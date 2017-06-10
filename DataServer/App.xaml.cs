@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace IPTVman
+namespace project
 {
     /// <summary>
     /// Логика взаимодействия для App.xaml
