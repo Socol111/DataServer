@@ -49,16 +49,24 @@ namespace project.ViewModel
         public static event Delegate_Command Event_CMD;
 
 
-        public void start()
+        public bool start()
         {
 
+   
             Connect();
 
             Sub("RIM7", "SPBFUT");
             Sub("SiM7", "SPBFUT");
 
-            add("Подписываемся на события всех сделок. Выполнено");
-            _quik.Events.OnAllTrade += ALLTRADE;
+
+
+            try
+            {
+                _quik.Events.OnAllTrade += ALLTRADE;
+            }
+            catch { add("ОШИБКА Подписки на события всех сделок"); }
+            finally { add("Подписываемся на события всех сделок. В"); }
+            return true;
 
         }
 
@@ -68,7 +76,7 @@ namespace project.ViewModel
             try
             {
                 add("Соединяемся со скриптом QuikSharp..." );
-                _quik = new Quik(Quik.DefaultPort, new InMemoryStorage()); 
+              // _quik = new Quik(Quik.DefaultPort, new InMemoryStorage()); 
            
 
             }
@@ -269,6 +277,26 @@ namespace project.ViewModel
         }
 
 
+
+        public Task<string> AsyncTaskSTART(string url)
+        {
+
+            return Task.Run(() =>
+            {
+                //----------------
+
+
+                ///q.start();
+                return "";
+
+                //----------------
+            });
+        }
+
+        async void RUN(string x)
+        {
+            string ss = await AsyncTaskSTART(x);
+        }
 
 
 

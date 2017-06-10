@@ -17,8 +17,6 @@ namespace project.ViewModel
 
     public partial class MainWindow : Window
     {
-        QUIKSHARPconnector q;
-
 
         public MainWindow()
         {
@@ -29,42 +27,22 @@ namespace project.ViewModel
             QUIKSHARPconnector.Event_Print += new Delegate_Print(add);
             QUIKSHARPconnector.Event_CMD += new Delegate_Command(cmd);
 
-
-            q = new QUIKSHARPconnector();
-
-            RUN("");
-
-
             // use a timer to periodically update the memory usage
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timer.Tick += timer_Tick;
             timer.Start();
 
-         
-        }
-
-
-
-        public Task<string> AsyncTaskSTART(string url)
-        {
-
-            return Task.Run(() =>
+            Task.Run(() =>
             {
                 //----------------
-
-
-                q.start();
-                return "";
-
+                ViewModelMain.task1_release();
                 //----------------
             });
+           
         }
 
-        async void RUN(string x)
-        {
-            string ss = await AsyncTaskSTART(x);
-        }
+
 
 
 
