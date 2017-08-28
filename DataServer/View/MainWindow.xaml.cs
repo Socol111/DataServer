@@ -19,6 +19,7 @@ namespace project.ViewModel
             this.Title = "Cobra Data Server v1.0";
 
             //Подписки
+     
             QUIKSHARPconnector.Event_Print += new Action<string, object>(add);
             QUIKSHARPconnector.Event_CMD += new Action<int, int, int, string>(cmd);
             Pipe.Event_Print += new Action<string, object>(add);
@@ -26,7 +27,7 @@ namespace project.ViewModel
 
             // use a timer to periodically update the memory usage
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, 800);
             timer.Tick += timer_Tick;
             timer.Start();
 
@@ -52,6 +53,29 @@ namespace project.ViewModel
 
         private void timer_Tick(object sender, EventArgs e)
         {
+                l1.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                {
+                    l1.Content = data.ct_global.ToString();
+                }));
+
+
+            string msg = "";
+
+            foreach (var i in ViewModelMain._instr)
+            {
+                msg = i.name + "  pipesend=" + i.ct.ToString()+"\r";
+            }
+
+            boxstat.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+            {
+                //if (box.l > 5000) box.Clear();
+                //box.AppendText(s + Environment.NewLine);
+                boxstat.Document.Blocks.Clear();
+
+                TextRange range = new TextRange(boxstat.Document.ContentEnd, boxstat.Document.ContentEnd);
+                range.Text = msg;
+                range.ApplyPropertyValue(TextElement.ForegroundProperty, System.Windows.Media.Brushes.Green);
+            }));
 
         }
 
@@ -61,5 +85,26 @@ namespace project.ViewModel
 
         }
 
+        Window setting;
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (setting != null) return;
+            setting = new WindowSettings
+            {
+                Topmost = true,
+                WindowStyle = WindowStyle.ToolWindow,
+                Name = "winsettings"
+            };
+
+            setting.Closing += setting_Closing;
+            setting.Show();
+        }
+        private void setting_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            setting = null;
+        }
+
     }
+   
+
 }

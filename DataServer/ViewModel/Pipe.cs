@@ -25,7 +25,7 @@ namespace project.ViewModel
         {
             get
             {
-                return "IN_Cobraconnector_" + name;
+                return Model.data.pipe_prefix + name;
             }
         }
 
@@ -47,7 +47,7 @@ namespace project.ViewModel
             if (s == "USDRUB") return;
             name = s;
 
-            string namechannel = "IN_Cobraconnector_" + name;
+            string namechannel = Model.data.pipe_prefix + name;
             try
             {
                 //pipeSERVERwrite = new NamedPipeServerStream(namechannel,

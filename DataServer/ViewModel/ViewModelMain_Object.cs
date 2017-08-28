@@ -36,6 +36,20 @@ namespace project.ViewModel
         }
         string _name, _class;
         decimal _bid, _ask;
+        int _ct=0;
+
+
+        public int ct
+        {
+            get
+            {
+                return _ct;
+            }
+            set
+            {
+                _ct = value;
+            }
+        }
 
         public string name
         {

@@ -53,9 +53,12 @@ namespace project.ViewModel
         }
         public bool start()
         {
-            foreach (var i in _instr)
+            if (data.pipe_enable)
             {
-                _pipe.Add(new Pipe(i.name));
+                foreach (var i in _instr)
+                {
+                    _pipe.Add(new Pipe(i.name));
+                }
             }
 
             foreach (var i in _instr)
@@ -78,7 +81,7 @@ namespace project.ViewModel
      
             FIFOorderbook = new Queue<OrderBook>();
             _instr = p;
-            _pipe = new List<Pipe>();
+            if (data.pipe_enable) _pipe = new List<Pipe>();
             try
             {
                // add("Соединяемся со скриптом QuikSharp..." );
@@ -98,7 +101,6 @@ namespace project.ViewModel
                     if (isServerConnected)
                     {
                         add("Соединение с сервером установлено." );
-                        
                     }
                     else
                     {
@@ -118,7 +120,6 @@ namespace project.ViewModel
                             else
                             {
                                 err("Соединение с сервером НЕ установлено!");
-
                             }
                         }
                    }
@@ -128,7 +129,7 @@ namespace project.ViewModel
                     err("Неудачная попытка получить статус соединения с сервером." );
                 }
             }
-            else err("QuikSharp НЕ СОЗДАН ");
+            else err("Фатальная ошибка QuikSharp НЕ СОЗДАН ");
         }
 
 
@@ -140,10 +141,9 @@ namespace project.ViewModel
         {
             try
             {
-    
                 string rez= "";
 
-                add("Определяем код класса инструмента " + secCode + "@" +classCode);
+                ///add("Определяем код класса инструмента " + secCode + "@" +classCode);
                 try
                 {
                     rez = _quik.Class.GetSecurityClass("SPBFUT,TQBR,TQBS,TQNL,TQLV,TQNE,TQOB", secCode).Result;
@@ -153,11 +153,9 @@ namespace project.ViewModel
                     err("Ошибка определения класса инструмента. Убедитесь, что тикер указан правильно");
                 }
 
-
                 if (rez == classCode)
                 {
-                    add(secCode + "@" + classCode+" найден");
-
+                    //add(secCode + "@" + classCode+" найден");
                 }
                 else err("не найден инструмент " + secCode+"@"+classCode );
 
@@ -171,7 +169,7 @@ namespace project.ViewModel
                     tool = new Tool(_quik, secCode, classCode);
                     if (tool != null && tool.Name != null && tool.Name != "")
                     {
-                        add("Инструмент " + tool.Name + " создан." );
+                        //add("Инструмент " + tool.Name + " создан." );
 
                         //textBoxAccountID.Text = tool.AccountID;
                         //textBoxFirmID.Text = tool.FirmID;
@@ -181,7 +179,7 @@ namespace project.ViewModel
                         //textBoxGuaranteeProviding.Text = Convert.ToString(tool.GuaranteeProviding);
                         //textBoxLastPrice.Text = Convert.ToString(tool.LastPrice);
                         //textBoxQty.Text = Convert.ToString(GetPositionT2(_quik, tool, clientCode));
-                        add("Подписываемся на стакан..." );
+                        //add("Подписываемся на стакан..." );
 
                         _quik.OrderBook.Subscribe(tool.ClassCode, tool.SecurityCode).Wait();
                        // _quik.OrderBook.Subscribe(tool.ClassCode, "SiM7").Wait();
@@ -230,59 +228,48 @@ namespace project.ViewModel
 
         Queue<OrderBook> FIFOorderbook;
         Queue<AllTrade> FIFOtrade;
-        static int ct = 0;
+
         bool loc_Quote=false;
         void OnQuoteDo(OrderBook quote)
         {
             if (loc_Quote) return;
             loc_Quote = true;
-            ct++;
-            
+  
             FIFOorderbook.Enqueue(quote);
             //if (FIFOorderbook.Count > 60000) WRITE();
 
             foreach (var i in _instr)
             {
-                if (quote.sec_code == i.name)
+                if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
                 {
                     toolOrderBook = quote;
                     bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
                     offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
-                    foreach (var p in _pipe)
+
+                    if (data.pipe_enable)
                     {
-                        if (p.Name == i.name)
+                        foreach (var p in _pipe)
                         {
-                            if (i.ask == offer && i.bid == bid) { break; }
-                            else
-                            p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
-                            i.ask = offer; i.bid = bid;
+                            if (p.Name == i.name)
+                            {
+                                if (i.ask == offer && i.bid == bid) { break; }
+                                else
+                                {
+                                    data.ct_global++;
+                                    i.ct++;
+                                    p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
+                                }
+                                    i.ask = offer; i.bid = bid;
+                            }
                         }
                     }
                     break;
                 }
             }
-
-            //    if (quote.sec_code == "LKOH" /*&& quote.class_code == tool.ClassCode*/)
-            //    {
-            //        toolOrderBook = quote;
-            //        bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-            //        offer = Convert.ToDecimal(toolOrderBook.offer[0].price);  
-            //        _pipe.send( "tick;" + bid.ToString() + ";" + offer.ToString() + ";");
-            //    }
-
-            //if (quote.sec_code == "SBER" /*&& quote.class_code == tool.ClassCode*/)
-            //{
-            //    toolOrderBook = quote;
-            //    bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-            //    offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
-
-            //    _pipe.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
-            //}
             loc_Quote = false;
         }
 
         string tektime = "";
-
 
         void ALLTRADE(AllTrade t)
         {
