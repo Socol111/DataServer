@@ -5,7 +5,7 @@
         xmlns:helpers="clr-namespace:project.Helpers"
         xmlns:vm="clr-namespace:project.ViewModel" 
         x:Class="project.ViewModel.MainWindow" WindowStartupLocation="CenterScreen"
-        Title="" Height="490.341" Width="843.602" Background="#FF282076" 
+        Title="" Height="727.341" Width="1201.602" Background="#FF282076" 
     
     
     
@@ -22,7 +22,7 @@
 
 
 
-    <Grid Margin="0,10,2,2">
+    <Grid Margin="0,10,2,36">
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
                 <GradientStop Color="#FF070113" Offset="0.911"/>
@@ -32,16 +32,18 @@
             </LinearGradientBrush>
         </Grid.Background>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="31*"/>
-            <ColumnDefinition Width="188*"/>
-            <ColumnDefinition Width="12*"/>
-            <ColumnDefinition Width="804*"/>
+            <ColumnDefinition Width="27*"/>
+            <ColumnDefinition Width="164*"/>
+            <ColumnDefinition Width="11*"/>
+            <ColumnDefinition Width="422*"/>
+            <ColumnDefinition Width="127*"/>
+            <ColumnDefinition Width="151*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto" MinHeight="44"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="Статистика" BorderBrush="#FFD3E04B" Foreground="#FF26F55F" RenderTransformOrigin="0.5,0.5" Margin="0,215,58,10" Grid.Column="1" Grid.ColumnSpan="3"/>
+        <GroupBox Header="Статистика" BorderBrush="#FFD3E04B" Foreground="#FF26F55F" RenderTransformOrigin="0.5,0.5" Margin="0,413,58,10" Grid.Column="1" Grid.ColumnSpan="5" VerticalContentAlignment="Bottom"/>
 
 
 
@@ -85,8 +87,8 @@
         </StackPanel>
 
         <!-- <КНОПКИ>-->
-        <Label x:Name="mem" Content="{Binding memory, UpdateSourceTrigger=PropertyChanged}" Grid.Column="3" Margin="0,0,15,8" Foreground="#FF41E466" Grid.Row="1" FontSize="13.333" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="23" Width="214" />
-        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="3">
+        <Label x:Name="mem" Content="{Binding memory, UpdateSourceTrigger=PropertyChanged}" Grid.Column="4" Margin="0,0,15,8" Foreground="#FF41E466" Grid.Row="1" FontSize="13.333" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="23" Width="214" Grid.ColumnSpan="2" />
+        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -100,7 +102,7 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <Button Content="ДОБАВИТЬ"  Command="{Binding key_OPENCommand}" CommandParameter=""  Margin="0,24,34,0" Focusable="False" Width="100" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="3">
+        <Button Content="ДОБАВИТЬ"  Command="{Binding key_OPENCommand}" CommandParameter=""  Margin="0,24,34,0" Focusable="False" Width="100" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -114,6 +116,18 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <TextBox x:Name="tb" Grid.Column="1" HorizontalAlignment="Left" Height="186" Margin="0,24,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="568" Grid.ColumnSpan="3" Background="#FF150B44" Foreground="#FF15D827"/>
+        <RichTextBox Name ="box" Grid.Column="1" Margin="0,24,0,227" Grid.ColumnSpan="4" Foreground="#FF24B845" FontSize="16">
+            <RichTextBox.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FF0F1555" Offset="1"/>
+                </LinearGradientBrush>
+            </RichTextBox.Background>
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>

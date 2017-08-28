@@ -20,17 +20,11 @@ namespace project.ViewModel
 {
     partial class ViewModelMain : ViewModelBase
     {
-
-       // public RelayCommand key_FILTERmoveDragCommand { get; set; }
-     
-
         void ini_command()
         {
           //  key_FILTERmoveDragCommand = new RelayCommand(key_dragdrop);
-     
-        }
 
-      
+        }
 
 
     }//class

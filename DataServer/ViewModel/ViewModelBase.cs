@@ -20,8 +20,7 @@ using System.Net.NetworkInformation;
 namespace project.ViewModel
 {
     class ViewModelBase : INotifyPropertyChanged
-    {
-        
+    { 
         System.Timers.Timer Timer1;
         public bool win_loading = false;
         public void CreateTimer1(int ms)
@@ -42,62 +41,38 @@ namespace project.ViewModel
             if (PropertyChanged != null)
             {
                 RaisePropertyChanged("memory");
-
             }
         }
 
-
-
-
         public class HasDisposeMethod : IDisposable
         {
-            
-
             public HasDisposeMethod()
             {
                
             }
-
             protected virtual void Dispose(bool disposing)
             {
                 if (disposing)
                 {
                     // dispose managed resources
-                  
                 }
-                // free native resources
             }
 
             public void Dispose()
             {
                 Dispose(true);
-            
             }
         }
 
-
-
-        //basic ViewModelBase
         internal void RaisePropertyChanged(string prop)
         {
            if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
-               
             }
-         
-
         }
        public  event PropertyChangedEventHandler PropertyChanged; //событие выбора канала
 
-
-
-
-       
-
-
-
-        //Extra Stuff, shows why a base ViewModel is useful
         bool? _CloseWindowFlag;
         public bool? CloseWindowFlag
         {

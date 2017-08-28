@@ -43,10 +43,17 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\API_QUIKSHARP\Reference\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="QuikSharp">
-      <HintPath>..\..\..\API_QUIKSHARP\Reference\QuikSharp.dll</HintPath>
+      <HintPath>..\..\..\..\API_QUIKSHARP\Reference\QuikSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers">
+      <HintPath>..\..\..\..\API_QUIKSHARP\Reference\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
@@ -75,6 +82,8 @@
     <Compile Include="Model\data.cs" />
     <Compile Include="Model\Registy_Find.cs" />
     <Compile Include="Model\security.cs" />
+    <Compile Include="ViewModel\FilesWork.cs" />
+    <Compile Include="ViewModel\Pipe.cs" />
     <Compile Include="ViewModel\QUIKSHARPconnector.cs" />
     <Compile Include="ViewModel\ViewModelMain_Command.cs" />
     <Compile Include="ViewModel\ViewModelMain_Object.cs" />

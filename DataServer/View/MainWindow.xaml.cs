@@ -7,25 +7,22 @@ using project.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System.Windows.Documents;
 
 namespace project.ViewModel
 {
-    public delegate void Delegate_Print(string s);
-    public delegate void Delegate_Command(int cod, int p1, int p2,string s);
-
-
     public partial class MainWindow : Window
     {
-
         public MainWindow()
         {
             InitializeComponent();
             this.Title = "Cobra Data Server v1.0";
 
             //Подписки
-            QUIKSHARPconnector.Event_Print += new Delegate_Print(add);
-            QUIKSHARPconnector.Event_CMD += new Delegate_Command(cmd);
+            QUIKSHARPconnector.Event_Print += new Action<string, object>(add);
+            QUIKSHARPconnector.Event_CMD += new Action<int, int, int, string>(cmd);
+            Pipe.Event_Print += new Action<string, object>(add);
+            Pipe.Event_CMD += new Action<int, int, int, string>(cmd);
 
             // use a timer to periodically update the memory usage
             DispatcherTimer timer = new DispatcherTimer();
@@ -35,34 +32,26 @@ namespace project.ViewModel
 
             Task.Run(() =>
             {
-                //----------------
                 ViewModelMain.task1_release();
-                //----------------
             });
-           
         }
 
-
-
-
-
-        void add(string s)
+        void add(string msg, object c)
         {
-
-            tb.Dispatcher.Invoke(DispatcherPriority.Background, new
-            Action(() =>
+            box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
             {
-                if (tb.LineCount > 500) tb.Clear();
-                tb.AppendText(s + Environment.NewLine);
-                tb.ScrollToEnd();
+                //if (box.l > 5000) box.Clear();
+                //box.AppendText(s + Environment.NewLine);
+
+                TextRange range = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
+                range.Text = msg+ "\r";
+                range.ApplyPropertyValue(TextElement.ForegroundProperty, c);
+                box.ScrollToEnd();//  Autoscroll
             }));
         }
 
-
         private void timer_Tick(object sender, EventArgs e)
         {
-
-         
 
         }
 
@@ -70,16 +59,7 @@ namespace project.ViewModel
         void cmd(int cod, int p1, int p2, string s)
         {
 
-
         }
-
-
-
-
-
-
-
-
 
     }
 }

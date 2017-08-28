@@ -1,0 +1,129 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
+using System.IO.Pipes;
+using System.Runtime.InteropServices;
+using System.Globalization;
+using System.Reflection;
+
+namespace project.ViewModel
+{
+    class Pipe
+    {
+        NamedPipeClientStream pipCLIENT;
+        //NamedPipeServerStream pipeSERVERwrite;
+        string name;
+
+        public static event Action<string, object> Event_Print;
+        public static event Action<int, int, int, string> Event_CMD;
+
+        public string pipename
+        {
+            get
+            {
+                return "IN_Cobraconnector_" + name;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+        }
+
+
+        public Pipe(string s)
+        {
+            if (s == "AA") return;
+            if (s == "BA") return;
+            if (s == "AAPL") return;
+            if(s == "EBAY") return;
+            if (s == "USDRUB") return;
+            name = s;
+
+            string namechannel = "IN_Cobraconnector_" + name;
+            try
+            {
+                //pipeSERVERwrite = new NamedPipeServerStream(namechannel,
+                //    PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+                //pipeSERVERwrite.WaitForConnection();
+                add("подключаем "+namechannel+"...");
+                pipCLIENT = new NamedPipeClientStream(namechannel);
+                pipCLIENT.Connect();
+            }
+            catch (Exception ex) { err("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message); }
+            finally { }
+            add("PIPE КАНАЛ " + namechannel + " подключен к серверу status=" +
+                pipCLIENT.CanWrite + "/" + pipCLIENT.CanRead);
+        }
+
+        public bool isConnect
+        {
+            get
+            {
+                if (pipCLIENT == null) return false;
+                return pipCLIENT.IsConnected;
+            }
+        }
+
+        bool lok_send = false;
+        public void send(string msg)
+        {
+            if (lok_send) return;
+            if (!isConnect) return;
+    
+            lok_send = true;
+            WriteMessage(msg);
+            lok_send = false;
+        }
+
+        public void WriteMessage( string put )
+        {
+            byte[] msg = Encoding.UTF8.GetBytes(put);
+
+            try
+            {
+                pipCLIENT.Write(msg, 0, (int)msg.Length);
+            }
+            catch (Exception ex)
+            {
+                err("сбой записи в PIPE  " + ex.Message);
+            }
+            //while (!pipCLIENT.) Thread.Sleep(5);
+        }
+
+        public byte[] ReadMessage(PipeStream s)
+        {
+            MemoryStream ms = new MemoryStream();
+            byte[] buffer = new byte[0x1000];
+            do
+            {
+                try
+                {
+                    ms.Write(buffer, 0, s.Read(buffer, 0, buffer.Length));
+                }
+                catch { err("сбой чтения из PIPE"); }
+            }
+            while (!s.IsMessageComplete);
+            return ms.ToArray();
+        }
+
+        void add(string s)
+        {
+            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Green);
+        }
+        void err(string s)
+        {
+            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Red);
+        }
+    }
+
+
+
+}
