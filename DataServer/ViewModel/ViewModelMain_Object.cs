@@ -20,6 +20,7 @@ namespace project.ViewModel
 
         }
 
+        public static object list => Model.data.eliminate;
 
     }//class
 

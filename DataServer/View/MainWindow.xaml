@@ -87,7 +87,7 @@
 
         <!-- <КНОПКИ>-->
         <Label x:Name="mem" Content="{Binding memory, UpdateSourceTrigger=PropertyChanged}" Grid.Column="4" Margin="0,0,15,8" Foreground="#FF41E466" Grid.Row="1" FontSize="13.333" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="23" Width="214" Grid.ColumnSpan="2" />
-        <Button Content="НАСТРОЙКИ" Command="" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5" Click="Button_Click">
+        <Button Content="НАСТРОЙКИ" Command="" CommandParameter=""   Margin="0,105,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5" Click="Button_Click">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -101,7 +101,7 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <Button Content="ДОБАВИТЬ"  Command="{Binding key_OPENCommand}" CommandParameter=""  Margin="0,24,34,0" Focusable="False" Width="100" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
+        <Button Content="ДОБАВИТЬ"  Command="{Binding key_OPENCommand}" CommandParameter=""  Margin="0,64,34,0" Focusable="False" Width="100" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -115,7 +115,7 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <RichTextBox Name ="box" Grid.Column="1" Margin="0,24,0,300" Grid.ColumnSpan="4" Foreground="#FF24B845" FontSize="16">
+        <RichTextBox Name ="box" Grid.Column="1" Margin="0,24,0,430" Grid.ColumnSpan="4" Foreground="#FF24B845">
             <RichTextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -128,9 +128,9 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Label Name ="l1" Content="1111" Grid.Column="5" HorizontalAlignment="Left" Margin="26,205,0,0" VerticalAlignment="Top" Width="162"/>
+        <Label Name ="l1" Content="----------" Grid.Column="5" HorizontalAlignment="Left" Margin="26,205,0,0" VerticalAlignment="Top" Width="162" FontSize="18"/>
         <Label x:Name ="l1_Copy" Content="Счетчик pipe send" Grid.Column="5" HorizontalAlignment="Left" Margin="26,186,0,0" VerticalAlignment="Top" Width="162" FontSize="20"/>
-        <RichTextBox x:Name ="boxstat" Grid.Column="1" Margin="0,404,121.537,22" Grid.ColumnSpan="5" Foreground="#FF24B845" FontSize="16">
+        <RichTextBox x:Name ="boxstat" Grid.Column="1" Margin="0,235,122,22" Grid.ColumnSpan="5" Foreground="#FF24B845" FontSize="16">
             <RichTextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -143,5 +143,13 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
+        <Label x:Name ="tmr" Content="----------" Grid.Column="5" Margin="0,-6,0,0" VerticalAlignment="Top" FontSize="18" Background="#FF3E2020" Foreground="#FF248595" Height="47" FontWeight="Bold" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="184">
+            <Label.BorderBrush>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FF2D2D7A" Offset="1"/>
+                </LinearGradientBrush>
+            </Label.BorderBrush>
+        </Label>
     </Grid>
 </Window>

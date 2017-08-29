@@ -17,9 +17,9 @@ namespace project.ViewModel
         {
             InitializeComponent();
             this.Title = "Settings";
-           
-            // use a timer to periodically update the memory usage
-            DispatcherTimer timer = new DispatcherTimer();
+            
+             // use a timer to periodically update the memory usage
+             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timer.Tick += timer_Tick;
             timer.Start();
@@ -34,7 +34,7 @@ namespace project.ViewModel
 
         private void timer_Tick(object sender, EventArgs e)
         {
-
+           
         }
 
 
@@ -43,5 +43,15 @@ namespace project.ViewModel
 
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (newel.Text == "") return;
+            Model.data.eliminate.Add(newel.Text);
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Model.data.eliminate.RemoveAt(lst1.SelectedIndex);
+        }
     }
 }

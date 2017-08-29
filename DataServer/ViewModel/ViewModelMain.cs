@@ -31,17 +31,14 @@ namespace project.ViewModel
        
             quik = new QUIKSHARPconnector();
         }
-        public static void task1_release()
+        public async static void task1_release()
         {
-            try
+            while (true)
             {
                 Thread.Sleep(500);
                 quik.Connect(_instr);
-                quik.start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка " + ex.ToString());
+                Thread.Sleep(5000);
+                quik.work();
             }
         }
 

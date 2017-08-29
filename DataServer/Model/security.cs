@@ -8,8 +8,7 @@ using QuikSharp;
 
 namespace project.Model
 {
-   
-
+  
     public class Tool
     {
         Char separator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];

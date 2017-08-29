@@ -40,27 +40,30 @@ namespace project.ViewModel
 
         public Pipe(string s)
         {
-            if (s == "AA") return;
-            if (s == "BA") return;
-            if (s == "AAPL") return;
-            if(s == "EBAY") return;
-            if (s == "USDRUB") return;
+            foreach (var el in Model.data.eliminate)
+            {
+                if (el == s) return;
+            }
             name = s;
 
-            string namechannel = Model.data.pipe_prefix + name;
-            try
+            while (true)
             {
-                //pipeSERVERwrite = new NamedPipeServerStream(namechannel,
-                //    PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
-                //pipeSERVERwrite.WaitForConnection();
-                add("подключаем "+namechannel+"...");
-                pipCLIENT = new NamedPipeClientStream(namechannel);
-                pipCLIENT.Connect();
+                string namechannel = Model.data.pipe_prefix + name;
+                try
+                {
+                    //pipeSERVERwrite = new NamedPipeServerStream(namechannel,
+                    //    PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+                    //pipeSERVERwrite.WaitForConnection();
+                    add("подключаем " + namechannel + "...");
+                    pipCLIENT = new NamedPipeClientStream(namechannel);
+                    pipCLIENT.Connect();
+                }
+                catch (Exception ex) { err("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message); Thread.Sleep(5000); continue; }
+                finally { }
+                add("PIPE КАНАЛ " + namechannel + " подключен к серверу status=" +
+                    pipCLIENT.CanWrite + "/" + pipCLIENT.CanRead);
+                break;
             }
-            catch (Exception ex) { err("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message); }
-            finally { }
-            add("PIPE КАНАЛ " + namechannel + " подключен к серверу status=" +
-                pipCLIENT.CanWrite + "/" + pipCLIENT.CanRead);
         }
 
         public bool isConnect

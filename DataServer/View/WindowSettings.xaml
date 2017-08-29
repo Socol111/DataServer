@@ -5,7 +5,7 @@
         xmlns:helpers="clr-namespace:project.Helpers"
         xmlns:vm="clr-namespace:project.ViewModel" 
         x:Class="project.ViewModel.WindowSettings" WindowStartupLocation="CenterScreen"
-        Title="" Height="350.64" Width="741.979" Background="#FF282076" 
+        Title="" Height="350.64" Width="741.979" Background="#FF63217C" 
     
     
     
@@ -22,35 +22,29 @@
 
 
 
-    <Grid Margin="0,10,2,36">
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                <GradientStop Color="#FF070113" Offset="0.911"/>
-                <GradientStop Color="#FF361876" Offset="0.995"/>
-                <GradientStop Color="#FF32166E" Offset="0.047"/>
-                <GradientStop Color="#FF6940C1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
+    <Grid Margin="10,28,2,25" Background="#FF4D3636">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="27*"/>
-            <ColumnDefinition Width="164*"/>
-            <ColumnDefinition Width="11*"/>
-            <ColumnDefinition Width="422*"/>
-            <ColumnDefinition Width="127*"/>
-            <ColumnDefinition Width="151*"/>
+            <ColumnDefinition Width="22*"/>
+            <ColumnDefinition Width="31*"/>
+            <ColumnDefinition Width="13*"/>
+            <ColumnDefinition Width="89*"/>
+            <ColumnDefinition Width="9*"/>
+            <ColumnDefinition Width="342*"/>
+            <ColumnDefinition Width="103*"/>
+            <ColumnDefinition Width="123*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="Auto" MinHeight="44"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
 
 
         <!-- <КВАДРАТ>-->
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="3"/>
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="5" Grid.Column="1" Margin="20,256,295,-11" Grid.RowSpan="2"/>
 
         <!-- <КНОПКИ>-->
-        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
+        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="6" Grid.ColumnSpan="2">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -64,7 +58,7 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <Button Content="ДОБАВИТЬ"  Command="{Binding key_OPENCommand}" CommandParameter=""  Margin="0,24,34,0" Focusable="False" Width="100" Height="25" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5">
+        <Button Content="ДОБАВИТЬ"  CommandParameter=""  Margin="0,28,234,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5" Click="Button_Click">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -78,8 +72,23 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <ListBox Grid.Column="1" HorizontalAlignment="Left" Height="183" Margin="23,37,0,0" VerticalAlignment="Top" Width="185" Grid.ColumnSpan="3"/>
-        <TextBox Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="132,37,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="216" Grid.ColumnSpan="2"/>
-        <TextBox Grid.Column="3" HorizontalAlignment="Left" Height="23" Margin="132,90,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="216" Grid.ColumnSpan="2"/>
+        <ListBox Name="lst1" ItemsSource="{Binding list}"  Grid.Column="3" HorizontalAlignment="Left" Height="168" Margin="21,56,0,0" VerticalAlignment="Top" Width="185" Grid.ColumnSpan="3"/>
+        <TextBox Name="newel" HorizontalAlignment="Left" Height="21" Margin="21,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="100" Grid.ColumnSpan="3" Grid.Column="3"/>
+        <TextBox Grid.Column="5" HorizontalAlignment="Left" Height="21" Margin="174,104,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="216" Grid.ColumnSpan="2"/>
+        <Label Grid.ColumnSpan="3" Content="Игнорировать" Grid.Column="3" HorizontalAlignment="Left" Margin="21,6,0,0" VerticalAlignment="Top" Width="149"/>
+        <Button Content="Удалить" CommandParameter=""  Margin="0,228,335,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="3" Grid.ColumnSpan="3" Click="Button_Click_1">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black"/>
+                    <GradientStop Color="#FFFBE454" Offset="0.749"/>
+                </LinearGradientBrush>
+            </Button.Background>
+            <Button.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0"/>
+                    <GradientStop Color="#FF0627BB" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Foreground>
+        </Button>
     </Grid>
 </Window>
