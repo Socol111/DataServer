@@ -43,7 +43,7 @@ namespace project.ViewModel
 
         List<Instumensts> _instr;
         List<Pipe> _pipe;
-        Task test;
+
         public static event Action<string, object> Event_Print;
         public static event Action<int, int, int, string> Event_CMD;
         bool connect_ok = false;
@@ -53,9 +53,9 @@ namespace project.ViewModel
         }
         public void work()
         {
-            connect_ok = true;
+            
 
-            if (data.pipe_enable)
+            if (!data.block_new_pipe && data.pipe_enable)
             {
                 foreach (var i in _instr)
                 {
@@ -76,69 +76,94 @@ namespace project.ViewModel
 
             add("Подписка на события всех сделок выполнена");
 
-            test = Task.Run(() =>
-            {
-                while (true)
+
+            connect_ok = true;
+            data.Not_connect = false;
+            data.Not_data = false;
+
+            // test = Task.Run(() =>
+            //{
+            while (true)//main cycle
                 {
+
+                    if (data.fatal) break;
+
                     try
                     {
                         Thread.Sleep(400);
+
+                        if (data.need_rst)
+                        {
+                            rst();
+                            data.need_rst = false;
+                        }
+
+                        if (data.Not_data)
+                        {
+                            err(DateTime.Now.ToString() + " НЕТ ДАННЫХ,  reconnect...");
+                            return;
+                        }
+
+
+
                         isServerConnected = _quik.Service.IsConnected().Result;
                         if (!isServerConnected)
                         {
                             err(DateTime.Now.ToString() + " НЕТ Связи с QuikSharp,  reconnect...");
-                            Thread.Sleep(3000);
+                            data.Not_connect=true;
                             return;
                         }
                         else
                         {
-                            //add("ok " + DateTime.Now.ToString());
-                            connect_ok = true;
+               
                         }
+
+                       
                     }
-                    catch
+                    catch(Exception ex)
                     {
+                        err(ex.Message);
                     }
                 }
-            });
-
-
-            while (true)
-            {
-                Thread.Sleep(1000);
-                if (!connect_ok)
-                {
-                    err(DateTime.Now.ToString() + " НЕТ Связи с QuikSharp,  reconnect...");
-                    test = null;
-                    Thread.Sleep(3000);
-                    return;
-                }
-                connect_ok = false;
-            }
+           // });
 
         }
 
-        public void Connect(List<Instumensts> p)
+
+        /// <summary>
+        /// connect
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public bool Connect(List<Instumensts> p)
         {
      
             FIFOorderbook = new Queue<OrderBook>();
             _instr = p;
-            if (data.pipe_enable) _pipe = new List<Pipe>();
+
+            if(!data.block_new_pipe && data.pipe_enable) _pipe = new List<Pipe>();
+
+
             try
             {
-               //add("инициализация QuikSharp...");
-                _quik = new Quik(Quik.DefaultPort, new InMemoryStorage()); 
+                add("инициализация QuikSharp...");
+                _quik = new Quik(Quik.DefaultPort, new InMemoryStorage());
+                Thread.Sleep(5000);
+                add("OK");
             }
             catch
             {
                 err("Ошибка инициализации QuikSharp...");
+                return false;
             }
             if (_quik != null)
             {
                 try
                 {
-                    add("Соединяемся c Lua скриптом QuikSharp ...");
+                    add("Соединяемся c Lua скриптом QuikSharp ...   service=" + _quik.Service.QuikService.IsStarted);
+                   if (!_quik.Service.QuikService.IsStarted) _quik.Service.QuikService.Start();
                     isServerConnected = _quik.Service.IsConnected().Result;
+
                     if (isServerConnected)
                     {
                         add("Соединение с Lua скриптом QuikSharp установлено.");
@@ -150,7 +175,7 @@ namespace project.ViewModel
                         while (true)
                         {
                             add("Повтор соединения");
-                            Thread.Sleep(8000);
+                            Thread.Sleep(5000);
 
                             isServerConnected = _quik.Service.IsConnected().Result;
                             if (isServerConnected)
@@ -161,24 +186,63 @@ namespace project.ViewModel
                             else
                             {
                                 err("Соединение с сервером НЕ установлено!");
+                                return false;
                             }
                         }
-                   }
+                    }
                 }
                 catch
                 {
-                    err("Неудачная попытка получить статус соединения с сервером." );
+                    err("Неудачная попытка получить статус соединения с сервером.");
+                    return false;
                 }
+
+
             }
-            else err("Фатальная ошибка QuikSharp НЕ СОЗДАН ");
+            else { err("Фатальная ошибка QuikSharp НЕ СОЗДАН "); return false; }
+
+            
+            add("statrt work");
+            return true;
         }
 
 
+        public void stop()
+        {
 
-       
+          
+                if (_quik != null)
+                    _quik.Events.OnAllTrade -= ALLTRADE;
 
+                foreach (var i in _instr)
+                {
+                    DeSub(i.name, i.Class.Replace("@", ""));
+                }
 
-        void Sub(string secCode, string classCode)
+            if (data.Not_data)
+            {
+                try
+                {
+                    if (_quik != null) _quik.Service.QuikService.Stop();
+                    if (_quik != null) _quik.StopService();
+                }
+                catch { }
+            };
+
+            _quik = null;
+        }
+        public void rst()
+        {
+            if (_quik != null)
+            if (_quik != null) _quik.Service.QuikService.Stop();
+            if (_quik != null) _quik.Service.QuikService.Start();
+
+        }
+            async  void DeSub(string secCode, string classCode)
+        {
+            if (_quik != null) { }
+        }
+            void Sub(string secCode, string classCode)
         {
             try
             {
@@ -273,9 +337,11 @@ namespace project.ViewModel
         bool loc_Quote=false;
         void OnQuoteDo(OrderBook quote)
         {
+            if (_quik == null) return;
+            if (!_quik.Service.QuikService.IsStarted) return;
+
             if (loc_Quote) return;
             loc_Quote = true;
-  
             //FIFOorderbook.Enqueue(quote);
             //if (FIFOorderbook.Count > 60000) WRITE();
 
@@ -314,12 +380,13 @@ namespace project.ViewModel
 
         void ALLTRADE(AllTrade t)
         {
-            return;
-           // add("---- all trade ---"); 
+            if (_quik == null) return;
+            if (!_quik.Service.QuikService.IsStarted) return;
+            // add("---- all trade ---"); 
             if (FIFOtrade == null)
                 FIFOtrade = new Queue<AllTrade>();
 
-            FIFOtrade.Enqueue(t);
+           // FIFOtrade.Enqueue(t);
 
           //  if (FIFOtrade.Count > 60000) WRITE();
 
@@ -331,22 +398,22 @@ namespace project.ViewModel
 
 
 
-        public Task<string> AsyncTaskSTART(string url)
-        {
-            return Task.Run(() =>
-            {
-                //----------------
-                ///q.start();
-                return "";
+        //public Task<string> AsyncTaskSTART(string url)
+        //{
+        //    return Task.Run(() =>
+        //    {
+        //        //----------------
+        //        ///q.start();
+        //        return "";
 
-                //----------------
-            });
-        }
+        //        //----------------
+        //    });
+        //}
 
-        async void RUN(string x)
-        {
-            string ss = await AsyncTaskSTART(x);
-        }
+        //async void RUN(string x)
+        //{
+        //   // string ss = await AsyncTaskSTART(x);
+        //}
 
 
 

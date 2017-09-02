@@ -26,6 +26,7 @@ namespace project.ViewModel
         public static CancellationTokenSource cts1;
         public static CancellationToken cancellationToken;
         private object threadLock = new object();
+        int ct_no_connect=0;
 
         public MainWindow()
         {
@@ -51,47 +52,56 @@ namespace project.ViewModel
             //{
             //    ViewModelMain.task1_release();
             //});
-            start();
+            //start();
+
+            
         }
 
-        public async void start()
-        {
-            await AsyncTaskSTART(cts1.Token);
-        }
+        //public async void start()
+        //{
+        //    while (true)
+        //    {
 
-        public async Task<string> AsyncTaskSTART(CancellationToken cancellationToken)
-        {
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            task1 = Task.Run(() =>
-            {
-                var tcs = new TaskCompletionSource<string>();
-                try
-                {
-                    lock (threadLock)
-                    {
-                        ViewModelMain.task1_release();
-                    }
-                    tcs.SetResult("ok");
-                }
-                catch (OperationCanceledException e)
-                {
-                    tcs.SetException(e);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-                return tcs.Task;
-            });
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            try { await task1; }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-            cts1.Cancel();
-            return "";
-        }
+        //        await AsyncTaskSTART(cts1.Token);
+        //        Thread.Sleep(1000);
+        //        MessageBox.Show("fatal restart");
+        //        data.fatal_need_rst_task = false;
+        //    }
+        //}
+
+        //public async Task<string> AsyncTaskSTART(CancellationToken cancellationToken)
+        //{
+        //    //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        //    task1 = Task.Run(() =>
+        //    {
+        //        var tcs = new TaskCompletionSource<string>();
+        //        try
+        //        {
+        //            lock (threadLock)
+        //            {
+        //                ViewModelMain.task1_release();
+        //            }
+        //            tcs.SetResult("ok");
+        //        }
+        //        catch (OperationCanceledException e)
+        //        {
+        //            tcs.SetException(e);
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            tcs.SetException(e);
+        //        }
+        //        return tcs.Task;
+        //    });
+        //    //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+        //    try { await task1; }
+        //    catch (Exception e)
+        //    {
+        //        MessageBox.Show("fatal="+e.Message);
+        //    }
+        //    cts1.Cancel();
+        //    return "";
+        //}
 
         void add(string msg, object c)
         {
@@ -108,17 +118,100 @@ namespace project.ViewModel
         }
 
         string mess = "";
+        int l1_mem = 0;
+        bool loc = false;
+        int ct_fatal;
         private void timer_Tick(object sender, EventArgs e)
         {
+            if (loc) return;
+            loc = true;
+
             tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
             {
                 tmr.Content = DateTime.Now.ToString();
             }));
 
-            l1.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            if (data.Not_connect && !data.fatal)
+            {
+                
+        
+                ct_fatal++;
+                if (ct_fatal > 50)
+                {
+                    add("-- запуск fatal restart ---", System.Windows.Media.Brushes.Red);
+                    data.fatal = true;
+                    ct_fatal = 0;
+                }
+            }
+
+
+
+
+
+
+            if (l1_mem != data.ct_global)
+            {            
+                l1.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                 {
                     l1.Content = data.ct_global.ToString();
                 }));
+
+                l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    l1err.Content = "";
+                }));
+
+                l1_mem = data.ct_global;
+            }
+            else//счетчик стоит
+            {
+
+                if (data.Not_data) goto exit;
+                if (data.Not_connect) goto exit;
+
+                ct_no_connect++;
+
+                l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    l1err.Content = ct_no_connect.ToString();
+                }));
+
+
+                if (ct_no_connect == 2)
+                {
+                    if (!data.Not_data)
+                    {
+                        tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                        {
+                            tmr_last.Content = DateTime.Now.ToString();
+                        }));
+                    }
+
+                    l1.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                    {
+                        l1.Foreground = System.Windows.Media.Brushes.Red;
+                    }));
+                }
+
+                if (ct_no_connect == 12) { data.need_rst = true; }
+                if (ct_no_connect > 30) { data.Not_data = true; ct_no_connect = 0; goto exit; }
+            }
+
+            if (ct_no_connect==0)
+            {
+                l1.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    l1.Foreground = System.Windows.Media.Brushes.White;
+                }));
+
+            }
+
+
+            
+
+           
+
+           
 
             mess = "";
            // mess = "Всего pipesend="+data.ct_global.ToString()+"\r";
@@ -139,6 +232,8 @@ namespace project.ViewModel
                 range.ApplyPropertyValue(TextElement.ForegroundProperty, System.Windows.Media.Brushes.Green);
             }));
 
+            exit:
+            loc = false;
         }
 
 

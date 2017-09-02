@@ -13,6 +13,15 @@ namespace project.Model
         public static string path_settings= "";
         public static string pipe_prefix = "IN_Cobraconnector_";
         public static bool pipe_enable = true;
+
+        public static bool Not_data = false;
+        public static bool Not_connect = true;
+        public static bool fatal = false;
+        public static bool fatal_need_rst_task = false;
+
+        public static bool need_rst = false;
+        public static bool block_new_pipe = false;
+
         public static System.Collections.ObjectModel.ObservableCollection<string> eliminate = 
              new ObservableCollection<string> { "AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB" };
     }

@@ -50,8 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\API_QUIKSHARP\Reference\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="QuikSharp">
-      <HintPath>..\..\..\..\API_QUIKSHARP\Reference\QuikSharp.dll</HintPath>
+    <Reference Include="QUIKSharp, Version=0.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\API_QUIKSHARP\QUIKSharp-master\bin\net45\QUIKSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers">

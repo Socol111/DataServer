@@ -24,10 +24,6 @@ namespace project.ViewModel
             timer.Tick += timer_Tick;
             timer.Start();
 
-            Task.Run(() =>
-            {
-                ViewModelMain.task1_release();
-            });
         }
 
         

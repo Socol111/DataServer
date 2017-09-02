@@ -42,6 +42,8 @@ namespace project.ViewModel
             {
                 RaisePropertyChanged("memory");
             }
+
+            ViewModelMain.timer();
         }
 
         public class HasDisposeMethod : IDisposable
