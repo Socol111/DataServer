@@ -41,23 +41,26 @@ namespace project.ViewModel
         {
             if (loc) return;
             loc= true;
-
+            
             if (data.fatal)
             {
  
                 try
                 {
-                    quik.stop();
-
+                    quik.Stop();
+                    
                 }
                 catch
                 { }
 
-                data.fatal_need_rst_task = true;
   
-                while (data.fatal_need_rst_task)
+                data.fatal_need_rst_task = true;
+
+                mt.Abort(5000);
+                while (mt.ThreadState == System.Threading.ThreadState.Running)
                 { Thread.Sleep(500); }
 
+                //MessageBox.Show("task остановлена");
 
                 data.fatal = false;
                 data.block_new_pipe = false;
@@ -67,23 +70,23 @@ namespace project.ViewModel
 
             loc = false;
         }
-           
-      
 
-            public static void create()
-            {
-                quik = new QUIKSHARPconnector();
+        public static CancellationTokenSource cts1;
+        public static CancellationToken cancellationToken;
+        static Thread mt;
+        public static void create()
+        {       
+                data.fatal = false;
+                cts1 = new CancellationTokenSource();
+                cancellationToken = cts1.Token;//для task1
 
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            var task1 = Task.Run(() =>
+            mt = new Thread(() =>
             {
                 var tcs = new TaskCompletionSource<string>();
                 try
                 {
-                    //lock (threadLock)
-                   // {
-                        ViewModelMain.task1_release();
-                    //}
+                    ViewModelMain.task1_release(cancellationToken);
                     tcs.SetResult("ok");
                 }
                 catch (OperationCanceledException e)
@@ -94,32 +97,45 @@ namespace project.ViewModel
                 {
                     tcs.SetException(e);
                 }
-                return tcs.Task;
+               // return tcs.Task;
             });
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
+            mt.Name = "QUIKSHARP THREAD";
+            mt.Start();
         }
 
 
         /// <summary>
         /// 
         /// </summary>
-        public static void task1_release()
+        public static void task1_release(CancellationToken cts)
         {
-            while (true)
-            {
-                if (data.fatal) break;
-                Thread.Sleep(500);
-                if (!quik.Connect(_instr)) { Thread.Sleep(2500); break; }
-                Thread.Sleep(5000);
-                if (data.fatal) break;
-                quik.work();//main cycle
 
+                while (true)
+                {
+                    if (data.fatal_need_rst_task || cts.IsCancellationRequested) break;
+                    Thread.Sleep(500);
+                    if (quik == null) quik = new QUIKSHARPconnector();
+
+                    if (quik != null)
+                    {
+                        if (!quik.Connect(_instr)) { Thread.Sleep(2500); continue; }
+                    }
                 
-                data.block_new_pipe = true;
-                quik.stop();
+                    Thread.Sleep(5000);
+                    if (data.fatal) break;
+                    quik.work();//main cycle
+
+
+                    data.block_new_pipe = true;
+                    quik.Stop();
+                }
+                data.fatal_need_rst_task = false;//task закончена
+                quik = null;
+
+                Thread.Sleep(3000);
             }
-        }
+     
 
 
 

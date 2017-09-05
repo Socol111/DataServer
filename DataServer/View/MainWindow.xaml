@@ -115,7 +115,7 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
-        <RichTextBox Name ="box" Grid.Column="1" Margin="0,24,0,430" Grid.ColumnSpan="4" Foreground="#FF24B845">
+        <RichTextBox Name ="box" Grid.Column="1" Margin="0,24,0,0" Grid.ColumnSpan="4" Foreground="#FF24B845" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Height="208">
             <RichTextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -128,9 +128,9 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Label Name ="l1" Content="----------" Grid.Column="3" HorizontalAlignment="Left" Margin="307,628,0,0" VerticalAlignment="Top" Width="162" FontSize="22" Foreground="#FFF7F7F7" Grid.RowSpan="2"/>
-        <Label x:Name ="l1_Copy" Content="Счетчик pipe send" Grid.Column="3" HorizontalAlignment="Left" Margin="119,630,0,0" VerticalAlignment="Top" Width="162" FontSize="20" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.RowSpan="2"/>
-        <RichTextBox x:Name ="boxstat" Grid.Column="1" Margin="0,235,122,22" Grid.ColumnSpan="5" Foreground="#FF24B845" FontSize="16">
+        <Label Name ="l1" Content="----------" Grid.Column="3" HorizontalAlignment="Left" Margin="272,0,0,32" VerticalAlignment="Bottom" Width="162" FontSize="22" Foreground="#FFF7F7F7" Grid.RowSpan="2"/>
+        <Label x:Name ="l1_Copy" Content="Счетчик pipe send" Grid.Column="3" HorizontalAlignment="Left" Margin="97,0,0,30" VerticalAlignment="Bottom" Width="162" FontSize="20" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.RowSpan="2"/>
+        <RichTextBox x:Name ="boxstat" Grid.Column="1" Margin="0,261,0,0" Grid.ColumnSpan="5" Foreground="#FF24B845" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="331" Width="1099">
             <RichTextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -143,7 +143,7 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <Label x:Name ="tmr" Content="----------" Grid.Column="1" Margin="0,628,484,0" VerticalAlignment="Top" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="47" FontWeight="Bold" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="248" Grid.ColumnSpan="3" Grid.RowSpan="2">
+        <Label x:Name ="tmr" Content="----------" Grid.Column="1" Margin="65,0,0,10" VerticalAlignment="Bottom" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="47" FontWeight="Bold" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="248" Grid.ColumnSpan="3" Grid.RowSpan="2" HorizontalContentAlignment="Center">
             <Label.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -151,7 +151,7 @@
                 </LinearGradientBrush>
             </Label.BorderBrush>
         </Label>
-        <Label x:Name ="tmr_last" Content="----------" Grid.Column="3" Margin="0,630,61,0" VerticalAlignment="Top" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="47" FontWeight="Bold" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="248" Grid.ColumnSpan="2" Grid.RowSpan="2">
+        <Label x:Name ="tmr_last" Content="----------" Grid.Column="3" Margin="0,0,95,14" VerticalAlignment="Bottom" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="47" FontWeight="Bold" HorizontalAlignment="Right" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="248" Grid.ColumnSpan="2" Grid.RowSpan="2">
             <Label.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -159,6 +159,6 @@
                 </LinearGradientBrush>
             </Label.BorderBrush>
         </Label>
-        <Label x:Name ="l1err" Content="----------" Grid.Column="3" HorizontalAlignment="Left" Margin="313,19,0,0" VerticalAlignment="Top" Width="68" FontSize="18" Foreground="#FFF7F7F7" Grid.Row="1" Height="23" Background="#FF340707"/>
+        <Label x:Name ="l1err" Content="----------" Grid.Column="3" HorizontalAlignment="Left" Margin="280,0,0,4" VerticalAlignment="Bottom" Width="68" FontSize="18" Foreground="#FFF7F7F7" Grid.Row="1" Height="23" Background="#FF340707"/>
     </Grid>
 </Window>

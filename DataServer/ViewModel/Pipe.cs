@@ -19,7 +19,7 @@ namespace project.ViewModel
         string name;
 
         public static event Action<string, object> Event_Print;
-        public static event Action<int, int, int, string> Event_CMD;
+       // public static event Action<int, int, int, string> Event_CMD;
 
         public string pipename
         {

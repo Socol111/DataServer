@@ -21,7 +21,6 @@ namespace project.ViewModel
 {
     class QUIKSHARPconnector
     {
-        bool isServerConnected;
         static Quik _quik;
         Char separator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
 
@@ -45,8 +44,8 @@ namespace project.ViewModel
         List<Pipe> _pipe;
 
         public static event Action<string, object> Event_Print;
-        public static event Action<int, int, int, string> Event_CMD;
-        bool connect_ok = false;
+        //public static event Action<int, int, int, string> Event_CMD;
+        //bool connect_ok = false;
         public QUIKSHARPconnector()
         {
             
@@ -77,12 +76,10 @@ namespace project.ViewModel
             add("Подписка на события всех сделок выполнена");
 
 
-            connect_ok = true;
             data.Not_connect = false;
             data.Not_data = false;
 
-            // test = Task.Run(() =>
-            //{
+    
             while (true)//main cycle
                 {
 
@@ -90,46 +87,49 @@ namespace project.ViewModel
 
                     try
                     {
-                        Thread.Sleep(400);
+                        Thread.Sleep(1000);
 
                         if (data.need_rst)
                         {
-                            rst();
+                            Rst();
                             data.need_rst = false;
                         }
 
                         if (data.Not_data)
                         {
-                            err(DateTime.Now.ToString() + " НЕТ ДАННЫХ,  reconnect...");
+                            err(" НЕТ ДАННЫХ,  reconnect...");
                             return;
                         }
 
 
+                      //add("test connect");
 
-                        isServerConnected = _quik.Service.IsConnected().Result;
-                        if (!isServerConnected)
+                        bool r = _quik.Debug.IsQuik().Wait(2000);
+                        if (!r) 
                         {
-                            err(DateTime.Now.ToString() + " НЕТ Связи с QuikSharp,  reconnect...");
-                            data.Not_connect=true;
+                            err(" НЕТ Связи с QuikSharp,  reconnect...");
+                            data.Not_connect = true;
+                            Stop();
+                            Thread.Sleep(5000);
+                            add("---------------");
                             return;
-                        }
-                        else
-                        {
-               
-                        }
-
+                         }
                        
-                    }
+                      //add("test connect end");
+
+                }
                     catch(Exception ex)
                     {
                         err(ex.Message);
                     }
-                }
-           // });
+            }
+    
 
         }
 
 
+
+        bool connect_ok = false;
         /// <summary>
         /// connect
         /// </summary>
@@ -137,7 +137,8 @@ namespace project.ViewModel
         /// <returns></returns>
         public bool Connect(List<Instumensts> p)
         {
-     
+
+            add("Start Connect...");
             FIFOorderbook = new Queue<OrderBook>();
             _instr = p;
 
@@ -146,103 +147,114 @@ namespace project.ViewModel
 
             try
             {
-                add("инициализация QuikSharp...");
-                _quik = new Quik(Quik.DefaultPort, new InMemoryStorage());
-                Thread.Sleep(5000);
-                add("OK");
-            }
-            catch
-            {
-                err("Ошибка инициализации QuikSharp...");
-                return false;
-            }
-            if (_quik != null)
-            {
-                try
+
+                if (_quik == null)
                 {
-                    add("Соединяемся c Lua скриптом QuikSharp ...   service=" + _quik.Service.QuikService.IsStarted);
-                   if (!_quik.Service.QuikService.IsStarted) _quik.Service.QuikService.Start();
-                    isServerConnected = _quik.Service.IsConnected().Result;
+                    add("инициализация QuikSharp...");
+                    if (data.fatal_need_rst_task) { _quik = null; add("прерывание"); return false; }
 
-                    if (isServerConnected)
-                    {
-                        add("Соединение с Lua скриптом QuikSharp установлено.");
-                    }
-                    else
-                    {
-                        err("ОШИБКА Соединения с Lua скриптом QuikSharp");
+                    _quik = new Quik(Quik.DefaultPort, new InMemoryStorage());
 
-                        while (true)
-                        {
-                            add("Повтор соединения");
-                            Thread.Sleep(5000);
 
-                            isServerConnected = _quik.Service.IsConnected().Result;
-                            if (isServerConnected)
-                            {
-                                add("Повторное Соединение с Lua скриптом QuikSharp установлено.");
-                                break;
-                            }
-                            else
-                            {
-                                err("Соединение с сервером НЕ установлено!");
-                                return false;
-                            }
-                        }
-                    }
+                    if (data.fatal_need_rst_task) { _quik = null; add("прерывание"); return false; }
+                    bool r = _quik.Debug.IsQuik().Wait(2000);
+                    if (!r) { add("скрипт не запущен рестарт"); _quik = null; Thread.Sleep(30000); return false; }
+
+                    add("скрипт ping " + _quik.Debug.Ping().Result);
+
+                    add("connecting...");
+                    connect_ok = _quik.Service.IsConnected().Result;
                 }
-                catch
+
+                else
                 {
-                    err("Неудачная попытка получить статус соединения с сервером.");
-                    return false;
+                    add("инициализация QuikSharp перезапуск");
+                    _quik.Service.QuikService.Stop();
+                    Thread.Sleep(1000);
+                    _quik.Service.QuikService.Start();
                 }
 
 
+                if (connect_ok) add("инициализация QuikSharp соединение c Lua скриптом OK. ");
+                else
+                {
+                    err("ошибка нет соединения  Повтор...");
+                    _quik = null; Thread.Sleep(10000);  return false;
+                }
             }
-            else { err("Фатальная ошибка QuikSharp НЕ СОЗДАН "); return false; }
+            catch(Exception ex)
+            {
+                err("Ошибка инициализации QuikSharp... "+ex.Message );
+                add("Повтор соединения");
+                _quik = null; Thread.Sleep(3000); return false;
+            }
 
-            
-            add("statrt work");
+
+            add("Connect выполнен");
             return true;
         }
 
 
-        public void stop()
+        public void Stop()
         {
-
-          
-                if (_quik != null)
-                    _quik.Events.OnAllTrade -= ALLTRADE;
+            if (_quik != null)
+            {
+                add("запуск отмены подписок ... ");
+                _quik.Events.OnAllTrade -= ALLTRADE;
 
                 foreach (var i in _instr)
                 {
                     DeSub(i.name, i.Class.Replace("@", ""));
                 }
 
+                add("отмена подписок выполнена ");
+            }
+            else add("отмена подписок Quik = null");
+
             if (data.Not_data)
             {
                 try
                 {
-                    if (_quik != null) _quik.Service.QuikService.Stop();
-                    if (_quik != null) _quik.StopService();
+                    add("остановка сервисов...");
+                    if (_quik != null)
+                    {
+                        _quik.Service.QuikService.Stop();
+                        _quik.StopService();
+                        add("остановка сервисов выполнена");
+                    }
                 }
-                catch { }
-            };
+                catch(Exception ex) { add("остановка сервисов ошибка "+ex.Message); }
+            }
+            else add("отмена подписок servis not stop");
 
+            add("Рестарт ...");
             _quik = null;
         }
-        public void rst()
+        public void Rst()
         {
             if (_quik != null)
-            if (_quik != null) _quik.Service.QuikService.Stop();
-            if (_quik != null) _quik.Service.QuikService.Start();
+            {
+                add("Перезапуск сервисов start");
+                _quik.Service.QuikService.Stop();
+                _quik.Service.QuikService.Start();
+                add("Перезапуск сервисов end");
+            }
+        }
 
-        }
-            async  void DeSub(string secCode, string classCode)
+        void DeSub(string secCode, string classCode)
         {
-            if (_quik != null) { }
+                if (_quik != null)
+                {
+                  //  _quik.OrderBook.Subscribe(tool.ClassCode, tool.SecurityCode).Wait();
+                   _quik.Events.OnQuote -= OnQuoteDo;
+
+                    // _quik.Candles.Subscribe(tool.ClassCode, tool.SecurityCode, CandleInterval.TICK);
+                }
+            
         }
-            void Sub(string secCode, string classCode)
+
+
+        void Sub(string secCode, string classCode)
         {
             try
             {
@@ -334,46 +346,46 @@ namespace project.ViewModel
         Queue<OrderBook> FIFOorderbook;
         Queue<AllTrade> FIFOtrade;
 
-        bool loc_Quote=false;
+        object lok = new object();
         void OnQuoteDo(OrderBook quote)
         {
             if (_quik == null) return;
             if (!_quik.Service.QuikService.IsStarted) return;
 
-            if (loc_Quote) return;
-            loc_Quote = true;
-            //FIFOorderbook.Enqueue(quote);
-            //if (FIFOorderbook.Count > 60000) WRITE();
-
-            foreach (var i in _instr)
+            lock (lok)
             {
-                if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
-                {
-                    toolOrderBook = quote;
-                    bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-                    offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
+                //FIFOorderbook.Enqueue(quote);
+                //if (FIFOorderbook.Count > 60000) WRITE();
 
-                    if (data.pipe_enable)
+                foreach (var i in _instr)
+                {
+                    if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
                     {
-                        foreach (var p in _pipe)
+                        toolOrderBook = quote;
+                        bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
+                        offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
+
+                        if (data.pipe_enable)
                         {
-                            if (p.Name == i.name)
+                            foreach (var p in _pipe)
                             {
-                                if (i.ask == offer && i.bid == bid) { break; }
-                                else
+                                if (p.Name == i.name)
                                 {
                                     data.ct_global++;
-                                    i.ct++;
-                                    p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
-                                }
+                                    if (i.ask == offer && i.bid == bid) { break; }
+                                    else
+                                    { 
+                                        i.ct++;
+                                        p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
+                                    }
                                     i.ask = offer; i.bid = bid;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
-            loc_Quote = false;
+            }//lock
         }
 
         string tektime = "";
@@ -433,12 +445,12 @@ namespace project.ViewModel
 
         void add(string s)
         {
-            if (Event_Print != null)  Event_Print(s, System.Windows.Media.Brushes.Green);
+            if (Event_Print != null)  Event_Print(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond + "   "+ s, System.Windows.Media.Brushes.Green);
         }
 
         void err(string s)
         {
-            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Red);
+            if (Event_Print != null) Event_Print(DateTime.Now.ToString()+ "."+ DateTime.Now.Millisecond +"   " + s, System.Windows.Media.Brushes.Red);
         }
 
 
