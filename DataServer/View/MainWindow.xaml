@@ -9,7 +9,7 @@
     
     
     
-        DataContext="{DynamicResource ViewModelMain}" Foreground="#FF20D10F">
+        DataContext="{DynamicResource ViewModelMain}" Foreground="#FF20D10F" Closed="Window_Closed">
 
 
     <Window.Resources>
@@ -129,7 +129,7 @@
             </FlowDocument>
         </RichTextBox>
         <Label Name ="l1" Content="----------" Grid.Column="3" HorizontalAlignment="Left" Margin="272,0,0,32" VerticalAlignment="Bottom" Width="162" FontSize="22" Foreground="#FFF7F7F7" Grid.RowSpan="2"/>
-        <Label x:Name ="l1_Copy" Content="Счетчик pipe send" Grid.Column="3" HorizontalAlignment="Left" Margin="97,0,0,30" VerticalAlignment="Bottom" Width="162" FontSize="20" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.RowSpan="2"/>
+        <Label x:Name ="l1_Copy" Content="Счетчик событий" Grid.Column="3" HorizontalAlignment="Left" Margin="97,0,0,30" VerticalAlignment="Bottom" Width="162" FontSize="20" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.RowSpan="2"/>
         <RichTextBox x:Name ="boxstat" Grid.Column="1" Margin="0,261,0,0" Grid.ColumnSpan="5" Foreground="#FF24B845" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Top" Height="331" Width="1099">
             <RichTextBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

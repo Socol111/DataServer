@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Windows.Data;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace project.ViewModel
 {
@@ -20,15 +21,23 @@ namespace project.ViewModel
     {
         public static QUIKSHARPconnector quik;
         public static List<Instumensts> _instr;
+        private static Mutex m_instance;
+        public static event Action stopprogramm;
 
-     
 
         public ViewModelMain()
         {
             ini_command();
+           
+            bool tryCreateNewApp;
+            m_instance = new Mutex(true, "CobraDataSerevMutex", out tryCreateNewApp);
+            if (!tryCreateNewApp)
+            {
+                if (stopprogramm != null) stopprogramm();
+                return;
+            }
+
             CreateTimer1(500);
-
-
             _instr = new List<Instumensts>();
             FilesWork f = new FilesWork("d:/z/zAmerikaFinam/MQL4/Files/CobraConnector/ticker.ini");
             f.ReadListInstrument(_instr);
@@ -73,10 +82,13 @@ namespace project.ViewModel
 
         public static CancellationTokenSource cts1;
         public static CancellationToken cancellationToken;
-        static Thread mt;
+        public static Thread mt;
+        static bool thread_start = false;
         public static void create()
-        {       
-                data.fatal = false;
+        {
+            if (thread_start) return;
+            thread_start = true;
+               data.fatal = false;
                 cts1 = new CancellationTokenSource();
                 cancellationToken = cts1.Token;//для task1
 
@@ -88,6 +100,7 @@ namespace project.ViewModel
                 {
                     ViewModelMain.task1_release(cancellationToken);
                     tcs.SetResult("ok");
+                    thread_start = false;
                 }
                 catch (OperationCanceledException e)
                 {
@@ -135,9 +148,9 @@ namespace project.ViewModel
 
                 Thread.Sleep(3000);
             }
-     
 
 
 
     }//class
+
 }//namespace

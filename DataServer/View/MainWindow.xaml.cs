@@ -17,20 +17,26 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using System.Windows.Forms;
 
 namespace project.ViewModel
 {
     public partial class MainWindow : Window
     {
         public Task task1=null;
-        
+        public Window header;
         private object threadLock = new object();
         int ct_no_connect=0;
 
         public MainWindow()
         {
-            InitializeComponent();
+            header = this;
+            ViewModelMain.stopprogramm += new Action(endprog);
             this.Title = "Cobra Data Server v1.0";
+            InitializeComponent();
+
+           
+
 
             //Подписки
             QUIKSHARPconnector.Event_Print += new Action<string, object>(add);
@@ -48,7 +54,18 @@ namespace project.ViewModel
  
         }
 
-       
+        private void endprog()
+        {
+            var result = System.Windows.Forms.MessageBox.Show(
+             "Уже запущен экземпляр сервера",
+             "Сообщение",
+             MessageBoxButtons.OK,
+             MessageBoxIcon.Information,
+             MessageBoxDefaultButton.Button1
+             );
+            this.Close();
+        }
+
         void add(string msg, object c)
         {
             box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
@@ -213,6 +230,11 @@ namespace project.ViewModel
             setting = null;
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (ViewModelMain.mt!=null)
+                ViewModelMain.mt.Abort();
+        }
     }
    
 

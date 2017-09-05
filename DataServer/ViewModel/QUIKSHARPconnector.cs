@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using QuikSharp;
 using QuikSharp.DataStructures;
 using QuikSharp.DataStructures.Transaction;
@@ -158,7 +157,7 @@ namespace project.ViewModel
 
                     if (data.fatal_need_rst_task) { _quik = null; add("прерывание"); return false; }
                     bool r = _quik.Debug.IsQuik().Wait(2000);
-                    if (!r) { add("скрипт не запущен рестарт"); _quik = null; Thread.Sleep(30000); return false; }
+                    if (!r) { add("скрипт не отвечает   рестарт"); _quik = null; Thread.Sleep(30000); return false; }
 
                     add("скрипт ping " + _quik.Debug.Ping().Result);
 

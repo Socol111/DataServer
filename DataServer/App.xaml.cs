@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace project
 {
@@ -11,6 +13,7 @@ namespace project
     /// </summary>
     public partial class App
     {
+       
         void IconMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount > 1)
