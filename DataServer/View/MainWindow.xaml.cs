@@ -18,6 +18,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
+using Serilog;
 
 namespace project.ViewModel
 {
@@ -27,18 +28,18 @@ namespace project.ViewModel
         public Window header;
         private object threadLock = new object();
         int ct_no_connect=0;
-
+        readonly string NameServer = "Cobra Data Server v1.0";
         public MainWindow()
         {
             header = this;
             ViewModelMain.stopprogramm += new Action(endprog);
-            this.Title = "Cobra Data Server v1.0";
+            this.Title = NameServer;
             InitializeComponent();
 
-           
-
-
             //Подписки
+            ViewModelMain.winadd += ViewModelMain_winadd;
+            ViewModelMain.winerr += ViewModelMain_winerr;
+
             QUIKSHARPconnector.Event_Print += new Action<string, object>(add);
             //QUIKSHARPconnector.Event_CMD += new Action<int, int, int, string>(cmd);
             Pipe.Event_Print += new Action<string, object>(add);
@@ -50,8 +51,27 @@ namespace project.ViewModel
             timer.Tick += timer_Tick;
             timer.Start();
 
-            
- 
+            //Install - Package Serilog
+            //Install - Package Serilog.Sinks.Literate
+            //Install - Package Serilog.Sinks.RollingFile
+            Log.Logger = new LoggerConfiguration()
+                           .MinimumLevel.Debug()
+                           .WriteTo.LiterateConsole()
+                           .WriteTo.RollingFile("logs\\{Date} Cobra Data Server.txt")
+                           .CreateLogger();
+
+            Log.Information("Start Cobra Data Server");
+
+        }
+
+        private void ViewModelMain_winerr(string obj)
+        {
+            add((string)obj, System.Windows.Media.Brushes.Red);
+        }
+
+        private void ViewModelMain_winadd(string obj)
+        {
+            add((string)obj, System.Windows.Media.Brushes.Green);
         }
 
         private void endprog()
@@ -74,7 +94,7 @@ namespace project.ViewModel
                 //box.AppendText(s + Environment.NewLine);
 
                 TextRange range = new TextRange(box.Document.ContentEnd, box.Document.ContentEnd);
-                range.Text = msg+ "\r";
+                range.Text = DateTime.Now.ToString() + "." + DateTime.Now.Millisecond + "   " + msg + "\r";
                 range.ApplyPropertyValue(TextElement.ForegroundProperty, c);
                 box.ScrollToEnd();//  Autoscroll
             }));
@@ -83,7 +103,8 @@ namespace project.ViewModel
         string mess = "";
         int l1_mem = 0;
         bool loc = false;
-        int ct_fatal;
+        int ct_fatal; byte  cttitle;
+        
         private void timer_Tick(object sender, EventArgs e)
         {
             if (loc) return;
@@ -113,6 +134,14 @@ namespace project.ViewModel
 
             if (l1_mem != data.ct_global)
             {
+                if (!data.first_Not_data)
+                {
+                    data.first_Not_data = true;
+                    Log.Information("Данные появились");
+                }
+
+
+
                 ct_no_connect = 0;
 
                 l1.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
@@ -124,6 +153,12 @@ namespace project.ViewModel
                 {
                     l1err.Content = "";
                 }));
+
+                cttitle++;
+                if (cttitle == 10) this.Title = "/ " + NameServer;
+                if (cttitle == 20) this.Title = "- " + NameServer;
+                if (cttitle == 30) this.Title = @"\ " + NameServer;
+                if (cttitle == 40) { this.Title = @"| " + NameServer; cttitle = 0; }
 
                 l1_mem = data.ct_global;
             }
@@ -143,8 +178,11 @@ namespace project.ViewModel
 
                 if (ct_no_connect == 2)
                 {
-                    if (!data.Not_data)
+                    if (!data.Not_data && !data.first_Not_data)
                     {
+                        data.first_Not_data = true;
+
+                        Log.Error("Пропали данные");
                         tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                         {
                             tmr_last.Content = DateTime.Now.ToString();
@@ -160,7 +198,7 @@ namespace project.ViewModel
                 //if (ct_no_connect == 12) { data.need_rst = true; }
                 if (ct_no_connect > 29)
                 {
-                    
+                    add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
                     data.Not_data = true; ct_no_connect = 0; goto exit;
                     
                 }
@@ -232,6 +270,9 @@ namespace project.ViewModel
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            Log.Information("Close Cobra Data Server");
+            Log.CloseAndFlush();
+
             if (ViewModelMain.mt!=null)
                 ViewModelMain.mt.Abort();
         }

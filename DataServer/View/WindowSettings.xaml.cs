@@ -17,9 +17,11 @@ namespace project.ViewModel
         {
             InitializeComponent();
             this.Title = "Settings";
-            
+
+            hour.Text = data.hour_start_pipe.ToString();
+
              // use a timer to periodically update the memory usage
-             DispatcherTimer timer = new DispatcherTimer();
+            DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             timer.Tick += timer_Tick;
             timer.Start();
@@ -48,6 +50,11 @@ namespace project.ViewModel
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Model.data.eliminate.RemoveAt(lst1.SelectedIndex);
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

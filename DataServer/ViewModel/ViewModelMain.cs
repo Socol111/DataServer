@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Windows.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace project.ViewModel
 {
@@ -21,27 +22,32 @@ namespace project.ViewModel
     {
         public static QUIKSHARPconnector quik;
         public static List<Instumensts> _instr;
-        private static Mutex m_instance;
         public static event Action stopprogramm;
-
+        public static event Action<string> winadd;
+        public static event Action<string> winerr;
 
         public ViewModelMain()
         {
             ini_command();
-           
-            bool tryCreateNewApp;
-            m_instance = new Mutex(true, "CobraDataSerevMutex", out tryCreateNewApp);
-            if (!tryCreateNewApp)
+
+            bool existed;
+            // получаем GIUD приложения
+            string guid = Marshal.GetTypeLibGuidForAssembly(System.Reflection.Assembly.GetExecutingAssembly()).ToString();
+
+            Mutex mutexObj = new Mutex(true, guid, out existed);
+
+            if (!existed)
             {
-                if (stopprogramm != null) stopprogramm();
+                if (stopprogramm != null) stopprogramm();////ДУБЛИКАТ ПРОГРАММЫ
                 return;
             }
-
+            
             CreateTimer1(500);
             _instr = new List<Instumensts>();
             FilesWork f = new FilesWork("d:/z/zAmerikaFinam/MQL4/Files/CobraConnector/ticker.ini");
             f.ReadListInstrument(_instr);
 
+            add("Создание задачи");
             create();
         }
 
@@ -53,7 +59,7 @@ namespace project.ViewModel
             
             if (data.fatal)
             {
- 
+                err("Фатал. остановка QuikSharp");
                 try
                 {
                     quik.Stop();
@@ -64,16 +70,20 @@ namespace project.ViewModel
 
   
                 data.fatal_need_rst_task = true;
+                err("Фатал. прерывание задачи");
 
                 mt.Abort(5000);
                 while (mt.ThreadState == System.Threading.ThreadState.Running)
-                { Thread.Sleep(500); }
+                { Thread.Sleep(500); err("задача прерывается...."); }
 
-                //MessageBox.Show("task остановлена");
+                loctask = false;
+                thread_start = false;
+                err("Фатал. задача успешно прервана");
 
                 data.fatal = false;
                 data.block_new_pipe = false;
 
+                add("Создание задачи из таймера");
                 create();
             }
 
@@ -86,8 +96,13 @@ namespace project.ViewModel
         static bool thread_start = false;
         public static void create()
         {
-            if (thread_start) return;
+            if (thread_start) { err("Создание задачи - отмена уже создана "); return; }
             thread_start = true;
+
+
+            data.fatal_need_rst_task = false;
+            data.fatal = false;
+
                data.fatal = false;
                 cts1 = new CancellationTokenSource();
                 cancellationToken = cts1.Token;//для task1
@@ -114,43 +129,65 @@ namespace project.ViewModel
             });
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             mt.Name = "QUIKSHARP THREAD";
+
+            err("Запуск задачи");
             mt.Start();
         }
 
-
+        static bool loctask = false;
         /// <summary>
         /// 
         /// </summary>
         public static void task1_release(CancellationToken cts)
         {
+            if (loctask) { err("отмена запуска задачи - уже выполняется"); return; }
+            loctask = true;
 
-                while (true)
-                {
-                    if (data.fatal_need_rst_task || cts.IsCancellationRequested) break;
+            while (true)
+            {
+                err("Начало выполнения задачи");
+                if (data.fatal_need_rst_task || cts.IsCancellationRequested) break;
                     Thread.Sleep(500);
                     if (quik == null) quik = new QUIKSHARPconnector();
 
                     if (quik != null)
                     {
-                        if (!quik.Connect(_instr)) { Thread.Sleep(2500); continue; }
+                        if (!quik.Connect(_instr)) {
+                        err("Connect НЕУДАЧЕН пауза ...");
+                        Thread.Sleep(2500); continue; }
                     }
                 
                     Thread.Sleep(5000);
-                    if (data.fatal) break;
-                    quik.work();//main cycle
+                  if (data.fatal) { err("фатал. выход из задачи"); break; }
 
+                    err("Запуск главного цикла");
+                    quik.work();//main cycle
+                    err(" главныый цикл остановлен");
 
                     data.block_new_pipe = true;
-                    quik.Stop();
-                }
-                data.fatal_need_rst_task = false;//task закончена
-                quik = null;
-
-                Thread.Sleep(3000);
+                err("QuikSharp stop");
+                quik.Stop();
             }
 
+            loctask = false;
+            err("Фатальный останов пауза 3сек...");
+                data.fatal_need_rst_task = false;//task закончена
+                quik = null;
+          
+                Thread.Sleep(3000);
+                err("завершение задачи");
+        }
 
 
+        static void add(string s)
+        {
+            if (winadd != null) winadd(s);
+        }
+
+        static void err(string s)
+        {
+            if (winerr != null) winerr(s);
+        }
     }//class
 
 }//namespace

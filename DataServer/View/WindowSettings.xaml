@@ -44,7 +44,7 @@
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="5" Grid.Column="1" Margin="20,256,295,-11" Grid.RowSpan="2"/>
 
         <!-- <КНОПКИ>-->
-        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="6" Grid.ColumnSpan="2">
+        <Button Content="СОХРАНИТЬ" Command="{Binding key_SAVECommand}" CommandParameter=""   Margin="0,80,34,0" Focusable="False" Width="100" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="6" Grid.ColumnSpan="2" Click="Button_Click_2">
             <Button.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black"/>
@@ -74,7 +74,7 @@
         </Button>
         <ListBox Name="lst1" ItemsSource="{Binding list}"  Grid.Column="3" HorizontalAlignment="Left" Height="168" Margin="21,56,0,0" VerticalAlignment="Top" Width="185" Grid.ColumnSpan="3"/>
         <TextBox Name="newel" HorizontalAlignment="Left" Height="21" Margin="21,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="100" Grid.ColumnSpan="3" Grid.Column="3"/>
-        <TextBox Grid.Column="5" HorizontalAlignment="Left" Height="21" Margin="174,104,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="216" Grid.ColumnSpan="2"/>
+        <TextBox Name="hour" Grid.Column="5" HorizontalAlignment="Left" Height="21" Margin="158,203,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="216" Grid.ColumnSpan="2"/>
         <Label Grid.ColumnSpan="3" Content="Игнорировать" Grid.Column="3" HorizontalAlignment="Left" Margin="21,6,0,0" VerticalAlignment="Top" Width="149"/>
         <Button Content="Удалить" CommandParameter=""  Margin="0,228,335,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="3" Grid.ColumnSpan="3" Click="Button_Click_1">
             <Button.Background>
@@ -90,5 +90,6 @@
                 </LinearGradientBrush>
             </Button.Foreground>
         </Button>
+        <Label Content="Час начала передачи данных по PIPE" Grid.Column="5" HorizontalAlignment="Left" Margin="158,178,0,0" VerticalAlignment="Top" Width="252" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>

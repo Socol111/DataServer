@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
 using project.Model;
-
+using Serilog;
 
 namespace project.ViewModel
 {
@@ -106,6 +106,7 @@ namespace project.ViewModel
                         bool r = _quik.Debug.IsQuik().Wait(2000);
                         if (!r) 
                         {
+                            Log.Error("НЕТ Связи с QuikSharp");
                             err(" НЕТ Связи с QuikSharp,  reconnect...");
                             data.Not_connect = true;
                             Stop();
@@ -157,7 +158,7 @@ namespace project.ViewModel
 
                     if (data.fatal_need_rst_task) { _quik = null; add("прерывание"); return false; }
                     bool r = _quik.Debug.IsQuik().Wait(2000);
-                    if (!r) { add("скрипт не отвечает   рестарт"); _quik = null; Thread.Sleep(30000); return false; }
+                    if (!r) { add("скрипт не отвечает   рестарт   выход из Connect"); _quik = null; Thread.Sleep(30000); return false; }
 
                     add("скрипт ping " + _quik.Debug.Ping().Result);
 
@@ -375,6 +376,8 @@ namespace project.ViewModel
                                     else
                                     { 
                                         i.ct++;
+
+                                        if (DateTime.Now.Hour> data.hour_start_pipe)
                                         p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";");
                                     }
                                     i.ask = offer; i.bid = bid;
@@ -444,12 +447,12 @@ namespace project.ViewModel
 
         void add(string s)
         {
-            if (Event_Print != null)  Event_Print(DateTime.Now.ToString() + "." + DateTime.Now.Millisecond + "   "+ s, System.Windows.Media.Brushes.Green);
+            if (Event_Print != null)  Event_Print( s, System.Windows.Media.Brushes.Green);
         }
 
         void err(string s)
         {
-            if (Event_Print != null) Event_Print(DateTime.Now.ToString()+ "."+ DateTime.Now.Millisecond +"   " + s, System.Windows.Media.Brushes.Red);
+            if (Event_Print != null) Event_Print( s, System.Windows.Media.Brushes.Red);
         }
 
 

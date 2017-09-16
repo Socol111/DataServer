@@ -5,7 +5,7 @@
         xmlns:helpers="clr-namespace:project.Helpers"
         xmlns:vm="clr-namespace:project.ViewModel" 
         x:Class="project.ViewModel.MainWindow" WindowStartupLocation="CenterScreen"
-        Title="" Height="727.341" Width="1201.602" Background="#FF282076" 
+        Height="727.341" Width="1201.602" Background="#FF282076" 
     
     
     
