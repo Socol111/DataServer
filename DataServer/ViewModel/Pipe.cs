@@ -9,6 +9,7 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Reflection;
+using Serilog;
 
 namespace project.ViewModel
 {
@@ -58,7 +59,11 @@ namespace project.ViewModel
                     pipCLIENT = new NamedPipeClientStream(namechannel);
                     pipCLIENT.Connect();
                 }
-                catch (Exception ex) { err("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message); Thread.Sleep(5000); continue; }
+                catch (Exception ex)
+                {
+                    err("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message);
+                    Log.Debug("ПРОБЛЕМА С PIPE " + namechannel + " " + ex.Message);
+                    Thread.Sleep(5000); continue; }
                 finally { }
                 add("PIPE КАНАЛ " + namechannel + " подключен к серверу status=" +
                     pipCLIENT.CanWrite + "/" + pipCLIENT.CanRead);
@@ -76,17 +81,18 @@ namespace project.ViewModel
         }
 
         bool lok_send = false;
-        public void send(string msg)
+        public void send(string msg, string name)
         {
             if (lok_send) return;
             if (!isConnect) return;
     
             lok_send = true;
-            WriteMessage(msg);
+            WriteMessage(msg, name);
             lok_send = false;
         }
 
-        public void WriteMessage( string put )
+        byte ct_sboi = 0;
+        public void WriteMessage( string put, string name )
         {
             byte[] msg = Encoding.UTF8.GetBytes(put);
 
@@ -96,7 +102,13 @@ namespace project.ViewModel
             }
             catch (Exception ex)
             {
-                err("сбой записи в PIPE  " + ex.Message);
+                ct_sboi++;
+                if (ct_sboi > 100)
+                {
+                    ct_sboi = 0;
+                    add("*");
+                }
+                err("сбой записи в PIPE  "+name+"  " + ex.Message);
             }
             //while (!pipCLIENT.) Thread.Sleep(5);
         }

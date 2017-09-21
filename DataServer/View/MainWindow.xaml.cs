@@ -48,8 +48,16 @@ namespace project.ViewModel
             // use a timer to periodically update the memory usage
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-            timer.Tick += timer_Tick;
+            timer.Tick += Timer_Tick;
             timer.Start();
+
+
+            // use a timer to periodically update the memory usage
+            DispatcherTimer timer2 = new DispatcherTimer();
+            timer2.Interval = new TimeSpan(1);
+            timer2.Tick += Timer_TickHOUR;
+            timer2.Start();
+
 
             //Install - Package Serilog
             //Install - Package Serilog.Sinks.Literate
@@ -60,8 +68,17 @@ namespace project.ViewModel
                            .WriteTo.RollingFile("logs\\{Date} Cobra Data Server.txt")
                            .CreateLogger();
 
-            Log.Information("Start Cobra Data Server");
+            Log.Debug("Start Cobra Data Server");
 
+        }
+
+     
+
+        private void Timer_TickHOUR(object sender, EventArgs e)
+        {
+            if (DateTime.Now.Hour == 10 ) data.ctglobalATstart = data.ct_global;
+            if (DateTime.Now.Hour == 18 ) Log.Debug("Статистика событий 18ч "+(data.ct_global- data.ctglobalATstart).ToString());
+            if (DateTime.Now.Hour == 23) Log.Debug("Статистика событий 23ч" + (data.ct_global - data.ctglobalATstart).ToString());
         }
 
         private void ViewModelMain_winerr(string obj)
@@ -86,8 +103,23 @@ namespace project.ViewModel
             this.Close();
         }
 
+
+        byte rst = 0;
         void add(string msg, object c)
         {
+            if (msg == "*")
+            {
+                rst++;
+                if (rst > 10)
+                {
+                    rst = 0;
+                    box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+                    {
+                        box.Document.Blocks.Clear();
+                    }));
+                }
+            }
+            else
             box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
             {
                 //if (box.l > 5000) box.Clear();
@@ -103,17 +135,25 @@ namespace project.ViewModel
         string mess = "";
         int l1_mem = 0;
         bool loc = false;
-        int ct_fatal; byte  cttitle;
-        
-        private void timer_Tick(object sender, EventArgs e)
-        {
-            if (loc) return;
-            loc = true;
+        int ct_fatal; byte cttitle;
 
+        private void Timer_Tick(object sender, EventArgs e)
+        {
             tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
             {
                 tmr.Content = DateTime.Now.ToString();
             }));
+
+            servertime.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            {
+               servertime.Content = data.servertime;
+            }));
+
+            if (data.Not_connect) { ct_no_connect=0; ct_fatal = 0;  return; }
+
+            if (loc) return;
+            loc = true;
+
 
             if (data.Not_connect && !data.fatal)
             {
@@ -137,7 +177,7 @@ namespace project.ViewModel
                 if (!data.first_Not_data)
                 {
                     data.first_Not_data = true;
-                    Log.Information("Данные появились");
+                    Log.Debug("Данные появились");
                 }
 
 
@@ -155,10 +195,10 @@ namespace project.ViewModel
                 }));
 
                 cttitle++;
-                if (cttitle == 10) this.Title = "/ " + NameServer;
-                if (cttitle == 20) this.Title = "- " + NameServer;
-                if (cttitle == 30) this.Title = @"\ " + NameServer;
-                if (cttitle == 40) { this.Title = @"| " + NameServer; cttitle = 0; }
+                if (cttitle == 1) this.Title = "/ " + NameServer;
+                if (cttitle == 2) this.Title = "- " + NameServer;
+                if (cttitle == 3) this.Title = @"\ " + NameServer;
+                if (cttitle == 4) { this.Title = @"| " + NameServer; cttitle = 0; }
 
                 l1_mem = data.ct_global;
             }
@@ -182,7 +222,7 @@ namespace project.ViewModel
                     {
                         data.first_Not_data = true;
 
-                        Log.Error("Пропали данные");
+                        Log.Debug("Пропали данные");
                         tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                         {
                             tmr_last.Content = DateTime.Now.ToString();
@@ -199,7 +239,10 @@ namespace project.ViewModel
                 if (ct_no_connect > 29)
                 {
                     add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
-                    data.Not_data = true; ct_no_connect = 0; goto exit;
+                    data.Not_data = true;
+                   // data.fatal = true;
+                    ct_no_connect = 0;
+                    goto exit;
                     
                 }
             }
@@ -244,11 +287,6 @@ namespace project.ViewModel
         }
 
 
-        void cmd(int cod, int p1, int p2, string s)
-        {
-
-        }
-
         Window setting;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -270,7 +308,7 @@ namespace project.ViewModel
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Log.Information("Close Cobra Data Server");
+            Log.Debug("Close Cobra Data Server");
             Log.CloseAndFlush();
 
             if (ViewModelMain.mt!=null)

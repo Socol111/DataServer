@@ -135,6 +135,7 @@ namespace project.ViewModel
         }
 
         static bool loctask = false;
+        static byte rst_not_connect = 0;
         /// <summary>
         /// 
         /// </summary>
@@ -143,36 +144,50 @@ namespace project.ViewModel
             if (loctask) { err("отмена запуска задачи - уже выполняется"); return; }
             loctask = true;
 
+            if (quik == null) quik = new QUIKSHARPconnector();
+
             while (true)
             {
-                err("Начало выполнения задачи");
+                add("Начало выполнения задачи");
                 if (data.fatal_need_rst_task || cts.IsCancellationRequested) break;
                     Thread.Sleep(500);
-                    if (quik == null) quik = new QUIKSHARPconnector();
 
-                    if (quik != null)
+
+                    if (!quik.Connect(_instr))
                     {
-                        if (!quik.Connect(_instr)) {
                         err("Connect НЕУДАЧЕН пауза ...");
-                        Thread.Sleep(2500); continue; }
+                        Thread.Sleep(2500); continue;
                     }
-                
-                    Thread.Sleep(5000);
+            
+
+                if (data.Not_connect)
+                {
+                    rst_not_connect++;
+                    if (rst_not_connect > 5)
+                    {
+                        err("фатал. нет подключения"); break;
+                    }
+
+                }
+                else rst_not_connect = 0;
+
+                 Thread.Sleep(2000);
                   if (data.fatal) { err("фатал. выход из задачи"); break; }
 
-                    err("Запуск главного цикла");
+                    add("Запуск главного цикла");
                     quik.work();//main cycle
-                    err(" главныый цикл остановлен");
+                    add(" главный цикл остановлен");
 
-                    data.block_new_pipe = true;
-                err("QuikSharp stop");
-                quik.Stop();
+                 data.block_new_pipe = true;
+                add("QuikSharp stop");
+               quik.Stop();
+               
             }
 
             loctask = false;
             err("Фатальный останов пауза 3сек...");
-                data.fatal_need_rst_task = false;//task закончена
-                quik = null;
+             data.fatal_need_rst_task = false;//task закончена
+              //  quik = null;
           
                 Thread.Sleep(3000);
                 err("завершение задачи");

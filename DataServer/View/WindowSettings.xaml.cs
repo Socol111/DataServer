@@ -28,13 +28,10 @@ namespace project.ViewModel
 
         }
 
-        
-
         private void timer_Tick(object sender, EventArgs e)
         {
            
         }
-
 
         void cmd(int cod, int p1, int p2, string s)
         {
