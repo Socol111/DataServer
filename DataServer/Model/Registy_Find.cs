@@ -10,10 +10,8 @@ using Microsoft.Win32;
 
 namespace project.Model
 {
- 
     class REG_FIND
     {
-
        public REG_FIND()
         {
         }

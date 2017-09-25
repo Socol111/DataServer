@@ -21,7 +21,7 @@ namespace project.ViewModel
     partial class ViewModelMain : ViewModelBase
     {
         public static QUIKSHARPconnector quik;
-        public static List<Instumensts> _instr;
+        public static List<Instrumensts> _instr;
         public static event Action stopprogramm;
         public static event Action<string> winadd;
         public static event Action<string> winerr;
@@ -43,7 +43,7 @@ namespace project.ViewModel
             }
             
             CreateTimer1(500);
-            _instr = new List<Instumensts>();
+            _instr = new List<Instrumensts>();
             FilesWork f = new FilesWork("d:/z/zAmerikaFinam/MQL4/Files/CobraConnector/ticker.ini");
             f.ReadListInstrument(_instr);
 

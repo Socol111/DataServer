@@ -110,41 +110,41 @@ namespace project.Model
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Tool.GetBaseParam. Ошибка получения наименования для " + securityCode + ": " + e.Message);
+                            //Console.WriteLine("Tool.GetBaseParam. Ошибка получения наименования для " + securityCode + ": " + e.Message);
                         }
 
                         if (classCode == "SPBFUT")
                         {
-                            Console.WriteLine("Получаем 'guaranteeProviding'.");
+                            //Console.WriteLine("Получаем 'guaranteeProviding'.");
                             lot = 1;
                             guaranteeProviding = Convert.ToDouble(quik.Trading.GetParamEx(classCode, securityCode, "BUYDEPO").Result.ParamValue.Replace('.', separator));
                         }
                         else
                         {
-                            Console.WriteLine("Получаем 'lot'.");
+                            //Console.WriteLine("Получаем 'lot'.");
                             lot = Convert.ToInt32(Convert.ToDouble(quik.Trading.GetParamEx(classCode, securityCode, "LOTSIZE").Result.ParamValue.Replace('.', separator)));
                             guaranteeProviding = 0;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Tool.GetBaseParam. Ошибка: classCode не определен.");
+                        //Console.WriteLine("Tool.GetBaseParam. Ошибка: classCode не определен.");
                         lot = 0;
                         guaranteeProviding = 0;
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tool.GetBaseParam. quik = null !");
+                    //Console.WriteLine("Tool.GetBaseParam. quik = null !");
                 }
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine("Ошибка NullReferenceException в методе GetBaseParam: " + e.Message);
+                //Console.WriteLine("Ошибка NullReferenceException в методе GetBaseParam: " + e.Message);
             }
             catch (Exception e)
             {
-                Console.WriteLine("Ошибка в методе GetBaseParam: " + e.Message);
+                //Console.WriteLine("Ошибка в методе GetBaseParam: " + e.Message);
             }
         }
     }

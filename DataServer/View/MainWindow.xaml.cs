@@ -54,7 +54,7 @@ namespace project.ViewModel
 
             // use a timer to periodically update the memory usage
             DispatcherTimer timer2 = new DispatcherTimer();
-            timer2.Interval = new TimeSpan(1);
+            timer2.Interval = new TimeSpan(1, 0, 0);
             timer2.Tick += Timer_TickHOUR;
             timer2.Start();
 
@@ -72,13 +72,20 @@ namespace project.ViewModel
 
         }
 
-     
 
+       string getCT()
+        {
+
+            int rez= data.ct_global - data.ctglobalATstart;
+            return rez.ToString();
+        }
+
+       
         private void Timer_TickHOUR(object sender, EventArgs e)
         {
             if (DateTime.Now.Hour == 10 ) data.ctglobalATstart = data.ct_global;
-            if (DateTime.Now.Hour == 18 ) Log.Debug("Статистика событий 18ч "+(data.ct_global- data.ctglobalATstart).ToString());
-            if (DateTime.Now.Hour == 23) Log.Debug("Статистика событий 23ч" + (data.ct_global - data.ctglobalATstart).ToString());
+            if (DateTime.Now.Hour == 18 ) Log.Debug("Статистика событий 18ч "+ getCT());
+            if (DateTime.Now.Hour == 23) Log.Debug("Статистика событий 23ч" + getCT());
         }
 
         private void ViewModelMain_winerr(string obj)
@@ -102,7 +109,6 @@ namespace project.ViewModel
              );
             this.Close();
         }
-
 
         byte rst = 0;
         void add(string msg, object c)
@@ -168,19 +174,13 @@ namespace project.ViewModel
             }
 
 
-
-
-
-
             if (l1_mem != data.ct_global)
             {
-                if (!data.first_Not_data)
+                if (data.first_Not_data)
                 {
-                    data.first_Not_data = true;
+                    data.first_Not_data = false;
                     Log.Debug("Данные появились");
                 }
-
-
 
                 ct_no_connect = 0;
 
@@ -192,6 +192,11 @@ namespace project.ViewModel
                 l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                 {
                     l1err.Content = "";
+                }));
+
+                buf.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    buf.Content = QUIKSHARPconnector.getSIZEorderbook.ToString();
                 }));
 
                 cttitle++;
@@ -222,7 +227,7 @@ namespace project.ViewModel
                     {
                         data.first_Not_data = true;
 
-                        Log.Debug("Пропали данные");
+                        Log.Debug("Нет потока данных");
                         tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                         {
                             tmr_last.Content = DateTime.Now.ToString();
@@ -238,9 +243,9 @@ namespace project.ViewModel
                 //if (ct_no_connect == 12) { data.need_rst = true; }
                 if (ct_no_connect > 29)
                 {
-                    add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
-                    data.Not_data = true;
-                   // data.fatal = true;
+                   // add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
+                    //data.Not_data = true;
+                   
                     ct_no_connect = 0;
                     goto exit;
                     
@@ -268,7 +273,10 @@ namespace project.ViewModel
 
             foreach (var i in ViewModelMain._instr)
             {
-                mess += i.name + "  pipesend=" + i.ct.ToString() + "\r";
+                mess += i.name + "  pipesend=" + i.ct.ToString()
+                               + "  orders=" + i.orders.ToString()
+                               + "  inter=" + i.interes.ToString()
+                    + "\r";
             }
 
             boxstat.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>

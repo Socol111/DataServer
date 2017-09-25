@@ -14,7 +14,7 @@ namespace project.ViewModel
         {
             path = s;
         }
-        public void ReadListInstrument(List<Instumensts> p)
+        public void ReadListInstrument(List<Instrumensts> p)
         {
             string s1,s2;
             using (StreamReader sr = new StreamReader(path))
@@ -24,7 +24,7 @@ namespace project.ViewModel
                 {
                     s1 = sr.ReadLine();
                     s2 = sr.ReadLine();
-                    p.Add(new Instumensts(s1,s2));
+                    p.Add(new Instrumensts(s1,s2));
                     sr.ReadLine();
                     sr.ReadLine();
                 }

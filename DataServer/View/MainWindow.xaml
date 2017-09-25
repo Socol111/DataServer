@@ -160,7 +160,15 @@
             </Label.BorderBrush>
         </Label>
         <Label x:Name ="l1err" Content="-------" Grid.Column="3" HorizontalAlignment="Left" Margin="280,0,0,4" VerticalAlignment="Bottom" Width="68" FontSize="18" Foreground="#FFF7F7F7" Grid.Row="1" Height="23" Background="#FF340707"/>
-        <Label x:Name ="servertime" Content="Server time" Grid.Column="1" Margin="48,0,0,8" VerticalAlignment="Bottom" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="33" FontWeight="Bold" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="248" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" Grid.Row="1">
+        <Label x:Name ="servertime" Content="Server time" Grid.Column="1" Margin="145,0,0,8" VerticalAlignment="Bottom" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="33" FontWeight="Bold" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="151" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" Grid.Row="1" RenderTransformOrigin="0.5,0.5">
+            <Label.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="-0.306"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0.661"/>
+                </TransformGroup>
+            </Label.RenderTransform>
             <Label.BorderBrush>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="Black" Offset="0"/>
@@ -168,5 +176,8 @@
                 </LinearGradientBrush>
             </Label.BorderBrush>
         </Label>
+        <Label x:Name ="buf" Content="bufer" Grid.Column="3" HorizontalAlignment="Left" Margin="91,0,0,14" VerticalAlignment="Bottom" Width="162" FontSize="22" Foreground="#FFF7F7F7" Grid.Row="1"/>
+        <Label x:Name ="l1_Copy1" Content="Время прекращения потока" Grid.Column="3" HorizontalAlignment="Left" Margin="383,0,0,17" VerticalAlignment="Bottom" Width="254" FontSize="16" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.ColumnSpan="2"/>
+        <Label x:Name ="l1_Copy2" Content="сервер: " Grid.Column="1" HorizontalAlignment="Left" Margin="83,0,0,9" VerticalAlignment="Bottom" Width="254" FontSize="16" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.ColumnSpan="3" Grid.Row="1"/>
     </Grid>
 </Window>

@@ -26,9 +26,9 @@ namespace project.ViewModel
 
 
 
-    public class Instumensts
+    public class Instrumensts
     {
-        public Instumensts(string s, string cl)
+        public Instrumensts(string s, string cl)
         {
             _name = s;
             _class = cl;
@@ -38,7 +38,22 @@ namespace project.ViewModel
         string _name, _class;
         decimal _bid, _ask;
         int _ct=0;
+        int _ct_orders = 0;
+        int _ct_trades = 0;
+        double _interes = 0;
 
+
+        public double interes
+        {
+            get
+            {
+                return _interes;
+            }
+            set
+            {
+                _interes = value;
+            }
+        }
 
         public int ct
         {
@@ -49,6 +64,29 @@ namespace project.ViewModel
             set
             {
                 _ct = value;
+            }
+        }
+        public int orders
+        {
+            get
+            {
+                return _ct_orders;
+            }
+            set
+            {
+                _ct_orders = value;
+            }
+        }
+
+        public int trades
+        {
+            get
+            {
+                return _ct_trades;
+            }
+            set
+            {
+                _ct_trades = value;
             }
         }
 
