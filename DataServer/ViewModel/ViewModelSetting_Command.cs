@@ -14,18 +14,27 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Reflection;
 
 
 namespace CobraDataServer
 {
-    partial class ViewModelMain 
+    partial class ViewModelSetting : ViewModelBase
     {
+
+        public RelayCommand key_CreateDB { get; set; }
+        //public RelayCommand key_SAVE { get; set; }
+        //public RelayCommand key_ADDBEST { get; set; }
+
         void ini_command()
         {
-          // key_FILTERmoveDragCommand = new RelayCommand(key_dragdrop);
-
+            key_CreateDB = new RelayCommand(_key_CreateDB);
         }
 
+        private void _key_CreateDB(object obj)
+        {
+            mydb.item.CREATEtest();
+        }
 
     }//class
 

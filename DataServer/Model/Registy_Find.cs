@@ -8,7 +8,7 @@ using System.Security.Permissions;
 using Microsoft.Win32;
 
 
-namespace project.Model
+namespace CobraDataServer
 {
     class REG_FIND
     {

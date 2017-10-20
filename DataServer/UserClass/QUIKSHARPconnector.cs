@@ -13,12 +13,14 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.IO;
-using project.Model;
+using CobraDataServer;
 using Serilog;
+using System.Collections.Concurrent;
+using System.Windows;
 
-namespace project.ViewModel
+namespace CobraDataServer
 {
-    class QUIKSHARPconnector
+    public class QUIKSHARPconnector
     {
         Quik _quik;
         Char separator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
@@ -41,13 +43,12 @@ namespace project.ViewModel
         //   Order order;
 
         List<Instrumensts> _instr;
-        List<Pipe> _pipe;
-        public static event Action<string, object> Event_Print;
+        
 
-        static Queue<OrderBook> FIFOorderbook;
-        static Queue<AllTrade> FIFOtrade;
+        static ConcurrentQueue<OrderBook> FIFOorderbook;
+        static ConcurrentQueue<AllTrade> FIFOtrade;
 
-
+  
 
         public static int getSIZEorderbook
         {
@@ -59,56 +60,51 @@ namespace project.ViewModel
             get { return FIFOtrade.Count; }
         }
 
+        public List<Instrumensts> GET_Instr { get => _instr; set => _instr = value; }
+
         public QUIKSHARPconnector()
         {
-            FIFOtrade = new Queue<AllTrade>();
-            FIFOorderbook = new Queue<OrderBook>();
+            FIFOtrade = new ConcurrentQueue<AllTrade>();
+            FIFOorderbook = new ConcurrentQueue<OrderBook>();
         }
         public void work()
-        {
-            add("Подписки...");
-            if (_quik == null) err("err quik");
-            foreach (var i in _instr)
+        {   
+            mes.add("Подписки...");
+            if (_quik == null) mes.err("err quik");
+            var listFN = new List<string>();
+
+            foreach (var i in GET_Instr)
             {
-                Sub(i.name, i.Class.Replace("@", ""));
+                if (!data.TickerIsOk(i.name)) continue;
+                string fn= Sub(i.name, i.Class.Replace("@", ""));
+                listFN.Add(fn);
+            }
+
+            int ind = 0;
+            foreach (var i in listFN)
+            {
+                _instr[ind++].namefull = i;
             }
 
             try
             {
                 _quik.Events.OnAllTrade += ALLTRADE;
             }
-            catch { err("ОШИБКА Подписки на события всех сделок"); }
+            catch { mes.err("ОШИБКА Подписки на события всех сделок"); }
 
-            add("Подписка на события всех сделок выполнена");
-
-
-
-            if (!data.block_new_pipe && data.pipe_enable)
-            {
-                foreach (var i in _instr)
-                {
-                    _pipe.Add(new Pipe(i.name));
-                }
-                add("Все PIPE подключены успешно");
-                data.block_new_pipe = true;
-            }
-
-
-
+            mes.add("== Подписка на события всех сделок выполнена ==");
 
             data.Not_connect = false;
             data.Not_data = false;
 
-
+            //****************************************************************************************
+            //                          MAIN
+            //****************************************************************************************
             while (true)//main cycle
             {
                 if (data.fatal) break;
 
-                if (FIFOorderbook.Count == 0) Thread.Sleep(90);
-                else FIFOorderbook.Dequeue();
-
-                if (FIFOtrade.Count == 0) Thread.Sleep(90);
-                else FIFOtrade.Dequeue();
+                getData();
 
                 if (data.need_rst)
                 {
@@ -118,7 +114,7 @@ namespace project.ViewModel
 
                 if (data.Not_data)
                 {
-                    err(" НЕТ ДАННЫХ,  reconnect...");
+                    mes.err(" НЕТ ДАННЫХ,  reconnect...");
                     return;
                 }
 
@@ -127,6 +123,25 @@ namespace project.ViewModel
 
         }
 
+        OrderBook order;
+        AllTrade trade;
+
+        // An action to consume the ConcurrentQueue.
+        Action act_getdata = () =>
+        {
+           
+        };
+
+        void getData()
+        {
+            // ПАРАЛЕЛЬНОЕ ВЫПОЛНЕННИЕ
+            //Parallel.Invoke(act_getdata, act_getdata);
+
+            if (FIFOorderbook.Count == 0 && FIFOtrade.Count == 0) Thread.Sleep(90);
+
+            if (FIFOorderbook.Count != 0) FIFOorderbook.TryDequeue(out order);
+            if (FIFOtrade.Count != 0) FIFOtrade.TryDequeue(out trade);
+        }
 
         // <summary>
         // connect 
@@ -136,36 +151,35 @@ namespace project.ViewModel
         public bool Connect(List<Instrumensts> p)
         {
 
-            add("Start Connect...");
+            mes.add("Start Connect...");
             // FIFOorderbook = new Queue<OrderBook>();
             _instr = p;
 
-            if (!data.block_new_pipe && data.pipe_enable) _pipe = new List<Pipe>();
-
+          
             try
             {
 
                 if (_quik == null)
                 {
-                    add("инициализация QuikSharp...");
-                    if (data.fatal_need_rst_task) { add("прерывание"); return false; }
+                    mes.add("инициализация QuikSharp...");
+                    if (data.fatal_need_rst_task) { mes.add("прерывание"); return false; }
 
                     _quik = new Quik(34130, new InMemoryStorage());
 
-                    add("connecting... result =" + _quik.Service.IsConnected().Result);
+                    mes.add("connecting... result =" + _quik.Service.IsConnected().Result);
 
-                    if (data.fatal_need_rst_task) { add("прерывание"); return false; }
+                    if (data.fatal_need_rst_task) { mes.add("прерывание"); return false; }
                     bool r = _quik.Debug.IsQuik().Wait(6000);
-                    if (!r) { add("скрипт не отвечает   рестарт   выход из Connect"); Thread.Sleep(30000); return false; }
+                    if (!r) { mes.add("скрипт не отвечает   рестарт   выход из Connect"); Thread.Sleep(30000); return false; }
 
-                    add("скрипт тест  ping " + _quik.Debug.Ping().Result);
+                    mes.add("скрипт тест  ping " + _quik.Debug.Ping().Result);
 
 
                 }
 
                 else
                 {
-                    add("!!!!перезапуск!!!!  QuikSharp ");
+                    mes.add("!!!!перезапуск!!!!  QuikSharp ");
                     _quik.Service.QuikService.Stop();
                     Thread.Sleep(5000);
                     _quik.Service.QuikService.Start();
@@ -181,13 +195,13 @@ namespace project.ViewModel
             }
             catch (Exception ex)
             {
-                err("Ошибка инициализации QuikSharp... " + ex.Message);
-                add("Повтор соединения");
+                mes.err("Ошибка инициализации QuikSharp... " + ex.Message);
+                mes.add("Повтор соединения");
                 Thread.Sleep(3000); return false;
             }
 
 
-            add("Connect выполнен");
+            mes.add("Connect выполнен");
             return true;
         }
 
@@ -198,7 +212,7 @@ namespace project.ViewModel
             {
                 if (_quik != null)
                 {
-                    add("запуск отмены подписок ... ");
+                    mes.add("запуск отмены подписок ... ");
                      _quik.Events.OnAllTrade -= ALLTRADE;
 
                     foreach (var i in _instr)
@@ -206,15 +220,15 @@ namespace project.ViewModel
                         DeSub(i.name, i.Class.Replace("@", ""));
                     }
 
-                    add("отмена подписок выполнена ");
+                    mes.add("отмена подписок выполнена ");
                 }
-                else add("отмена подписок Quik = null");
+                else mes.add("отмена подписок Quik = null");
 
                 if (data.Not_data)
                 {
                     try
                     {
-                        add("остановка сервисов...");
+                        mes.add("остановка сервисов...");
                         if (_quik != null)
                         {
                             Trace.WriteLine("-- остановка сервисов. start");
@@ -222,31 +236,31 @@ namespace project.ViewModel
 
                             _quik.StopService();
                             Trace.WriteLine("-- остановка сервисов. end");
-                            add("остановка сервисов выполнена");
+                            mes.add("остановка сервисов выполнена");
                         }
                     }
-                    catch (Exception ex) { add("остановка сервисов ошибка " + ex.Message); }
+                    catch (Exception ex) { mes.add("остановка сервисов ошибка " + ex.Message); }
                 }
-                else add("отмена подписок servis not stop");
+                else mes.add("отмена подписок servis not stop");
 
-                add("*");
-                add("Рестарт ...");
+                mes.add("*");
+                mes.add("Рестарт ...");
 
                 _quik = null;
 
                 Thread.Sleep(5000);
             }
 
-            catch (Exception ex) { err(ex.Message); }
+            catch (Exception ex) { mes.err(ex.Message); }
         }
         public void Rst()
         {
             if (_quik != null)
             {
-                add("Перезапуск сервисов start");
+                mes.add("Перезапуск сервисов start");
                 _quik.Service.QuikService.Stop();
                 _quik.Service.QuikService.Start();
-                add("Перезапуск сервисов end");
+                mes.add("Перезапуск сервисов end");
             }
         }
 
@@ -263,8 +277,9 @@ namespace project.ViewModel
         }
 
 
-        void Sub(string secCode, string classCode)
+        string  Sub(string secCode, string classCode)
         {
+            string fullname = "";
             try
             {
                 string rez = "";
@@ -276,14 +291,14 @@ namespace project.ViewModel
                 }
                 catch
                 {
-                    err("Ошибка определения класса инструмента. Убедитесь, что тикер указан правильно");
+                    mes.err("Ошибка определения класса инструмента. Убедитесь, что тикер указан правильно");
                 }
 
                 if (rez == classCode)
                 {
                     //add(secCode + "@" + classCode+" найден");
                 }
-                else { err("не найден инструмент " + secCode + "@" + classCode); return; }
+                else { mes.err("не найден инструмент " + secCode + "@" + classCode); return ""; }
 
                 //    add("Определяем код клиента..." );
                 //    clientCode = _quik.Class.GetClientCode().Result;
@@ -325,8 +340,8 @@ namespace project.ViewModel
 
                         //add("Подписываемся на колбэк 'OnQuote'..." );
                         _quik.Events.OnQuote += OnQuoteDo;
-                        add("Подписка на стакан " + tool.Name + " прошла успешно.");
-
+                        mes.add("Подписка на стакан " + tool.Name + " прошла успешно.");
+                        fullname = tool.Name;
                         _quik.Events.OnClose += Events_OnClose;
                         _quik.Events.OnCleanUp += Events_OnCleanUp;
                         _quik.Events.OnConnected += Events_OnConnected;
@@ -342,7 +357,7 @@ namespace project.ViewModel
                     }
                     else
                     {
-                        err("Подписка на стакан " + tool.Name + " не удалась.");
+                        mes.err("Подписка на стакан " + tool.Name + " не удалась.");
                         //textBoxBestBid.Text = "-";
                         //textBoxBestOffer.Text = "-";
                         //timerRenewForm.Enabled = false;
@@ -357,22 +372,23 @@ namespace project.ViewModel
             }
             catch
             {
-                err("Ошибка получения данных по инструменту.");
+                mes.err("Ошибка получения данных по инструменту.");
             }
+            return fullname;
         }
 
         private void Events_OnStop(int signal)
         {
             if (data.Not_connect) return;
             data.Not_connect = true;
-            errLOG("скрипт QUIKSHARP остановлен принудительно");
+            mes.errLOG("скрипт QUIKSHARP остановлен принудительно");
         }
 
         private void Events_OnDisconnectedFromQuik()
         {
             if (data.Not_connect) return;
             data.Not_connect = true;
-            errLOG("скрипт QUIKSHARP - НЕ ЗАПУЩЕН");
+            mes.errLOG("скрипт QUIKSHARP - НЕ ЗАПУЩЕН");
         }
 
 
@@ -382,7 +398,7 @@ namespace project.ViewModel
             data.Not_connect = false;
             fatalQUIK = false;
             data.first_Not_data = false;
-            addLOG("скрипт QUIKSHARP ЗАПУСТИЛСЯ");
+            mes.addLOG("скрипт QUIKSHARP ЗАПУСТИЛСЯ");
         }
 
 
@@ -394,18 +410,18 @@ namespace project.ViewModel
             if (!fatalQUIKserver) return;
             fatalQUIKserver = false;
             fatalQUIK = false;
-            addLOG("QUIK подключен к Серверу брокера");
+            mes.addLOG("QUIK подключен к Серверу брокера");
         }
 
         private void Events_OnDisconnected()
         {
             if (fatalQUIKserver) return;
             fatalQUIKserver = true;
-            errLOG("QUIK отключен от Сервера брокера");
+            mes.errLOG("QUIK отключен от Сервера брокера");
         }
         private void Events_OnCleanUp()
         {
-            addLOG("смена сессии QUIK");  
+            mes.addLOG("смена сессии QUIK");  
         }
 
         bool fatalQUIK = false;
@@ -413,7 +429,7 @@ namespace project.ViewModel
         {
             if (fatalQUIK) return;
             fatalQUIK = true;
-            errLOG("QUIK ЗАКРЫЛСЯ");
+            mes.errLOG("QUIK ЗАКРЫЛСЯ");
         }
 
         object lok = new object();
@@ -422,53 +438,59 @@ namespace project.ViewModel
             // if (_quik == null) return;
             // if (!_quik.Service.QuikService.IsStarted) return;
 
-            lock (lok)
+            try
             {
-                //FIFOorderbook.Enqueue(quote);
-                //if (FIFOorderbook.Count == 50000) err("Переполнение буфера данных");
-                short ct = -1;
-                foreach (var i in _instr)
+
+
+                lock (lok)
                 {
-                    ct++;
-                    if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
+                    FIFOorderbook.Enqueue(quote);
+                    if (FIFOorderbook.Count == 50000) mes.err("Переполнение буфера данных");
+
+                    short ct = -1;
+                    foreach (var i in _instr)
                     {
-                        _instr[ct].orders++;
-
-                        toolOrderBook = quote;
-                        bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-                        offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
-                        double volume = toolOrderBook.offer[0].quantity;
-
-                        data.servertime = toolOrderBook.server_time;
-
-
-                        if (data.pipe_enable)
+                        ct++;
+                        if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
                         {
-                            foreach (var p in _pipe)
-                            {
-                                if (p.Name == i.name)
-                                {
-                                    data.ct_global++;
-                                    if (i.ask == offer && i.bid == bid) { break; }
-                                    else
-                                    {
-                                        i.ct++;
+                            _instr[ct].orders++;
 
-                                        //if (DateTime.Now.Hour> data.hour_start_pipe)
-                                        p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";", p.Name);
+                            toolOrderBook = quote;
+                            bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
+                            offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
+                            double volume = toolOrderBook.offer[0].quantity;
+
+                            data.servertime = toolOrderBook.server_time;
+                            data.ct_global++;
+
+                            if (data.pipe_enable)
+                            {
+                                foreach (var p in data.listpipe)
+                                {
+                                    if (p.Name == i.name)
+                                    {
+                                        if (i.ask == offer && i.bid == bid) { break; }
+                                        else
+                                        {
+                                            i.ct++;
+
+                                            //if (DateTime.Now.Hour> data.hour_start_pipe)
+                                            p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";", p.Name);
+                                        }
+                                        i.ask = offer; i.bid = bid;
                                     }
-                                    i.ask = offer; i.bid = bid;
                                 }
                             }
+                            break;
                         }
-                        break;
                     }
-                }
-            }//lock
+                }//lock
 
+            }
+            catch (Exception ex) { mes.err("err orders event "+ex.Message); }
         }
 
-        StringBuilder s1, s2;
+        //StringBuilder s1, s2;
         QuikDateTime tt;
         string tektime;
         object loktrade = new object();
@@ -476,6 +498,8 @@ namespace project.ViewModel
         {
             // if (_quik == null) return;
             // if (!_quik.Service.QuikService.IsStarted) return;
+          try
+          {
 
             lock (loktrade)
             {
@@ -485,6 +509,10 @@ namespace project.ViewModel
                 foreach (var i in _instr)
                 {
                     ct++;
+                   if( !data.first_Not_data ) FIFOtrade.Enqueue(t);
+
+                    if (FIFOtrade.Count == 50000) mes.err("Переполнение буфера данных сделок");
+
                     if (t.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
                     {
                         _instr[ct].interes = t.OpenInterest;
@@ -494,15 +522,14 @@ namespace project.ViewModel
                 }
 
               
-                FIFOtrade.Enqueue(t);
-                if (FIFOtrade.Count == 50000) err("Переполнение буфера данных сделок");
+                
 
                 var cla = t.ClassCode;
                 var period = t.Period;
                 var code = t.SecCode;
                 var size = t.Qty;
 
-                s1.Insert(0, cla);
+                //s1.Insert(0, cla);
 
 
 
@@ -510,50 +537,15 @@ namespace project.ViewModel
                 tektime = String.Format("{0}.{1}.{2}  {3}:{4}:{5}",
                    tt.day, tt.month, tt.year, tt.hour, tt.min, tt.sec);
 
-            }   
+            }
+
+          }
+          catch (Exception ex) { mes.err("err trades event " + ex.Message); }
         }
 
 
 
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        void addLOG(string s)
-        {
-            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Green);
-            Log.Debug(s);
-        }
-        void errLOG(string s)
-        {
-            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Red);
-            Log.Debug(s);
-        }
-
-
-
-        void add(string s)
-        {
-            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Green);
-        }
-
-        void err(string s)
-        {
-            if (Event_Print != null) Event_Print(s, System.Windows.Media.Brushes.Red);
-        }
-
-
+    
 
 
     }

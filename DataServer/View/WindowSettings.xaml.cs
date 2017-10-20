@@ -2,23 +2,24 @@
 using IPTVman.ViewModel;
 using System.Windows.Data;
 using System.Windows.Threading;
-using project.Model;
+using CobraDataServer;
 using project.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Windows.Forms;
+using System.IO;
 
-namespace project.ViewModel
+namespace CobraDataServer
 {
     public partial class WindowSettings : Window
     {
         public WindowSettings()
         {
             InitializeComponent();
-            this.Title = "Settings";
-
-            hour.Text = data.hour_start_pipe.ToString();
+            this.Title = "Настройки";
 
              // use a timer to periodically update the memory usage
             DispatcherTimer timer = new DispatcherTimer();
@@ -40,18 +41,76 @@ namespace project.ViewModel
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (newel.Text == "") return;
-            Model.data.eliminate.Add(newel.Text);
+            if (Ignore.Text == "") return;
+            data.eliminate.Add(Ignore.Text);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Model.data.eliminate.RemoveAt(lst1.SelectedIndex);
+            data.eliminate.RemoveAt(Lst1.SelectedIndex);
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+   
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                   data.pathTIKERS1 = dialog.SelectedPath;
+        }
+
+        private void selectpath_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                data.pathTIKERS1 = ofd.FileName;
+                PathTikerz1.Text = data.pathTIKERS1;
+                //Update.GuiElement("PathTiker");
+                data.getTickers();
+            }
+            //FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+
+            //DialogResult result = folderBrowser.ShowDialog();
+
+            //if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
+            //{
+            //    //string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
+            //    data.pathTIKERS = folderBrowser.SelectedPath;
+            //    PathTiker.Text = data.pathTIKERS;
+            //    //Update.GuiElement("PathTiker");
+            //}
+        }
+
+        private void selectpath_Click2(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                data.pathTIKERS2 = ofd.FileName;
+                PathTikerz2.Text = data.pathTIKERS2;
+                //Update.GuiElement("PathTiker");
+                data.getTickers();
+            }
+            //FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+
+            //DialogResult result = folderBrowser.ShowDialog();
+
+            //if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
+            //{
+            //    //string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
+            //    data.pathTIKERS = folderBrowser.SelectedPath;
+            //    PathTiker.Text = data.pathTIKERS;
+            //    //Update.GuiElement("PathTiker");
+            //}
         }
     }
 }

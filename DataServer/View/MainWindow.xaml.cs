@@ -2,7 +2,7 @@
 using IPTVman.ViewModel;
 using System.Windows.Data;
 using System.Windows.Threading;
-using project.Model;
+using CobraDataServer;
 using project.Helpers;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using Serilog;
 
-namespace project.ViewModel
+namespace CobraDataServer
 {
     public partial class MainWindow : Window
     {
@@ -40,9 +40,9 @@ namespace project.ViewModel
             ViewModelMain.winadd += ViewModelMain_winadd;
             ViewModelMain.winerr += ViewModelMain_winerr;
 
-            QUIKSHARPconnector.Event_Print += new Action<string, object>(add);
+            mes.Event_Print += new Action<string, object>(add);
             //QUIKSHARPconnector.Event_CMD += new Action<int, int, int, string>(cmd);
-            Pipe.Event_Print += new Action<string, object>(add);
+            //Pipe.Event_Print += new Action<string, object>(add);
             //Pipe.Event_CMD += new Action<int, int, int, string>(cmd);
 
             // use a timer to periodically update the memory usage
@@ -85,7 +85,7 @@ namespace project.ViewModel
         {
             if (DateTime.Now.Hour == 10 ) data.ctglobalATstart = data.ct_global;
             if (DateTime.Now.Hour == 18 ) Log.Debug("Статистика событий 18ч "+ getCT());
-            if (DateTime.Now.Hour == 23) Log.Debug("Статистика событий 23ч" + getCT());
+            if (DateTime.Now.Hour == 23) Log.Debug("Статистика событий 23ч " + getCT());
         }
 
         private void ViewModelMain_winerr(string obj)
@@ -179,7 +179,7 @@ namespace project.ViewModel
                 if (data.first_Not_data)
                 {
                     data.first_Not_data = false;
-                    Log.Debug("Данные появились");
+                    Log.Debug("             Данные появились");
                 }
 
                 ct_no_connect = 0;
@@ -198,6 +198,12 @@ namespace project.ViewModel
                 {
                     buf.Content = QUIKSHARPconnector.getSIZEorderbook.ToString();
                 }));
+
+                buftrades.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    buftrades.Content = QUIKSHARPconnector.getSIZEtrade.ToString();
+                }));
+
 
                 cttitle++;
                 if (cttitle == 1) this.Title = "/ " + NameServer;
@@ -221,9 +227,9 @@ namespace project.ViewModel
                 }));
 
 
-                if (ct_no_connect == 2)
+                if (ct_no_connect == 5 && DateTime.Now.Hour>=10)
                 {
-                    if (!data.Not_data && !data.first_Not_data)
+                    if ( !data.first_Not_data)
                     {
                         data.first_Not_data = true;
 
@@ -243,9 +249,11 @@ namespace project.ViewModel
                 //if (ct_no_connect == 12) { data.need_rst = true; }
                 if (ct_no_connect > 29)
                 {
-                   // add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
-                    //data.Not_data = true;
-                   
+                    if (DateTime.Now.Hour >= 10 && DateTime.Now.Hour <= 23)
+                    {
+                        add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
+                        data.Not_data = true;
+                    }
                     ct_no_connect = 0;
                     goto exit;
                     
@@ -271,17 +279,17 @@ namespace project.ViewModel
             mess = "";
            // mess = "Всего pipesend="+data.ct_global.ToString()+"\r";
 
-            foreach (var i in ViewModelMain._instr)
+            foreach (var i in data._instr)
             {
-                mess += i.name + "  pipesend=" + i.ct.ToString()
-                               + "  orders=" + i.orders.ToString()
-                               + "  inter=" + i.interes.ToString()
+                mess += i.name + "/" + i.namefull
+                                + "  pipesend=" + i.ct
+                               + "  orders=" + i.orders
+                               + "  inter=" + i.interes
                     + "\r";
             }
 
             boxstat.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
             {
-                //if (box.l > 5000) box.Clear();
                 //box.AppendText(s + Environment.NewLine);
                 boxstat.Document.Blocks.Clear();
 
@@ -302,7 +310,7 @@ namespace project.ViewModel
             setting = new WindowSettings
             {
                 Topmost = true,
-                WindowStyle = WindowStyle.ToolWindow,
+                WindowStyle = WindowStyle.ThreeDBorderWindow,
                 Name = "winsettings"
             };
 
@@ -316,13 +324,25 @@ namespace project.ViewModel
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Log.Debug("Close Cobra Data Server");
+            Log.Debug("=========== Close Cobra Data Server ===========");
             Log.CloseAndFlush();
 
-            if (ViewModelMain.mt!=null)
-                ViewModelMain.mt.Abort();
+            if (ViewModelMain.mt!=null) ViewModelMain.mt.Abort();
+        }
+
+        private void close_Click(object sender, RoutedEventArgs e)
+        {
+            data.exit = true;
+            foreach (var p in data.listpipe)
+            {
+                p.stopPIPE();
+            }
+            this.Close();
         }
     }
-   
+
+
+
+  
 
 }

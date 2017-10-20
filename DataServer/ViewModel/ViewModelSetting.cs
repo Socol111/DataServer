@@ -11,21 +11,23 @@ using Microsoft.Win32;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Net;
+using System.Windows.Data;
 using System.Threading.Tasks;
-using System.Net.Sockets;
-
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace CobraDataServer
 {
-    partial class ViewModelMain 
+    partial class ViewModelSetting : ViewModelBase
     {
-        void ini_command()
+        public ViewModelSetting()
         {
-          // key_FILTERmoveDragCommand = new RelayCommand(key_dragdrop);
-
+            ini_command();
+            //Update.EventUpdate += Update_EventUpdate;
         }
-
+     
+       
 
     }//class
 

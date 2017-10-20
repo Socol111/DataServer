@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
-using project.Model;
+using CobraDataServer;
 using project.Helpers;
 using System.IO;
 using System.Windows;
@@ -15,19 +15,25 @@ using System.Windows.Data;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Serilog;
 
-namespace project.ViewModel
+namespace CobraDataServer
 {
+ 
     partial class ViewModelMain : ViewModelBase
     {
-        public static QUIKSHARPconnector quik;
-        public static List<Instrumensts> _instr;
         public static event Action stopprogramm;
         public static event Action<string> winadd;
         public static event Action<string> winerr;
 
+
         public ViewModelMain()
         {
+         
+          // return;
+            
+            if (data.onestart) return;
+            data.onestart = true;
             ini_command();
 
             bool existed;
@@ -38,31 +44,35 @@ namespace project.ViewModel
 
             if (!existed)
             {
-                if (stopprogramm != null) stopprogramm();////ДУБЛИКАТ ПРОГРАММЫ
+                stopprogramm?.Invoke();////ДУБЛИКАТ ПРОГРАММЫ
                 return;
             }
             
             CreateTimer1(500);
-            _instr = new List<Instrumensts>();
-            FilesWork f = new FilesWork("d:/z/zAmerikaFinam/MQL4/Files/CobraConnector/ticker.ini");
-            f.ReadListInstrument(_instr);
+            data.getTickers();
 
-            add("Создание задачи");
-            create();
+           // var p = new Pipe("SiZ7");
+            create();///////////////////////////////////////
         }
+
+      
 
         static bool loc = false;
         public static void timer()
         {
             if (loc) return;
             loc= true;
+
+            //mydb.item.CREATEtest();//////////////////////////////
+            //return;
             
+
             if (data.fatal)
             {
                 err("Фатал. остановка QuikSharp");
                 try
                 {
-                    quik.Stop();
+                    data.quik.Stop();
                     
                 }
                 catch
@@ -81,7 +91,7 @@ namespace project.ViewModel
                 err("Фатал. задача успешно прервана");
 
                 data.fatal = false;
-                data.block_new_pipe = false;
+   
 
                 add("Создание задачи из таймера");
                 create();
@@ -136,15 +146,31 @@ namespace project.ViewModel
 
         static bool loctask = false;
         static byte rst_not_connect = 0;
-        /// <summary>
-        /// 
-        /// </summary>
-        public static void task1_release(CancellationToken cts)
+        static bool PIPE_ok = false;
+        public static void CREATE_PIPE()
+        {
+           
+            if (data.pipe_enable)
+            {
+  
+                foreach (var i in data.quik.GET_Instr)
+                {
+                   data.listpipe.Add(new Pipe(i.name));
+                }
+                mes.add("== Все PIPE подключены успешно  ==");
+                PIPE_ok = true;
+        
+            }
+        }
+    /// <summary>
+    /// 
+    /// </summary>
+    public static void task1_release(CancellationToken cts)
         {
             if (loctask) { err("отмена запуска задачи - уже выполняется"); return; }
             loctask = true;
 
-            if (quik == null) quik = new QUIKSHARPconnector();
+            if (data.quik == null) data.quik = new QUIKSHARPconnector();
 
             while (true)
             {
@@ -153,12 +179,13 @@ namespace project.ViewModel
                     Thread.Sleep(500);
 
 
-                    if (!quik.Connect(_instr))
+                    if (!data.quik.Connect(data._instr))
                     {
                         err("Connect НЕУДАЧЕН пауза ...");
                         Thread.Sleep(2500); continue;
                     }
-            
+
+                if (!PIPE_ok) CREATE_PIPE();
 
                 if (data.Not_connect)
                 {
@@ -175,12 +202,12 @@ namespace project.ViewModel
                   if (data.fatal) { err("фатал. выход из задачи"); break; }
 
                     add("Запуск главного цикла");
-                    quik.work();//main cycle
+                    data.quik.work();//main cycle
                     add(" главный цикл остановлен");
 
-                 data.block_new_pipe = true;
+  
                 add("QuikSharp stop");
-               quik.Stop();
+                data.quik.Stop();
                
             }
 
@@ -196,13 +223,46 @@ namespace project.ViewModel
 
         static void add(string s)
         {
-            if (winadd != null) winadd(s);
+            winadd?.Invoke(s);
         }
 
         static void err(string s)
         {
-            if (winerr != null) winerr(s);
+            winerr?.Invoke(s);
         }
     }//class
+
+
+    /// <summary>
+    /// СООБЩЕНИЯ
+    /// </summary>
+    static class mes
+    {
+        public static event Action<string, object> Event_Print;
+
+        public static void addLOG(string s)
+        {
+            Event_Print?.Invoke(s, System.Windows.Media.Brushes.Green);
+            Log.Debug(s);
+        }
+        public static void errLOG(string s)
+        {
+            Event_Print?.Invoke(s, System.Windows.Media.Brushes.Red);
+            Log.Debug(s);
+        }
+        public static void add(string s)
+        {
+            Event_Print?.Invoke(s, System.Windows.Media.Brushes.Green);
+        }
+
+        public static void err(string s)
+        {
+            Event_Print?.Invoke(s, System.Windows.Media.Brushes.Red);
+        }
+
+
+    }
+
+
 
 }//namespace

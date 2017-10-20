@@ -3,25 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using System.Windows.Data;
 using System.Threading;
 using project.Helpers;
-using project.Model;
+using CobraDataServer;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
+using Serilog;
 
-
-namespace project.ViewModel
+namespace CobraDataServer
 {
+    static class Update
+    {
+        public static event Action<string> EventUpdate;
+        public static void GuiElement(string s)
+        {
+            EventUpdate?.Invoke(s);
+        }
+
+    }
+
+
     class ViewModelBase : INotifyPropertyChanged
     { 
-        System.Timers.Timer Timer1;
+        static System.Timers.Timer Timer1;
         public bool win_loading = false;
         public void CreateTimer1(int ms)
         {
@@ -68,12 +80,9 @@ namespace project.ViewModel
 
         internal void RaisePropertyChanged(string prop)
         {
-           if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-       public  event PropertyChangedEventHandler PropertyChanged; //событие выбора канала
+       public  event PropertyChangedEventHandler PropertyChanged;
 
         bool? _CloseWindowFlag;
         public bool? CloseWindowFlag
@@ -95,5 +104,9 @@ namespace project.ViewModel
                     : !CloseWindowFlag;
             }));
         }
+
     }
+
+
+
 }

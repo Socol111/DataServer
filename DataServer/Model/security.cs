@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using QuikSharp;
 
 
-namespace project.Model
+namespace CobraDataServer
 {
   
     public class Tool
@@ -108,7 +108,7 @@ namespace project.Model
                             step = Convert.ToDecimal(quik.Trading.GetParamEx(classCode, securityCode, "SEC_PRICE_STEP").Result.ParamValue.Replace('.', separator));
                             priceAccuracy = Convert.ToInt32(Convert.ToDouble(quik.Trading.GetParamEx(classCode, securityCode, "SEC_SCALE").Result.ParamValue.Replace('.', separator)));
                         }
-                        catch (Exception e)
+                        catch //(Exception e)
                         {
                             //Console.WriteLine("Tool.GetBaseParam. Ошибка получения наименования для " + securityCode + ": " + e.Message);
                         }
@@ -138,11 +138,7 @@ namespace project.Model
                     //Console.WriteLine("Tool.GetBaseParam. quik = null !");
                 }
             }
-            catch (NullReferenceException e)
-            {
-                //Console.WriteLine("Ошибка NullReferenceException в методе GetBaseParam: " + e.Message);
-            }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.WriteLine("Ошибка в методе GetBaseParam: " + e.Message);
             }
