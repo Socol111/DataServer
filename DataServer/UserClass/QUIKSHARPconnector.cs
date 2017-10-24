@@ -42,30 +42,34 @@ namespace CobraDataServer
         //List<MoneyLimitEx> listMoneyLimitsEx;
         //   Order order;
 
-        List<Instrumensts> _instr;
-        
+       
 
         static ConcurrentQueue<OrderBook> FIFOorderbook;
         static ConcurrentQueue<AllTrade> FIFOtrade;
 
+        static ConcurrentQueue<OrderBook> FIFOorderbookall;
+        static ConcurrentQueue<AllTrade> FIFOtradeall;
   
 
         public static int getSIZEorderbook
         {
-            get { return FIFOorderbook.Count; }
+            get { return FIFOorderbookall.Count; }
         }
 
         public static int getSIZEtrade
         {
-            get { return FIFOtrade.Count; }
+            get { return FIFOtradeall.Count; }
         }
 
-        public List<Instrumensts> GET_Instr { get => _instr; set => _instr = value; }
+      
 
         public QUIKSHARPconnector()
         {
             FIFOtrade = new ConcurrentQueue<AllTrade>();
             FIFOorderbook = new ConcurrentQueue<OrderBook>();
+            FIFOtradeall = new ConcurrentQueue<AllTrade>();
+            FIFOorderbookall = new ConcurrentQueue<OrderBook>();
+
         }
         public void work()
         {   
@@ -73,7 +77,7 @@ namespace CobraDataServer
             if (_quik == null) mes.err("err quik");
             var listFN = new List<string>();
 
-            foreach (var i in GET_Instr)
+            foreach (var i in data._instr)
             {
                 if (!data.TickerIsOk(i.name)) continue;
                 string fn= Sub(i.name, i.Class.Replace("@", ""));
@@ -83,7 +87,7 @@ namespace CobraDataServer
             int ind = 0;
             foreach (var i in listFN)
             {
-                _instr[ind++].namefull = i;
+                data._instr[ind++].namefull = i;
             }
 
             try
@@ -101,10 +105,10 @@ namespace CobraDataServer
             //                          MAIN
             //****************************************************************************************
             while (true)//main cycle
-            {
+            {            
+                getAll();
+               
                 if (data.fatal) break;
-
-                getData();
 
                 if (data.need_rst)
                 {
@@ -123,25 +127,6 @@ namespace CobraDataServer
 
         }
 
-        OrderBook order;
-        AllTrade trade;
-
-        // An action to consume the ConcurrentQueue.
-        Action act_getdata = () =>
-        {
-           
-        };
-
-        void getData()
-        {
-            // ПАРАЛЕЛЬНОЕ ВЫПОЛНЕННИЕ
-            //Parallel.Invoke(act_getdata, act_getdata);
-
-            if (FIFOorderbook.Count == 0 && FIFOtrade.Count == 0) Thread.Sleep(90);
-
-            if (FIFOorderbook.Count != 0) FIFOorderbook.TryDequeue(out order);
-            if (FIFOtrade.Count != 0) FIFOtrade.TryDequeue(out trade);
-        }
 
         // <summary>
         // connect 
@@ -153,7 +138,7 @@ namespace CobraDataServer
 
             mes.add("Start Connect...");
             // FIFOorderbook = new Queue<OrderBook>();
-            _instr = p;
+            data._instr = p;
 
           
             try
@@ -215,7 +200,7 @@ namespace CobraDataServer
                     mes.add("запуск отмены подписок ... ");
                      _quik.Events.OnAllTrade -= ALLTRADE;
 
-                    foreach (var i in _instr)
+                    foreach (var i in data._instr)
                     {
                         DeSub(i.name, i.Class.Replace("@", ""));
                     }
@@ -435,117 +420,184 @@ namespace CobraDataServer
         object lok = new object();
         void OnQuoteDo(OrderBook quote)
         {
-            // if (_quik == null) return;
-            // if (!_quik.Service.QuikService.IsStarted) return;
-
-            try
-            {
-
+             //if (_quik == null) return;
+             if (!_quik.Service.QuikService.IsStarted) return;
+             if (quote == null) return;
 
                 lock (lok)
                 {
-                    FIFOorderbook.Enqueue(quote);
-                    if (FIFOorderbook.Count == 50000) mes.err("Переполнение буфера данных");
+                    FIFOorderbookall.Enqueue(quote);
+                    if (FIFOorderbookall.Count == 50000) mes.err("Переполнение буфера данных");
 
-                    short ct = -1;
-                    foreach (var i in _instr)
-                    {
-                        ct++;
-                        if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
-                        {
-                            _instr[ct].orders++;
-
-                            toolOrderBook = quote;
-                            bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-                            offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
-                            double volume = toolOrderBook.offer[0].quantity;
-
-                            data.servertime = toolOrderBook.server_time;
-                            data.ct_global++;
-
-                            if (data.pipe_enable)
-                            {
-                                foreach (var p in data.listpipe)
-                                {
-                                    if (p.Name == i.name)
-                                    {
-                                        if (i.ask == offer && i.bid == bid) { break; }
-                                        else
-                                        {
-                                            i.ct++;
-
-                                            //if (DateTime.Now.Hour> data.hour_start_pipe)
-                                            p.send("tick;" + bid.ToString() + ";" + offer.ToString() + ";", p.Name);
-                                        }
-                                        i.ask = offer; i.bid = bid;
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
                 }//lock
 
+        }
+
+        object loktrade = new object();
+        void ALLTRADE(AllTrade t)
+        {
+            // if (_quik == null) return;
+            if (!_quik.Service.QuikService.IsStarted) return;
+            if (t == null) return;
+
+            lock (loktrade)
+            {
+                FIFOtradeall.Enqueue(t);
+                if (FIFOtradeall.Count == 50000) mes.err("Переполнение буфера данных сделок");
             }
-            catch (Exception ex) { mes.err("err orders event "+ex.Message); }
+        }
+
+       
+        void Analiz_Quote(OrderBook quote)
+        {
+            try { 
+
+            short ct = -1;
+            foreach (var i in data._instr)
+            {
+                ct++;
+                if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
+                {
+                    data._instr[ct].orders++;
+                    data.ct_global++;
+
+                    try
+                    {
+                        toolOrderBook = quote;
+                        bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
+                        offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
+                        double volume = toolOrderBook.offer[0].quantity;
+
+                    }
+                    catch (Exception ex) { mes.err("err orders bidoffer " + ex.Message); }
+
+                     data.servertime = toolOrderBook.server_time;
+
+                        //write to DB
+
+                        
+
+                    if (data.pipe_enable)
+                    {
+
+                            data.pipeque.Enqueue(new PipeItem()
+                            { namepipe = quote.sec_code, askitem = offer, biditem = bid });
+                           
+                    }
+                    break;
+                }
+            }
+
+            }
+            catch (Exception ex) { mes.err("err orders event " + ex.Message); }
         }
 
         //StringBuilder s1, s2;
         QuikDateTime tt;
         string tektime;
-        object loktrade = new object();
-        void ALLTRADE(AllTrade t)
+        void Analiz_Trade(AllTrade t)
         {
-            // if (_quik == null) return;
-            // if (!_quik.Service.QuikService.IsStarted) return;
-          try
-          {
-
-            lock (loktrade)
-            {
-                //FIFOorderbook.Enqueue(quote);
-                //if (FIFOorderbook.Count == 50000) err("Переполнение буфера данных");
+            try
+            { 
                 short ct = -1;
-                foreach (var i in _instr)
+                foreach (var i in data._instr)
                 {
                     ct++;
-                   if( !data.first_Not_data ) FIFOtrade.Enqueue(t);
-
-                    if (FIFOtrade.Count == 50000) mes.err("Переполнение буфера данных сделок");
-
+               
                     if (t.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
                     {
-                        _instr[ct].interes = t.OpenInterest;
+                        data._instr[ct].interes = t.OpenInterest;
+
+                        //write to DB
+
+
                         break;
                     }
 
                 }
-
-              
-                
-
-                var cla = t.ClassCode;
-                var period = t.Period;
-                var code = t.SecCode;
-                var size = t.Qty;
-
-                //s1.Insert(0, cla);
-
-
-
-                tt = t.Datetime;
-                tektime = String.Format("{0}.{1}.{2}  {3}:{4}:{5}",
-                   tt.day, tt.month, tt.year, tt.hour, tt.min, tt.sec);
-
             }
-
-          }
-          catch (Exception ex) { mes.err("err trades event " + ex.Message); }
+            catch (Exception ex) { mes.err("err trades event " + ex.Message); }
         }
 
 
+        OrderBook order;
+        AllTrade trade;
+        OrderBook orderALL;
+        AllTrade tradeALL;
 
-    
+
+        // An action to consume the ConcurrentQueue.
+        Action act_getdata = () =>
+        {
+
+        };
+
+
+        /// <summary>
+        /// Чтение промежуточного буффера чтобы QuikSharp не ожидал
+        /// </summary>
+        void getAll()
+        {
+            if (FIFOorderbookall.Count == 0 && FIFOtradeall.Count == 0
+                && FIFOorderbook.Count == 0 && FIFOtrade.Count == 0) Thread.Sleep(90);
+
+
+            if (FIFOorderbookall.Count != 0)
+            {
+                FIFOorderbookall.TryDequeue(out orderALL);
+                Analiz_Quote(orderALL);
+            }
+            if (FIFOtradeall.Count != 0)
+            {
+                FIFOtradeall.TryDequeue(out tradeALL);
+                Analiz_Trade(tradeALL);
+            }
+
+           
+        }
+
+
+        /// <summary>
+        /// Запись в БАЗУ ДАННЫХ
+        /// </summary>
+        //void getData()
+        //{
+        //    // ПАРАЛЕЛЬНОЕ ВЫПОЛНЕННИЕ
+        //    //Parallel.Invoke(act_getdata, act_getdata);
+        //    if (FIFOorderbook.Count != 0)
+        //    {
+        //        FIFOorderbook.TryDequeue(out order);
+
+        //        //write to DB
+
+        //    }
+
+
+
+
+        //    if (FIFOtrade.Count != 0)
+        //    {
+        //        FIFOtrade.TryDequeue(out trade);
+
+        //        var cla = trade.ClassCode;
+        //        var period = trade.Period;
+        //        var code = trade.SecCode;
+        //        var size = trade.Qty;
+
+        //        //s1.Insert(0, cla);
+
+                
+
+               
+             
+        //        tt = trade.Datetime;
+        //        tektime = String.Format("{0}.{1}.{2}  {3}:{4}:{5}",
+        //           tt.day, tt.month, tt.year, tt.hour, tt.min, tt.sec);
+
+
+        //    }
+        //}
+
 
 
     }

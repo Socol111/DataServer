@@ -147,6 +147,7 @@ namespace CobraDataServer
         }
 
         byte ct_sboi = 0;
+        private int currentsec;
         public void WriteMessage( string put )
         {
             byte[] msg = Encoding.UTF8.GetBytes(put);
@@ -155,8 +156,14 @@ namespace CobraDataServer
             {
                 nm = "PIPE1 " + this.name;
                 if (pipCLIENT1 != null) pipCLIENT1.Write(msg, 0, (int)msg.Length);
-                nm = "PIPE2 " + this.name;
-                if (pipCLIENT2 != null) pipCLIENT2.Write(msg, 0, (int)msg.Length);
+
+                int sec = DateTime.Now.Second;
+                if (sec != currentsec)
+                {
+                    nm = "PIPE2 " + this.name;
+                    if (pipCLIENT2 != null) pipCLIENT2.Write(msg, 0, (int) msg.Length);
+                    currentsec = sec;
+                }
             }
             catch (Exception ex)
             {

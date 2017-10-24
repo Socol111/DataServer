@@ -155,11 +155,8 @@ namespace CobraDataServer
                servertime.Content = data.servertime;
             }));
 
-            if (data.Not_connect) { ct_no_connect=0; ct_fatal = 0;  return; }
-
             if (loc) return;
             loc = true;
-
 
             if (data.Not_connect && !data.fatal)
             {
@@ -176,6 +173,8 @@ namespace CobraDataServer
 
             if (l1_mem != data.ct_global)
             {
+                data.Not_connect = false;
+
                 if (data.first_Not_data)
                 {
                     data.first_Not_data = false;
@@ -204,6 +203,10 @@ namespace CobraDataServer
                     buftrades.Content = QUIKSHARPconnector.getSIZEtrade.ToString();
                 }));
 
+                bufpipe.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    bufpipe.Content = data.pipeque.Count.ToString();
+                }));
 
                 cttitle++;
                 if (cttitle == 1) this.Title = "/ " + NameServer;
@@ -245,6 +248,10 @@ namespace CobraDataServer
                         l1.Foreground = System.Windows.Media.Brushes.Red;
                     }));
                 }
+
+
+                if (data.Not_connect) { ct_no_connect = 0; ct_fatal = 0; goto exit; }
+
 
                 //if (ct_no_connect == 12) { data.need_rst = true; }
                 if (ct_no_connect > 29)

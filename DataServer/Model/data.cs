@@ -4,12 +4,14 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
 
 namespace CobraDataServer
 {
     public static class data
     {
         public static List<Pipe> listpipe=new List<Pipe>();
+
         public static QUIKSHARPconnector quik;
         public static List<Instrumensts> _instr;
         public static bool onestart = false;
@@ -33,6 +35,7 @@ namespace CobraDataServer
         public static byte hour_start_pipe = 10;
 
         public static bool exit = false;
+        public static ConcurrentQueue<PipeItem> pipeque = new ConcurrentQueue<PipeItem>();
 
         public static System.Collections.ObjectModel.ObservableCollection<string> eliminate = 
              new ObservableCollection<string> { "AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB" };
@@ -70,6 +73,7 @@ namespace CobraDataServer
                 //@"AttachDbFileName=D:\DB\TradesAndOrders2.mdf;" +
                 @"integrated security = True; MultipleActiveResultSets = True; App = EntityFramework";
 
+        public static bool enable;
         public static string Path = @"D:\DB\TradesAndOrders.mdf";
         public static string Namebd= @"TradesAndOrders";
 

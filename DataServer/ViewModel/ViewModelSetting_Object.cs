@@ -25,6 +25,7 @@ namespace CobraDataServer
         public string bdpath { get => mydb.Path; set => mydb.Path = value; }
         public string bdname { get => mydb.Namebd; set => mydb.Namebd = value; }
 
+        public bool enabledatabase { get => mydb.enable; set => mydb.enable = value; }
 
     }//class
 

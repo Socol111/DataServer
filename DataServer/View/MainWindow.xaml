@@ -145,7 +145,7 @@
                 </LinearGradientBrush>
             </Label.BorderBrush>
         </Label>
-        <Label x:Name ="l1err" Content="-------" Grid.Column="3" HorizontalAlignment="Left" Margin="280,0,0,4" VerticalAlignment="Bottom" Width="68" FontSize="18" Foreground="#FFF7F7F7" Grid.Row="1" Height="23" Background="#FF340707"/>
+        <Label x:Name ="l1err" Content="-------" Grid.Column="3" HorizontalAlignment="Left" Margin="297,0,0,36" VerticalAlignment="Bottom" Width="68" FontSize="18" Foreground="#FFF7F7F7" Height="23" Background="#FF340707"/>
         <Label x:Name ="servertime" Content="Server time" Grid.Column="1" Margin="145,0,0,8" VerticalAlignment="Bottom" FontSize="18" Background="#FF3E2020" Foreground="#FF439DBF" Height="33" FontWeight="Bold" HorizontalAlignment="Left" VerticalContentAlignment="Center" Width="151" Grid.ColumnSpan="3" HorizontalContentAlignment="Center" Grid.Row="1" RenderTransformOrigin="0.5,0.5">
             <Label.RenderTransform>
                 <TransformGroup>
@@ -182,5 +182,7 @@
                 </RadialGradientBrush>
             </Button.Foreground>
         </Button>
+        <Label x:Name ="l1_Copy5" Content="буфер pipe" Grid.Column="3" HorizontalAlignment="Left" Margin="267,0,0,-4" VerticalAlignment="Bottom" Width="111" FontSize="16" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.Row="1"/>
+        <Label x:Name ="bufpipe" Content="bufer" Grid.Column="3" HorizontalAlignment="Left" Margin="355,0,0,2" VerticalAlignment="Bottom" Width="81" FontSize="12" Foreground="#FFF7F7F7" Grid.Row="1" Height="13"/>
     </Grid>
 </Window>

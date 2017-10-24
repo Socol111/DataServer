@@ -6,20 +6,46 @@ using System.Threading.Tasks;
 
 namespace CobraDataServer
 {
-    public class Category
+    public class Ticker
     {
-        public string CategoryId { get; set; }
+        public int TickerId { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Trade> Trades { get; set; }
     }
 
-    public class Product
+    public class Order
     {
-        public int ProductId { get; set; }
-        public string Name { get; set; }
-        public string CategoryId { get; set; }
+        public DateTime OrderId { get; set; }
+        public ushort TickerId { get; set; }
 
-        public virtual Category Category { get; set; }
+        public decimal bid1 { get; set; }
+        public uint volbid1 { get; set; }
+
+        public decimal bid2 { get; set; }
+        public uint volbid2 { get; set; }
+
+        public decimal bid3 { get; set; }
+        public uint volbid3 { get; set; }
+
+        public decimal ask1 { get; set; }
+        public uint volask1 { get; set; }
+
+        public decimal ask2 { get; set; }
+        public uint volask2 { get; set; }
+
+        public decimal ask3 { get; set; }
+        public uint volask3 { get; set; }
+
+        public virtual Ticker Ticker { get; set; }
+    }
+
+    public class Trade
+    {
+        public DateTime TradeId { get; set; }
+        public ushort TickerId { get; set; }
+
+        public virtual Ticker Ticker { get; set; }
     }
 }

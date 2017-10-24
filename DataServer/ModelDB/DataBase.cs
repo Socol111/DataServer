@@ -9,12 +9,23 @@ using System.Windows;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
+using System.Data;
 
 namespace CobraDataServer
 {
     public class MSSQL
     {
-      
+
+        public class lstOrders : List<Order>
+        {
+
+        }
+
+        public class lstTrades : List<Trade>
+        {
+
+        }
+
         public void CREATEtest()
         {
             mes.err("create database");
@@ -38,15 +49,57 @@ namespace CobraDataServer
                     mes.err("state = " + db.Database.Connection.State);
                     mes.err("conn = " + db.Database.Connection.ToString());
                     mes.err("AutoDetectChanges = " + db.Configuration.AutoDetectChangesEnabled.ToString());
-                 
 
-                    db.Categories.Add(new Category { CategoryId = "id1", Name = "Foods" });
-                    db.Categories.Add(new Category { CategoryId = "id2", Name = "Foods" });
 
+                    int i = 1;
+                    foreach (var tik in data._instr)
+                    {
+                        db.Tickers.Add(new Ticker {TickerId = i, Name = tik.name+"@"+tik.namefull});
+                        i++;
+                    }
 
                     //Обновляем сведения об изменениях. Работает быстро
                     db.ChangeTracker.DetectChanges(); 
                     int recordsAffected = db.SaveChanges();
+
+                    lstOrders lst = new lstOrders()
+                    {
+
+                        new Order()
+                        {
+                            bid1 = 533,
+                            volask1 = 5
+                        },
+
+                         new Order()
+                        {
+                            bid1 = 123,
+                            volask2 = 5
+                        }
+                    };
+
+
+                    //entities - коллекция сущностей EntityFramework
+                    //using (IDataReader reader = lstOrders.GetDataReader())
+                    //using (SqlConnection connection = new SqlConnection(mydb.GetStringConnection()))
+                    //using (SqlBulkCopy bcp = new SqlBulkCopy(connection))
+                    //{
+                    //    connection.Open();
+
+                    //    bcp.DestinationTableName = "[Order]";
+
+                    //    bcp.ColumnMappings.Add("Date", "Date");
+                    //    bcp.ColumnMappings.Add("Number", "Number");
+                    //    bcp.ColumnMappings.Add("Text", "Text");
+
+                    //    bcp.WriteToServer(reader);
+                    //}
+
+
+
+
+
+
 
                     mes.err("create database write = " + recordsAffected.ToString());
                 }
@@ -65,8 +118,8 @@ namespace CobraDataServer
                 Database.Connection.ConnectionString = mydb.GetStringConnection();
             }
     
-            public DbSet<Category> Categories { get; set; }
-            public DbSet<Product> Products { get; set; }
+            public DbSet<Ticker> Tickers { get; set; }
+            public DbSet<Order> Orders { get; set; }
         }
 
 

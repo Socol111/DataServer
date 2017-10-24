@@ -184,6 +184,7 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
+                    <CheckBox Content="НАЧАТЬ ЗАПИСЬ В БАЗУ" IsChecked="{Binding enabledatabase}" Grid.Column="4" HorizontalAlignment="Left" Margin="215,19,0,0" VerticalAlignment="Top" Foreground="#FFFF2DF5" Width="194"/>
 
                 </Grid>
             </TabItem>

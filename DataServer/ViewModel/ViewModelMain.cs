@@ -52,11 +52,11 @@ namespace CobraDataServer
             data.getTickers();
 
            // var p = new Pipe("SiZ7");
-            create();///////////////////////////////////////
+           
         }
 
-      
 
+        private static bool threads_on = false;
         static bool loc = false;
         public static void timer()
         {
@@ -65,7 +65,11 @@ namespace CobraDataServer
 
             //mydb.item.CREATEtest();//////////////////////////////
             //return;
-            
+            if (!threads_on)
+            {
+                threads_on = true;
+                create();  
+            }
 
             if (data.fatal)
             {
@@ -102,20 +106,21 @@ namespace CobraDataServer
 
         public static CancellationTokenSource cts1;
         public static CancellationToken cancellationToken;
-        public static Thread mt;
+        public static Thread mt, pipeTHREAD;
         static bool thread_start = false;
+
+      
         public static void create()
         {
             if (thread_start) { err("Создание задачи - отмена уже создана "); return; }
             thread_start = true;
 
-
             data.fatal_need_rst_task = false;
             data.fatal = false;
 
-               data.fatal = false;
-                cts1 = new CancellationTokenSource();
-                cancellationToken = cts1.Token;//для task1
+            data.fatal = false;
+            cts1 = new CancellationTokenSource();
+            cancellationToken = cts1.Token;//для task1
 
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             mt = new Thread(() =>
@@ -140,9 +145,47 @@ namespace CobraDataServer
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             mt.Name = "QUIKSHARP THREAD";
 
-            err("Запуск задачи");
+            add("Запуск задачи");
             mt.Start();
+
+
+
+            PipeWork _pip = new PipeWork();
+
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            pipeTHREAD = new Thread(() =>
+            {
+                var tcs = new TaskCompletionSource<string>();
+                try
+                {
+                    _pip.Transmit();
+                    tcs.SetResult("ok");
+
+                }
+                catch (OperationCanceledException e)
+                {
+                    tcs.SetException(e);
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+                // return tcs.Task;
+            });
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+            if (data.pipe_enable)
+            {
+                pipeTHREAD.Name = "PIPE THREAD";
+
+                add("Запуск PIPE потока");
+                pipeTHREAD.Start();
+            }
+
         }
+
+
+
 
         static bool loctask = false;
         static byte rst_not_connect = 0;
@@ -153,7 +196,7 @@ namespace CobraDataServer
             if (data.pipe_enable)
             {
   
-                foreach (var i in data.quik.GET_Instr)
+                foreach (var i in data._instr)
                 {
                    data.listpipe.Add(new Pipe(i.name));
                 }

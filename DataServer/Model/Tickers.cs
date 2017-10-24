@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace CobraDataServer
 {
+
+    public class PipeItem
+    {
+        public string namepipe;
+        public decimal biditem;
+        public decimal askitem;
+    }
+
+
     public class Instrumensts
     {
         public Instrumensts(string s, string cl)
