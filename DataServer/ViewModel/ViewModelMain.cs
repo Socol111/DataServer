@@ -22,31 +22,16 @@ namespace CobraDataServer
  
     partial class ViewModelMain : ViewModelBase
     {
-        public static event Action stopprogramm;
         public static event Action<string> winadd;
         public static event Action<string> winerr;
 
 
         public ViewModelMain()
         {
-         
-          // return;
-            
+    
             if (data.onestart) return;
             data.onestart = true;
             ini_command();
-
-            bool existed;
-            // получаем GIUD приложения
-            string guid = Marshal.GetTypeLibGuidForAssembly(System.Reflection.Assembly.GetExecutingAssembly()).ToString();
-
-            Mutex mutexObj = new Mutex(true, guid, out existed);
-
-            if (!existed)
-            {
-                stopprogramm?.Invoke();////ДУБЛИКАТ ПРОГРАММЫ
-                return;
-            }
             
             CreateTimer1(500);
             data.getTickers();
@@ -68,7 +53,7 @@ namespace CobraDataServer
             if (!threads_on)
             {
                 threads_on = true;
-                create();  
+                threadprocess.create();
             }
 
             if (data.fatal)
@@ -86,105 +71,21 @@ namespace CobraDataServer
                 data.fatal_need_rst_task = true;
                 err("Фатал. прерывание задачи");
 
-                mt.Abort(5000);
-                while (mt.ThreadState == System.Threading.ThreadState.Running)
-                { Thread.Sleep(500); err("задача прерывается...."); }
+                threadprocess.stop_all();
 
                 loctask = false;
-                thread_start = false;
+                
                 err("Фатал. задача успешно прервана");
 
                 data.fatal = false;
-   
-
-                add("Создание задачи из таймера");
-                create();
+                threadprocess.create();
             }
 
             loc = false;
         }
 
-        public static CancellationTokenSource cts1;
-        public static CancellationToken cancellationToken;
-        public static Thread mt, pipeTHREAD;
-        static bool thread_start = false;
 
-      
-        public static void create()
-        {
-            if (thread_start) { err("Создание задачи - отмена уже создана "); return; }
-            thread_start = true;
-
-            data.fatal_need_rst_task = false;
-            data.fatal = false;
-
-            data.fatal = false;
-            cts1 = new CancellationTokenSource();
-            cancellationToken = cts1.Token;//для task1
-
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            mt = new Thread(() =>
-            {
-                var tcs = new TaskCompletionSource<string>();
-                try
-                {
-                    ViewModelMain.task1_release(cancellationToken);
-                    tcs.SetResult("ok");
-                    thread_start = false;
-                }
-                catch (OperationCanceledException e)
-                {
-                    tcs.SetException(e);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-               // return tcs.Task;
-            });
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            mt.Name = "QUIKSHARP THREAD";
-
-            add("Запуск задачи");
-            mt.Start();
-
-
-
-            PipeWork _pip = new PipeWork();
-
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-            pipeTHREAD = new Thread(() =>
-            {
-                var tcs = new TaskCompletionSource<string>();
-                try
-                {
-                    _pip.Transmit();
-                    tcs.SetResult("ok");
-
-                }
-                catch (OperationCanceledException e)
-                {
-                    tcs.SetException(e);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-                // return tcs.Task;
-            });
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-            if (data.pipe_enable)
-            {
-                pipeTHREAD.Name = "PIPE THREAD";
-
-                add("Запуск PIPE потока");
-                pipeTHREAD.Start();
-            }
-
-        }
-
-
+       
 
 
         static bool loctask = false;
@@ -193,7 +94,7 @@ namespace CobraDataServer
         public static void CREATE_PIPE()
         {
            
-            if (data.pipe_enable)
+            if (threadprocess.pipe_enable)
             {
   
                 foreach (var i in data._instr)
@@ -209,7 +110,8 @@ namespace CobraDataServer
     /// 
     /// </summary>
     public static void task1_release(CancellationToken cts)
-        {
+    {
+          
             if (loctask) { err("отмена запуска задачи - уже выполняется"); return; }
             loctask = true;
 

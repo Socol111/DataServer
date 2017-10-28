@@ -12,9 +12,22 @@ namespace CobraDataServer
 {
     partial class ViewModelSetting : ViewModelBase
     {
-       // private string y = byte.Parse(data.hour_start_pipe.ToString());
-        public static object list => data.eliminate;
+        static List<string> gettickers()
+        {
+            var rez = new List<string>();
+            foreach (var r in data._instr)
+            {
+                rez.Add(r.name);
+            }
+            return rez;
+        }
 
+        // private string y = byte.Parse(data.hour_start_pipe.ToString());
+        public static object list => data.eliminate;
+        public static object listACTUAL => mydb.listtickers;
+        public static object listBD => gettickers();
+
+        public string sizepacket { get => mydb.sizepacket.ToString(); set => mydb.sizepacket = int.Parse(value); }
         public string Prefix1 { get => data.pipe_prefix1; set => data.pipe_prefix1 = value; }
         public string Prefix2 { get => data.pipe_prefix2; set => data.pipe_prefix2 = value; }
         public string Pathtik1 { get => data.pathTIKERS1; set => data.pathTIKERS1 = value; }

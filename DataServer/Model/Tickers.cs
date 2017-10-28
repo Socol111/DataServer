@@ -10,8 +10,8 @@ namespace CobraDataServer
     public class PipeItem
     {
         public string namepipe;
-        public decimal biditem;
-        public decimal askitem;
+        public double biditem;
+        public double askitem;
     }
 
 
@@ -40,9 +40,9 @@ namespace CobraDataServer
 
         public string Class { get; set; }
 
-        public decimal ask { get; set; }
+        public double ask { get; set; }
 
-        public decimal bid { get; set; }
+        public double bid { get; set; }
     }
 
 

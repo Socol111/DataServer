@@ -1,24 +1,12 @@
 ﻿using System.Windows;
-using IPTVman.ViewModel;
-using System.Windows.Data;
 using System.Windows.Threading;
-using CobraDataServer;
-using project.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Documents;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using System.Threading;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Net.Sockets;
-using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using Serilog;
+using System.Runtime.InteropServices;
 
 namespace CobraDataServer
 {
@@ -30,9 +18,21 @@ namespace CobraDataServer
         int ct_no_connect=0;
         readonly string NameServer = "Cobra Data Server v1.0";
         public MainWindow()
-        {
+        {   
+        
+            bool existed;
+            // получаем GIUD приложения
+            string guid = Marshal.GetTypeLibGuidForAssembly(System.Reflection.Assembly.GetExecutingAssembly()).ToString();
+
+            Mutex mutexObj = new Mutex(true, guid, out existed);
+
+            if (!existed)
+            {
+                System.Windows.MessageBox.Show("Уже есть запущенная копия " + guid);
+                this.Close();
+            }
+
             header = this;
-            ViewModelMain.stopprogramm += new Action(endprog);
             this.Title = NameServer;
             InitializeComponent();
 
@@ -72,8 +72,7 @@ namespace CobraDataServer
 
         }
 
-
-       string getCT()
+        string getCT()
         {
 
             int rez= data.ct_global - data.ctglobalATstart;
@@ -208,6 +207,11 @@ namespace CobraDataServer
                     bufpipe.Content = data.pipeque.Count.ToString();
                 }));
 
+                bufdb.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+                {
+                    bufdb.Content = mydb.FIFOorderbook.Count.ToString();
+                }));
+
                 cttitle++;
                 if (cttitle == 1) this.Title = "/ " + NameServer;
                 if (cttitle == 2) this.Title = "- " + NameServer;
@@ -331,15 +335,18 @@ namespace CobraDataServer
 
         private void Window_Closed(object sender, EventArgs e)
         {
+           
+            threadprocess.stop_all();
+
             Log.Debug("=========== Close Cobra Data Server ===========");
             Log.CloseAndFlush();
 
-            if (ViewModelMain.mt!=null) ViewModelMain.mt.Abort();
         }
 
         private void close_Click(object sender, RoutedEventArgs e)
         {
-            data.exit = true;
+            threadprocess.exit = true;
+            Thread.Sleep(200);
             foreach (var p in data.listpipe)
             {
                 p.stopPIPE();

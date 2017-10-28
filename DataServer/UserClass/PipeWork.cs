@@ -15,7 +15,7 @@ namespace CobraDataServer
 
             while (true)
             {
-                if (data.exit) break;
+                if (threadprocess.exit) break;
                 if (data.pipeque.Count != 0)
                 {
                     data.pipeque.TryDequeue(out _pip);
@@ -24,7 +24,7 @@ namespace CobraDataServer
                     foreach (var p in data.listpipe)
                     {
                         i++;
-                        if (data.exit) break;
+                        if (threadprocess.exit) break;
                         if (p.Name == _pip.namepipe)
                         {
                             if (_pip.askitem == data._instr[i].ask && _pip.biditem == data._instr[i].bid)

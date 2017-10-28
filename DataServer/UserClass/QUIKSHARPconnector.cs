@@ -29,8 +29,7 @@ namespace CobraDataServer
         bool isSubscribedToolOrderBook = false;
         //string classCode = "";
         ///string clientCode;
-        decimal bid;
-        decimal offer;
+ 
         Tool tool;
         OrderBook toolOrderBook;
         //List<Candle> toolCandles;
@@ -428,7 +427,6 @@ namespace CobraDataServer
                 {
                     FIFOorderbookall.Enqueue(quote);
                     if (FIFOorderbookall.Count == 50000) mes.err("Переполнение буфера данных");
-
                 }//lock
 
         }
@@ -447,7 +445,6 @@ namespace CobraDataServer
             }
         }
 
-       
         void Analiz_Quote(OrderBook quote)
         {
             try { 
@@ -460,30 +457,130 @@ namespace CobraDataServer
                 {
                     data._instr[ct].orders++;
                     data.ct_global++;
-
+                        
                     try
                     {
                         toolOrderBook = quote;
-                        bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-                        offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
-                        double volume = toolOrderBook.offer[0].quantity;
+                            data.servertime = toolOrderBook.server_time;
 
+                        if (toolOrderBook.bid != null && toolOrderBook.offer != null)
+                        {
+       
+                            //--------------- to DB
+                            if (mydb.enable)
+                            {
+                                var ord = new Order()
+                                {
+                                    Time = DateTime.Now,
+                                    Name = toolOrderBook.sec_code+"_"+ toolOrderBook.server_time,
+
+                                    bid1 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid1 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid2 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid2 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid3 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid3 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid4 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid4 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid5 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid5 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid6 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid6 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid7 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid7 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid8 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid8 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid9 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid9 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid10 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid10 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid11 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid11 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid12 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid12 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid13 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid13 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid14 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid14 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid15 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid15 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid16 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid16 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid17 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid17 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid18 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid18 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid19 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid19 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+                                    bid20 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                    volbid20 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
+
+                                    ask1 = toolOrderBook.offer[0].price,
+                                    volask1 = toolOrderBook.offer[0].quantity,
+                                    ask2 = toolOrderBook.offer[0].price,
+                                    volask2 = toolOrderBook.offer[0].quantity,
+                                    ask3 = toolOrderBook.offer[0].price,
+                                    volask3 = toolOrderBook.offer[0].quantity,
+                                    ask4 = toolOrderBook.offer[0].price,
+                                    volask4 = toolOrderBook.offer[0].quantity,
+                                    ask5 = toolOrderBook.offer[0].price,
+                                    volask5 = toolOrderBook.offer[0].quantity,
+                                    ask6 = toolOrderBook.offer[0].price,
+                                    volask6 = toolOrderBook.offer[0].quantity,
+                                    ask7 = toolOrderBook.offer[0].price,
+                                    volask7 = toolOrderBook.offer[0].quantity,
+                                    ask8 = toolOrderBook.offer[0].price,
+                                    volask8 = toolOrderBook.offer[0].quantity,
+                                    ask9 = toolOrderBook.offer[0].price,
+                                    volask9 = toolOrderBook.offer[0].quantity,
+                                    ask10 = toolOrderBook.offer[0].price,
+                                    volask10 = toolOrderBook.offer[0].quantity,
+                                    ask11 = toolOrderBook.offer[0].price,
+                                    volask11 = toolOrderBook.offer[0].quantity,
+                                    ask12 = toolOrderBook.offer[0].price,
+                                    volask12 = toolOrderBook.offer[0].quantity,
+                                    ask13 = toolOrderBook.offer[0].price,
+                                    volask13 = toolOrderBook.offer[0].quantity,
+                                    ask14 = toolOrderBook.offer[0].price,
+                                    volask14 = toolOrderBook.offer[0].quantity,
+                                    ask15 = toolOrderBook.offer[0].price,
+                                    volask15 = toolOrderBook.offer[0].quantity,
+                                    ask16 = toolOrderBook.offer[0].price,
+                                    volask16 = toolOrderBook.offer[0].quantity,
+                                    ask17 = toolOrderBook.offer[0].price,
+                                    volask17 = toolOrderBook.offer[0].quantity,
+                                    ask18 = toolOrderBook.offer[0].price,
+                                    volask18 = toolOrderBook.offer[0].quantity,
+                                    ask19 = toolOrderBook.offer[0].price,
+                                    volask19 = toolOrderBook.offer[0].quantity,
+                                    ask20 = toolOrderBook.offer[0].price,
+                                    volask20 = toolOrderBook.offer[0].quantity,
+
+
+                                };
+
+                                mydb.FIFOorderbook.Enqueue(ord);
+                                if (mydb.FIFOorderbook.Count == 50000)
+                                    mes.err("Переполнение буфера данных DB");
+
+                            }
+
+                                //------- to PIPE
+                                if (threadprocess.pipe_enable)
+                                {
+                                    data.pipeque.Enqueue(new PipeItem()
+                                    {
+                                      namepipe = quote.sec_code,
+                                      biditem = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
+                                      askitem = toolOrderBook.offer[0].price
+
+                                    });
+
+                                }
+                            }
                     }
                     catch (Exception ex) { mes.err("err orders bidoffer " + ex.Message); }
 
-                     data.servertime = toolOrderBook.server_time;
-
-                        //write to DB
-
-                        
-
-                    if (data.pipe_enable)
-                    {
-
-                            data.pipeque.Enqueue(new PipeItem()
-                            { namepipe = quote.sec_code, askitem = offer, biditem = bid });
-                           
-                    }
                     break;
                 }
             }
@@ -492,7 +589,6 @@ namespace CobraDataServer
             catch (Exception ex) { mes.err("err orders event " + ex.Message); }
         }
 
-        //StringBuilder s1, s2;
         QuikDateTime tt;
         string tektime;
         void Analiz_Trade(AllTrade t)
@@ -502,15 +598,10 @@ namespace CobraDataServer
                 short ct = -1;
                 foreach (var i in data._instr)
                 {
-                    ct++;
-               
+                    ct++;              
                     if (t.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
                     {
                         data._instr[ct].interes = t.OpenInterest;
-
-                        //write to DB
-
-
                         break;
                     }
 
@@ -555,49 +646,6 @@ namespace CobraDataServer
 
            
         }
-
-
-        /// <summary>
-        /// Запись в БАЗУ ДАННЫХ
-        /// </summary>
-        //void getData()
-        //{
-        //    // ПАРАЛЕЛЬНОЕ ВЫПОЛНЕННИЕ
-        //    //Parallel.Invoke(act_getdata, act_getdata);
-        //    if (FIFOorderbook.Count != 0)
-        //    {
-        //        FIFOorderbook.TryDequeue(out order);
-
-        //        //write to DB
-
-        //    }
-
-
-
-
-        //    if (FIFOtrade.Count != 0)
-        //    {
-        //        FIFOtrade.TryDequeue(out trade);
-
-        //        var cla = trade.ClassCode;
-        //        var period = trade.Period;
-        //        var code = trade.SecCode;
-        //        var size = trade.Qty;
-
-        //        //s1.Insert(0, cla);
-
-                
-
-               
-             
-        //        tt = trade.Datetime;
-        //        tektime = String.Format("{0}.{1}.{2}  {3}:{4}:{5}",
-        //           tt.day, tt.month, tt.year, tt.hour, tt.min, tt.sec);
-
-
-        //    }
-        //}
-
 
 
     }

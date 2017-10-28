@@ -9,7 +9,6 @@ using System.Reflection;
 namespace CobraDataServer
 {
 
-
         public static class GenericListDataReaderExtensions
         {
             public static GenericListDataReader<T> GetDataReader<T>(this IEnumerable<T> list)

@@ -62,7 +62,6 @@ namespace CobraDataServer
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-   
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
                    data.pathTIKERS1 = dialog.SelectedPath;
         }
@@ -77,17 +76,7 @@ namespace CobraDataServer
                 //Update.GuiElement("PathTiker");
                 data.getTickers();
             }
-            //FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-
-            //DialogResult result = folderBrowser.ShowDialog();
-
-            //if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
-            //{
-            //    //string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
-            //    data.pathTIKERS = folderBrowser.SelectedPath;
-            //    PathTiker.Text = data.pathTIKERS;
-            //    //Update.GuiElement("PathTiker");
-            //}
+           
         }
 
         private void selectpath_Click2(object sender, RoutedEventArgs e)
@@ -100,17 +89,35 @@ namespace CobraDataServer
                 //Update.GuiElement("PathTiker");
                 data.getTickers();
             }
-            //FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+            
+        }
 
-            //DialogResult result = folderBrowser.ShowDialog();
+        private void selectpath_x_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
 
-            //if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
-            //{
-            //    //string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
-            //    data.pathTIKERS = folderBrowser.SelectedPath;
-            //    PathTiker.Text = data.pathTIKERS;
-            //    //Update.GuiElement("PathTiker");
-            //}
+            DialogResult result = folderBrowser.ShowDialog();
+
+            if (!string.IsNullOrWhiteSpace(folderBrowser.SelectedPath))
+            {
+                //string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
+                mydb.Path = folderBrowser.SelectedPath+@"\";
+                bdpathx.Text = mydb.Path;
+               
+            }
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            mydb.listtickers.RemoveAt(ListBDact.SelectedIndex);
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            string n = ListBD.SelectedItem as string;
+            
+            mydb.listtickers.Add("dadas");
+           
         }
     }
 }
