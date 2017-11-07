@@ -118,6 +118,7 @@
     <Compile Include="ModelDB\GenericListDataReader.cs" />
     <Compile Include="ModelDB\Items.cs" />
     <Compile Include="Model\data.cs" />
+    <Compile Include="Model\Serialization.cs" />
     <Compile Include="UserClass\Registy_Find.cs" />
     <Compile Include="Model\security.cs" />
     <Compile Include="Model\threadprocess.cs" />

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 
 namespace CobraDataServer
 {
@@ -29,7 +30,11 @@ namespace CobraDataServer
         }
         public void ReadListInstrument(List<Instrumensts> p)
         {
-            if (path == "" || path == "*") return;
+            if (path == "" || path == "*")
+            {
+              //MessageBox.Show("Не задан путь списка тикеров");
+              return;
+            }
             string s1,s2;
             using (StreamReader sr = new StreamReader(path))
             {
@@ -38,7 +43,11 @@ namespace CobraDataServer
                 {
                     s1 = sr.ReadLine();
                     s2 = sr.ReadLine();
+                    
+                    if (data.eliminate.Contains(s1)) { /*mes.add("Игнор тикера " + s1);*/  }
+                    else
                     p.Add(new Instrumensts(s1,s2));
+
                     sr.ReadLine();
                     sr.ReadLine();
                 }

@@ -191,7 +191,7 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <ListBox x:Name="ListBD" ItemsSource="{Binding listBD}" HorizontalAlignment="Left" Margin="54,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
+                    <ListBox x:Name="Listalltk" ItemsSource="{Binding listalltickers}" HorizontalAlignment="Left" Margin="54,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
                     <Button Content="Удалить" CommandParameter=""  Margin="0,230,240,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_5" >
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -206,10 +206,10 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <ListBox x:Name="ListBDact" ItemsSource="{Binding listACTUAL}" HorizontalAlignment="Left" Margin="322,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
-                    <Label Content="АКТИВНЫЕ ТИКЕРЫ БД" HorizontalAlignment="Left" Margin="322,5,0,0" VerticalAlignment="Top" Width="164" Foreground="#FF9EFF12"/>
+                    <ListBox x:Name="ListBDactual" ItemsSource="{Binding listactive, Mode=TwoWay}" HorizontalAlignment="Left" Margin="322,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
+                    <Label Content="записываемые тикеры:" HorizontalAlignment="Left" Margin="322,5,0,0" VerticalAlignment="Top" Width="164" Foreground="#FF9EFF12" RenderTransformOrigin="0.396,0.726"/>
                     <TextBox x:Name="Tx41" Text="{Binding sizepacket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="488,120,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
-                    <Label Content="Размер пакета записи" HorizontalAlignment="Left" Margin="488,90,0,0" VerticalAlignment="Top" Width="141" Foreground="#FF53C703"/>
+                    <Label Content="Размер пакета записи" HorizontalAlignment="Left" Margin="469,95,0,0" VerticalAlignment="Top" Width="141" Foreground="#FF53C703"/>
                 </Grid>
             </TabItem>
 
@@ -237,6 +237,7 @@
                     <Label Content="Трансляция строки tick;bid;ask; в PIPE-сервер " HorizontalAlignment="Left" Margin="105,0,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
                     <Label Content="(на каждый тикер свой PIPE-канал: имя=Префикс+тикер) " HorizontalAlignment="Left" Margin="105,21,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
                     <Label Content="Передача идет одновременно в PIPE1 и PIPE2" HorizontalAlignment="Left" Margin="105,107,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
+                    <CheckBox Content="ВКЛЮЧИТЬ ТРАНСЛЯЦИЮ" IsChecked="{Binding enablepipe}" HorizontalAlignment="Left" Margin="105,175,0,0" VerticalAlignment="Top" Foreground="#FFFFF52D" Width="194" Grid.Column="2" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
 

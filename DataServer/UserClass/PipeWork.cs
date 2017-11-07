@@ -16,7 +16,7 @@ namespace CobraDataServer
             while (true)
             {
                 if (threadprocess.exit) break;
-                if (data.pipeque.Count != 0)
+                if (data.pipeque.Count != 0 && data.PIPEENABLE)
                 {
                     data.pipeque.TryDequeue(out _pip);
 
@@ -26,22 +26,12 @@ namespace CobraDataServer
                         i++;
                         if (threadprocess.exit) break;
                         if (p.Name == _pip.namepipe)
-                        {
-                            if (_pip.askitem == data._instr[i].ask && _pip.biditem == data._instr[i].bid)
-                            {
-                                break;
-                            }
-                            else
-                            {
+                        {        
                                 //mes.add(_pip.namepipe+"   "+ data._instr[i].name);
                                 data._instr[i].ct++;
                                 //if (DateTime.Now.Hour> data.hour_start_pipe)
                                 p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);
-                            }
-
-                            data._instr[i].ask = _pip.biditem;
-                            data._instr[i].bid = _pip.askitem;
-                           
+     
                         }
                     }
 

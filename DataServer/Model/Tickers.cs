@@ -21,11 +21,12 @@ namespace CobraDataServer
         {
             name = s;
             Class = cl;
-            bid = 0;
-            ask = 0;
+           // bid = 0;
+           // ask = 0;
+            lastorder = new Order();
         }
 
-
+        public Order lastorder { get; set; }
         public double interes { get; set; } = 0;
 
         public int ct { get; set; } = 0;
@@ -40,9 +41,9 @@ namespace CobraDataServer
 
         public string Class { get; set; }
 
-        public double ask { get; set; }
+        //public double ask { get; set; }
 
-        public double bid { get; set; }
+       // public double bid { get; set; }
     }
 
 

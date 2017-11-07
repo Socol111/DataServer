@@ -7,25 +7,17 @@ using System.Collections;
 using CobraDataServer;
 using project.Helpers;
 using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Runtime.CompilerServices;
 
 namespace CobraDataServer
 {
-    partial class ViewModelSetting : ViewModelBase
+    partial class ViewModelSetting : ViewModelBase, INotifyPropertyChanged
     {
-        static List<string> gettickers()
-        {
-            var rez = new List<string>();
-            foreach (var r in data._instr)
-            {
-                rez.Add(r.name);
-            }
-            return rez;
-        }
-
+     
         // private string y = byte.Parse(data.hour_start_pipe.ToString());
         public static object list => data.eliminate;
-        public static object listACTUAL => mydb.listtickers;
-        public static object listBD => gettickers();
 
         public string sizepacket { get => mydb.sizepacket.ToString(); set => mydb.sizepacket = int.Parse(value); }
         public string Prefix1 { get => data.pipe_prefix1; set => data.pipe_prefix1 = value; }
@@ -39,7 +31,56 @@ namespace CobraDataServer
         public string bdname { get => mydb.Namebd; set => mydb.Namebd = value; }
 
         public bool enabledatabase { get => mydb.enable; set => mydb.enable = value; }
+        public bool enablepipe { get => data.PIPEENABLE; set => data.PIPEENABLE = value; }
 
+
+
+
+        public List<string> listalltickers
+        {
+            get
+            {
+                return (data.ListTickers);
+            }
+            set {  }
+        }
+
+        // Using a DependencyProperty as the backing store for listalltickers.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty listalltickersProperty =
+            DependencyProperty.Register("listalltickers", typeof(List<string>), typeof(ListBox), 
+                new PropertyMetadata(new List<string>()  ));
+
+
+
+        public List<string> listactive
+        {
+            get { return mydb.listtickers; }
+            set { }
+        }
+
+        ////Using a DependencyProperty as the backing store for listDB.This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty listactveProperty =
+            DependencyProperty.Register("listactive", typeof(List<string>), typeof(ListBox),
+                new PropertyMetadata(mydb.listtickers
+                ));
+      
+
+        #region Реализация INotifyPropertyChanged
+        /// <summary>Уведомляет подписчика о изменении свойства</summary>
+        void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+        public void NamedPropertyChanged(string PropertyName)
+        {
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(PropertyName));
+        }
+
+        #endregion
     }//class
 
 

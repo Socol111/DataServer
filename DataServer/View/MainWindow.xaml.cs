@@ -36,6 +36,10 @@ namespace CobraDataServer
             this.Title = NameServer;
             InitializeComponent();
 
+
+            SETTING.ReadFromXML();
+           
+            data.getTickers();
             //Подписки
             ViewModelMain.winadd += ViewModelMain_winadd;
             ViewModelMain.winerr += ViewModelMain_winerr;
@@ -115,7 +119,7 @@ namespace CobraDataServer
             if (msg == "*")
             {
                 rst++;
-                if (rst > 10)
+                if (rst > 100)
                 {
                     rst = 0;
                     box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
@@ -163,7 +167,8 @@ namespace CobraDataServer
                 ct_fatal++;
                 if (ct_fatal > 50)
                 {
-                    add("-- запуск fatal restart ---", System.Windows.Media.Brushes.Red);
+                    add("-- Фатальный рестарт ---", System.Windows.Media.Brushes.Red);
+                    Log.Debug( "Фатальный рестарт");
                     data.fatal = true;
                     ct_fatal = 0;
                 }

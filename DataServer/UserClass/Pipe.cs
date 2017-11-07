@@ -33,7 +33,7 @@ namespace CobraDataServer
         public Pipe(string name)
         {
             this.name = name;
-            if (!data.TickerIsOk(name)) return;
+            if (data.eliminate.Contains(name) || !data.PIPEENABLE) return;
 
             mes.add("подключаем PIPE1 " + name + "...");
             createPIPE1(name);

@@ -34,7 +34,6 @@ namespace CobraDataServer
             ini_command();
             
             CreateTimer1(500);
-            data.getTickers();
 
            // var p = new Pipe("SiZ7");
            
@@ -69,7 +68,7 @@ namespace CobraDataServer
 
   
                 data.fatal_need_rst_task = true;
-                err("Фатал. прерывание задачи");
+                err("-Остановка задач-");
 
                 threadprocess.stop_all();
 
@@ -94,7 +93,7 @@ namespace CobraDataServer
         public static void CREATE_PIPE()
         {
            
-            if (threadprocess.pipe_enable)
+            if (data.PIPEENABLE)
             {
   
                 foreach (var i in data._instr)
@@ -204,7 +203,6 @@ namespace CobraDataServer
         {
             Event_Print?.Invoke(s, System.Windows.Media.Brushes.Red);
         }
-
 
     }
 

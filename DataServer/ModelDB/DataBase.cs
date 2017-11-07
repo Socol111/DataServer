@@ -11,13 +11,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Data;
 using QuikSharp.DataStructures;
+using System.Diagnostics;
 
 namespace CobraDataServer
 {
     public class MSSQL
     {
 
-        public class EntityGenerator
+        public class EntityGenerator_Order
         {
             public static List<Order> GeneratOrder(int count)
             {
@@ -26,8 +27,25 @@ namespace CobraDataServer
                 return entities;
             }
         }
+
+        public class EntityGenerator_Trade
+        {
+            public static List<Trade> GeneratOrder(int count)
+            {
+                var entities = new List<Trade>(count);
+
+                return entities;
+            }
+        }
+
         public void CREATEtest()
         {
+            if (data._instr.Count == 0)
+            {
+                mes.err("нет тикеров для создания базы данных");
+                return;
+            }
+
             mes.add("--------------------------");
             mes.add("СОЗДАНИЕ БАЗЫ ДАННЫХ ....");
 
@@ -46,7 +64,7 @@ namespace CobraDataServer
                     int i = 1;
                     foreach (var tik in data._instr)
                     {
-                        db.Tickers.Add(new Ticker {TickerId = i, Name = tik.name+"@"+tik.namefull});
+                        db.Tickers.Add(new Ticker {Id = i, Name = tik.name});
                         i++;
                     }
 
@@ -54,36 +72,39 @@ namespace CobraDataServer
                     db.ChangeTracker.DetectChanges();
 
                     ////// entities - коллекция сущностей EntityFramework
-                   List<Order> entities = EntityGenerator.GeneratOrder(25);
+                   List<Order> entities = EntityGenerator_Order.GeneratOrder(100);
 
 
                     mes.add("state = " + db.Database.Connection.State);
                     mes.add("conn = " + db.Database.Connection.ToString());
                     mes.add("AutoDetectChanges = " + db.Configuration.AutoDetectChangesEnabled.ToString());
 
-                    for (int j = 1; j < 25; j++)
+                    for (int j = 0; j < 50; j++)
                     {
                         entities.Add
                         (
                           new Order()
                           {
-                              Time = new DateTime(2016, 7, j),
-                              bid1 = 9999,
-                              volbid1 = 1000
+                              TickerId = 1,
+                              time = new DateTime(2016, 7, 3),
+                              bid1 = j,
+                              volbid1 = j
                           }
                         );
 
                     }
+                    mes.add("Таблицы созданы");
 
-
+                    var sw = Stopwatch.StartNew();
+                  
                     db.Orders.AddRange(entities);
                     int recordsAffected = db.SaveChanges();
-                    mes.add("тестовая запись = " + recordsAffected.ToString());
+                    sw.Stop();
 
                     db.Orders.RemoveRange(entities);
                     recordsAffected = db.SaveChanges();
-                    mes.add("тест удаление = " + recordsAffected.ToString());
-
+                   
+                    mes.add("тестовая запись выполнена " + recordsAffected.ToString()+ "  время = "+ sw.ElapsedMilliseconds.ToString()+" (мс)");
                     mes.add("База успешно создана.");
                 }
             }
@@ -96,7 +117,7 @@ namespace CobraDataServer
         }
 
 
-        public void WRITE_TO_DB(List<Order> ent)
+        public void WRITE_TO_DB_ORDER(List<Order> ent)
         {
 
             using (IDataReader reader = ent.GetDataReader())
@@ -111,9 +132,12 @@ namespace CobraDataServer
 
                 try
                 {
-                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("Id", "Id"));
-                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("Time", "Time"));
-                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("Name", "Name"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("OrderId", "OrderId"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("TickerId", "TickerId"));
+
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("time", "time"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("NAMETEST", "NAMETEST"));
+
                     bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("bid1", "bid1"));
                     bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("volbid1", "volbid1"));
                     bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("bid2", "bid2"));
@@ -209,6 +233,39 @@ namespace CobraDataServer
 
         }
 
+        public void WRITE_TO_DB_TRADE(List<Trade> ent)
+        {
+
+            using (IDataReader reader = ent.GetDataReader())
+            using (SqlConnection connection = new SqlConnection(mydb.GetStringConnection()))
+            using (SqlBulkCopy bcp = new SqlBulkCopy(connection))
+            {
+                connection.Open();
+
+                bcp.DestinationTableName = "[Trades]";
+                //bcp.BatchSize = 0;//(число строк, загружаемых за раз на сервер, по умолчанию — равно 0
+
+                try
+                {
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("TradeId", "TradeId"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("TickerId", "TickerId"));
+
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("time", "time"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("NAMETEST", "NAMETEST"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("price", "price"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("qty", "qty"));
+                    bcp.ColumnMappings.Add(new SqlBulkCopyColumnMapping("openinter", "openinter"));
+
+                    bcp.WriteToServer(reader);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("error map  " + ex.Message);
+                }
+            }
+
+
+        }
 
         public class MyContext : DbContext
         {
@@ -216,9 +273,10 @@ namespace CobraDataServer
 
                 Database.Connection.ConnectionString = mydb.GetStringConnection();
             }
-    
+          
             public DbSet<Ticker> Tickers { get; set; }
             public DbSet<Order> Orders { get; set; }
+            public DbSet<Trade> Trades { get; set; }
         }
 
 

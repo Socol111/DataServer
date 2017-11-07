@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +10,28 @@ namespace CobraDataServer
 {
     public class Ticker
     {
-        public int TickerId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<Trade> Trades { get; set; }
+        //public ICollection<Order> Orders { get; set; }
+        //public ICollection<Trade> Trades { get; set; }
     }
 
+    [Table("Orders")]
     public class Order
     {
-        public int Id { get; set; }
-        public DateTime Time { get; set; }
-        // public ushort TickerId { get; set; }
+       [Key]
+        public int OrderId { get; set; }
 
-        public string Name { get; set; }
+        [ForeignKey("Ticker")]
+        public int TickerId { get; set; }
+
+        public Ticker Ticker { get; set; }
+
+
+        public DateTime time { get; set; }
+
+        public string NAMETEST { get; set; }
         public double bid1  { get  ; set; }
         public double volbid1 { get; set; }
         public double bid2 { get; set; }
@@ -107,14 +117,28 @@ namespace CobraDataServer
         public double volask20 { get; set; }
 
 
-        public virtual Ticker Ticker { get; set; }
     }
 
+    [Table("Trades")]
     public class Trade
     {
-        public DateTime TradeId { get; set; }
-        public ushort TickerId { get; set; }
+        [Key]
+        public int TradeId { get; set; }
 
-        public virtual Ticker Ticker { get; set; }
+        [ForeignKey("Ticker")]
+        public int TickerId { get; set; }
+
+        public Ticker Ticker { get; set; }
+
+        public DateTime time { get; set; }
+
+        public string NAMETEST { get; set; }
+
+        public double price { get; set; }
+
+        public long qty { get; set; }
+
+        public double openinter { get; set; }
+
     }
 }

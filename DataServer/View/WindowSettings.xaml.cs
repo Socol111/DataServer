@@ -52,7 +52,7 @@ namespace CobraDataServer
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-
+            SETTING.SaveInXmlFormat();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
@@ -109,15 +109,19 @@ namespace CobraDataServer
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            mydb.listtickers.RemoveAt(ListBDact.SelectedIndex);
+            mydb.listtickers.RemoveAt(ListBDactual.SelectedIndex);
+            ListBDactual.Items.Refresh();
+
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
-            string n = ListBD.SelectedItem as string;
+            string n = Listalltk.SelectedItem as string;
             
-            mydb.listtickers.Add("dadas");
-           
+            if (!mydb.listtickers.Contains(n))
+            mydb.listtickers.Add(n);
+            ListBDactual.Items.Refresh();
+
         }
     }
 }

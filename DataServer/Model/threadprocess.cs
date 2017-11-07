@@ -10,7 +10,7 @@ namespace CobraDataServer
     static class threadprocess
     {
         public static Thread mt, pipeTHREAD, dbTHREAD;
-        public static bool pipe_enable = true;
+      //  public static bool pipe_enable = true;
         public static bool exit = false;
 
         public static CancellationTokenSource cts1;
@@ -80,7 +80,7 @@ namespace CobraDataServer
             });
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
-            if (threadprocess.pipe_enable)
+            if (data.PIPEENABLE)
             {
                 threadprocess.pipeTHREAD.Name = "PIPE THREAD";
 
@@ -151,6 +151,9 @@ namespace CobraDataServer
                 Thread.Sleep(100);
                 mes.errLOG("задача PIPE прерывается....");
             }
+
+            thread_start = false;
+
         }
 
     }

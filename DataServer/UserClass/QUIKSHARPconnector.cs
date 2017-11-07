@@ -31,7 +31,8 @@ namespace CobraDataServer
         ///string clientCode;
  
         Tool tool;
-        OrderBook toolOrderBook;
+        OrderBook ob;
+        AllTrade tb;
         //List<Candle> toolCandles;
         //List<Order> listOrders;
         //List<Trade> listTrades;
@@ -72,15 +73,16 @@ namespace CobraDataServer
         }
         public void work()
         {   
+            if (data._instr.Count==0) mes.err("НЕ ЗАДАНЫ ТИЕКРЫ!!!");
             mes.add("Подписки...");
             if (_quik == null) mes.err("err quik");
             var listFN = new List<string>();
 
             foreach (var i in data._instr)
             {
-                if (!data.TickerIsOk(i.name)) continue;
+                if (data.eliminate.Contains(i.name)) {mes.add("Игнор подписки " + i.name); continue;}
                 string fn= Sub(i.name, i.Class.Replace("@", ""));
-                listFN.Add(fn);
+                if (fn!="") listFN.Add(fn); else mes.err("Не найден " + i.name);
             }
 
             int ind = 0;
@@ -268,7 +270,7 @@ namespace CobraDataServer
             {
                 string rez = "";
 
-                //add("Определяем код класса инструмента " + secCode + "@" +classCode);
+                //mes.add("Определяем код класса инструмента " + secCode + "@" +classCode);
                 try
                 {
                     rez = _quik.Class.GetSecurityClass("SPBFUT,TQBR,TQBS,TQNL,TQLV,TQNE,TQOB", secCode).Result;
@@ -280,7 +282,7 @@ namespace CobraDataServer
 
                 if (rez == classCode)
                 {
-                    //add(secCode + "@" + classCode+" найден");
+                    //mes.add(secCode + "@" + classCode+" найден");
                 }
                 else { mes.err("не найден инструмент " + secCode + "@" + classCode); return ""; }
 
@@ -320,7 +322,7 @@ namespace CobraDataServer
                     isSubscribedToolOrderBook = _quik.OrderBook.IsSubscribed(tool.ClassCode, tool.SecurityCode).Result;
                     if (isSubscribedToolOrderBook)
                     {
-                        toolOrderBook = new OrderBook();
+                        ob = new OrderBook();
 
                         //add("Подписываемся на колбэк 'OnQuote'..." );
                         _quik.Events.OnQuote += OnQuoteDo;
@@ -445,6 +447,10 @@ namespace CobraDataServer
             }
         }
 
+        private Order orderwr;
+        private Trade tradewr;
+        private bool ravno;
+        private double bid, ask;
         void Analiz_Quote(OrderBook quote)
         {
             try { 
@@ -452,134 +458,279 @@ namespace CobraDataServer
             short ct = -1;
             foreach (var i in data._instr)
             {
+                ob = quote;
                 ct++;
-                if (quote.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
+                if (ob.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
                 {
                     data._instr[ct].orders++;
                     data.ct_global++;
                         
                     try
                     {
-                        toolOrderBook = quote;
-                            data.servertime = toolOrderBook.server_time;
+                        var epoch = new DateTime(1970, 1, 1, 3, 0, 0).AddMilliseconds(ob.LuaTimeStamp);
+                        data.servertime = epoch.ToLongTimeString();// epoch.Hour+":"+epoch.Minute+":"+epoch.Second;
 
-                        if (toolOrderBook.bid != null && toolOrderBook.offer != null)
+                        if (ob.bid != null && ob.offer != null)
                         {
-       
+                             ravno = false;
                             //--------------- to DB
-                            if (mydb.enable)
+                            if (mydb.enable && ob.bid.Count()>15 && ob.offer.Count() > 15)
                             {
-                                var ord = new Order()
+                                orderwr = new Order()
                                 {
-                                    Time = DateTime.Now,
-                                    Name = toolOrderBook.sec_code+"_"+ toolOrderBook.server_time,
+                                    TickerId = ct,
+                                    time = epoch, 
+                                    NAMETEST = ob.sec_code,
+                                    
+                                    bid1 = ob.bid[ob.bid.Count() - 1].price,
+                                    volbid1 = ob.bid[ob.bid.Count() - 1].quantity,
+                                    bid2 = ob.bid[ob.bid.Count() - 2].price,
+                                    volbid2 = ob.bid[ob.bid.Count() - 2].quantity,
+                                    bid3 = ob.bid[ob.bid.Count() - 3].price,
+                                    volbid3 = ob.bid[ob.bid.Count() - 3].quantity,
+                                    bid4 = ob.bid[ob.bid.Count() - 4].price,
+                                    volbid4 = ob.bid[ob.bid.Count() - 4].quantity,
+                                    bid5 = ob.bid[ob.bid.Count() - 5].price,
+                                    volbid5 = ob.bid[ob.bid.Count() - 5].quantity,
+                                    bid6 = ob.bid[ob.bid.Count() - 6].price,
+                                    volbid6 = ob.bid[ob.bid.Count() - 6].quantity,
+                                    bid7 = ob.bid[ob.bid.Count() - 7].price,
+                                    volbid7 = ob.bid[ob.bid.Count() - 7].quantity,
+                                    bid8 = ob.bid[ob.bid.Count() - 8].price,
+                                    volbid8 = ob.bid[ob.bid.Count() - 8].quantity,
+                                    bid9 = ob.bid[ob.bid.Count() - 9].price,
+                                    volbid9 = ob.bid[ob.bid.Count() - 9].quantity,
+                                    bid10 = ob.bid[ob.bid.Count() - 10].price,
+                                    volbid10 = ob.bid[ob.bid.Count() - 10].quantity,
+                                    bid11 = ob.bid[ob.bid.Count() - 11].price,
+                                    volbid11 = ob.bid[ob.bid.Count() - 11].quantity,
+                                    bid12 = ob.bid[ob.bid.Count() - 12].price,
+                                    volbid12 = ob.bid[ob.bid.Count() - 12].quantity,
+                                    bid13 = ob.bid[ob.bid.Count() - 13].price,
+                                    volbid13 = ob.bid[ob.bid.Count() - 13].quantity,
+                                    bid14 = ob.bid[ob.bid.Count() - 14].price,
+                                    volbid14 = ob.bid[ob.bid.Count() - 14].quantity,
+                                    bid15 = ob.bid[ob.bid.Count() - 15].price,
+                                    volbid15 = ob.bid[ob.bid.Count() - 15].quantity,
+                                    bid16 = ob.bid[ob.bid.Count() - 16].price,
+                                    volbid16 = ob.bid[ob.bid.Count() - 16].quantity,
+                                    bid17 = ob.bid[ob.bid.Count() - 17].price,
+                                    volbid17 = ob.bid[ob.bid.Count() - 17].quantity,
+                                    bid18 = ob.bid[ob.bid.Count() - 18].price,
+                                    volbid18 = ob.bid[ob.bid.Count() - 18].quantity,
+                                    bid19 = ob.bid[ob.bid.Count() - 19].price,
+                                    volbid19 = ob.bid[ob.bid.Count() - 19].quantity,
+                                    bid20 = ob.bid[ob.bid.Count() - 20].price,
+                                    volbid20 = ob.bid[ob.bid.Count() - 20].quantity,
 
-                                    bid1 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid1 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid2 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid2 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid3 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid3 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid4 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid4 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid5 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid5 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid6 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid6 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid7 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid7 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid8 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid8 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid9 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid9 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid10 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid10 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid11 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid11 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid12 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid12 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid13 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid13 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid14 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid14 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid15 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid15 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid16 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid16 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid17 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid17 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid18 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid18 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid19 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid19 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-                                    bid20 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                    volbid20 = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].quantity,
-
-                                    ask1 = toolOrderBook.offer[0].price,
-                                    volask1 = toolOrderBook.offer[0].quantity,
-                                    ask2 = toolOrderBook.offer[0].price,
-                                    volask2 = toolOrderBook.offer[0].quantity,
-                                    ask3 = toolOrderBook.offer[0].price,
-                                    volask3 = toolOrderBook.offer[0].quantity,
-                                    ask4 = toolOrderBook.offer[0].price,
-                                    volask4 = toolOrderBook.offer[0].quantity,
-                                    ask5 = toolOrderBook.offer[0].price,
-                                    volask5 = toolOrderBook.offer[0].quantity,
-                                    ask6 = toolOrderBook.offer[0].price,
-                                    volask6 = toolOrderBook.offer[0].quantity,
-                                    ask7 = toolOrderBook.offer[0].price,
-                                    volask7 = toolOrderBook.offer[0].quantity,
-                                    ask8 = toolOrderBook.offer[0].price,
-                                    volask8 = toolOrderBook.offer[0].quantity,
-                                    ask9 = toolOrderBook.offer[0].price,
-                                    volask9 = toolOrderBook.offer[0].quantity,
-                                    ask10 = toolOrderBook.offer[0].price,
-                                    volask10 = toolOrderBook.offer[0].quantity,
-                                    ask11 = toolOrderBook.offer[0].price,
-                                    volask11 = toolOrderBook.offer[0].quantity,
-                                    ask12 = toolOrderBook.offer[0].price,
-                                    volask12 = toolOrderBook.offer[0].quantity,
-                                    ask13 = toolOrderBook.offer[0].price,
-                                    volask13 = toolOrderBook.offer[0].quantity,
-                                    ask14 = toolOrderBook.offer[0].price,
-                                    volask14 = toolOrderBook.offer[0].quantity,
-                                    ask15 = toolOrderBook.offer[0].price,
-                                    volask15 = toolOrderBook.offer[0].quantity,
-                                    ask16 = toolOrderBook.offer[0].price,
-                                    volask16 = toolOrderBook.offer[0].quantity,
-                                    ask17 = toolOrderBook.offer[0].price,
-                                    volask17 = toolOrderBook.offer[0].quantity,
-                                    ask18 = toolOrderBook.offer[0].price,
-                                    volask18 = toolOrderBook.offer[0].quantity,
-                                    ask19 = toolOrderBook.offer[0].price,
-                                    volask19 = toolOrderBook.offer[0].quantity,
-                                    ask20 = toolOrderBook.offer[0].price,
-                                    volask20 = toolOrderBook.offer[0].quantity,
+                                    ask1 = ob.offer[0].price,
+                                    volask1 = ob.offer[0].quantity,
+                                    ask2 = ob.offer[1].price,
+                                    volask2 = ob.offer[1].quantity,
+                                    ask3 = ob.offer[2].price,
+                                    volask3 = ob.offer[2].quantity,
+                                    ask4 = ob.offer[3].price,
+                                    volask4 = ob.offer[3].quantity,
+                                    ask5 = ob.offer[4].price,
+                                    volask5 = ob.offer[4].quantity,
+                                    ask6 = ob.offer[5].price,
+                                    volask6 = ob.offer[5].quantity,
+                                    ask7 = ob.offer[6].price,
+                                    volask7 = ob.offer[6].quantity,
+                                    ask8 = ob.offer[7].price,
+                                    volask8 = ob.offer[7].quantity,
+                                    ask9 = ob.offer[8].price,
+                                    volask9 = ob.offer[8].quantity,
+                                    ask10 = ob.offer[9].price,
+                                    volask10 = ob.offer[9].quantity,
+                                    ask11 = ob.offer[10].price,
+                                    volask11 = ob.offer[10].quantity,
+                                    ask12 = ob.offer[11].price,
+                                    volask12 = ob.offer[11].quantity,
+                                    ask13 = ob.offer[12].price,
+                                    volask13 = ob.offer[12].quantity,
+                                    ask14 = ob.offer[13].price,
+                                    volask14 = ob.offer[13].quantity,
+                                    ask15 = ob.offer[14].price,
+                                    volask15 = ob.offer[14].quantity,
+                                    ask16 = ob.offer[15].price,
+                                    volask16 = ob.offer[15].quantity,
+                                    ask17 = ob.offer[16].price,
+                                    volask17 = ob.offer[16].quantity,
+                                    ask18 = ob.offer[17].price,
+                                    volask18 = ob.offer[17].quantity,
+                                    ask19 = ob.offer[18].price,
+                                    volask19 = ob.offer[18].quantity,
+                                    ask20 = ob.offer[19].price,
+                                    volask20 = ob.offer[19].quantity,
 
 
                                 };
 
-                                mydb.FIFOorderbook.Enqueue(ord);
-                                if (mydb.FIFOorderbook.Count == 50000)
-                                    mes.err("Переполнение буфера данных DB");
+
+                                if (data._instr[ct].lastorder.volbid1 == orderwr.volbid1 &&
+                                data._instr[ct].lastorder.volbid2 == orderwr.volbid2 &&
+                                data._instr[ct].lastorder.volbid3 == orderwr.volbid3 &&
+                                data._instr[ct].lastorder.volbid4 == orderwr.volbid4 &&
+                                data._instr[ct].lastorder.volbid5 == orderwr.volbid5 &&
+                                data._instr[ct].lastorder.volbid6 == orderwr.volbid6 &&
+                                data._instr[ct].lastorder.volbid7 == orderwr.volbid7 &&
+                                data._instr[ct].lastorder.volbid8 == orderwr.volbid8 &&
+                                data._instr[ct].lastorder.volbid9 == orderwr.volbid9 &&
+                                data._instr[ct].lastorder.volbid10 == orderwr.volbid10 &&
+                                data._instr[ct].lastorder.volbid11 == orderwr.volbid11 &&
+                                data._instr[ct].lastorder.volbid12 == orderwr.volbid12 &&
+                                data._instr[ct].lastorder.volbid13 == orderwr.volbid13 &&
+                                data._instr[ct].lastorder.volbid14 == orderwr.volbid14 &&
+                                data._instr[ct].lastorder.volbid15 == orderwr.volbid15 &&
+                                data._instr[ct].lastorder.volbid16 == orderwr.volbid16 &&
+                                data._instr[ct].lastorder.volbid17 == orderwr.volbid17 &&
+                                data._instr[ct].lastorder.volbid18 == orderwr.volbid18 &&
+                                data._instr[ct].lastorder.volbid19 == orderwr.volbid19 &&
+                                data._instr[ct].lastorder.volbid20 == orderwr.volbid20 &&
+
+                                data._instr[ct].lastorder.volask1 == orderwr.volask1 &&
+                                data._instr[ct].lastorder.volask2 == orderwr.volask2 &&
+                                data._instr[ct].lastorder.volask3 == orderwr.volask3 &&
+                                data._instr[ct].lastorder.volask4 == orderwr.volask4 &&
+                                data._instr[ct].lastorder.volask5 == orderwr.volask5 &&
+                                data._instr[ct].lastorder.volask6 == orderwr.volask6 &&
+                                data._instr[ct].lastorder.volask7 == orderwr.volask7 &&
+                                data._instr[ct].lastorder.volask8 == orderwr.volask8 &&
+                                data._instr[ct].lastorder.volask9 == orderwr.volask9 &&
+                                data._instr[ct].lastorder.volask10 == orderwr.volask10 &&
+                                data._instr[ct].lastorder.volask11 == orderwr.volask11 &&
+                                data._instr[ct].lastorder.volask12 == orderwr.volask12 &&
+                                data._instr[ct].lastorder.volask13 == orderwr.volask13 &&
+                                data._instr[ct].lastorder.volask14 == orderwr.volask14 &&
+                                data._instr[ct].lastorder.volask15 == orderwr.volask15 &&
+                                data._instr[ct].lastorder.volask16 == orderwr.volask16 &&
+                                data._instr[ct].lastorder.volask17 == orderwr.volask17 &&
+                                data._instr[ct].lastorder.volask18 == orderwr.volask18 &&
+                                data._instr[ct].lastorder.volask19 == orderwr.volask19 &&
+                                data._instr[ct].lastorder.volask20 == orderwr.volask20 &&
+
+                                    data._instr[ct].lastorder.bid1 == orderwr.bid1 &&
+                                    data._instr[ct].lastorder.bid5 == orderwr.bid5 &&
+                                    data._instr[ct].lastorder.bid10 == orderwr.bid10 &&
+                                    data._instr[ct].lastorder.bid20 == orderwr.bid20 &&
+                                    data._instr[ct].lastorder.ask1 == orderwr.ask1 &&
+                                    data._instr[ct].lastorder.ask5 == orderwr.ask5 &&
+                                    data._instr[ct].lastorder.ask10 == orderwr.ask10 &&
+                                    data._instr[ct].lastorder.ask20 == orderwr.ask20
+
+                                )
+                                {
+                                     ravno = true;//равно
+                                }
+                                else
+                                {
+                                    if (mydb.listtickers.Contains(ob.sec_code))
+                                    {
+                                        mydb.FIFOorderbook.Enqueue(orderwr);
+                                        if (mydb.FIFOorderbook.Count == 500000)
+                                        {
+                                            mes.errLOG("Переполнение буфера данных Orders");
+                                        }
+                                    }
+                                }
+
+
+                                data._instr[ct].lastorder = new Order
+                                {
+
+                                volbid1 = orderwr.volbid1,
+                                volbid2 = orderwr.volbid2,
+                                volbid3 = orderwr.volbid3,
+                                volbid4 = orderwr.volbid4,
+                                volbid5 = orderwr.volbid5,
+                                volbid6 = orderwr.volbid6,
+                                volbid7 = orderwr.volbid7,
+                                volbid8 = orderwr.volbid8,
+                                volbid9 = orderwr.volbid9,
+                                volbid10 = orderwr.volbid10,
+                                volbid11 = orderwr.volbid11,
+                                volbid12 = orderwr.volbid12,
+                                volbid13 = orderwr.volbid13,
+                                volbid14 = orderwr.volbid14,
+                                volbid15 = orderwr.volbid15,
+                                volbid16 = orderwr.volbid16,
+                                volbid17 = orderwr.volbid17,
+                                volbid18 = orderwr.volbid18,
+                                volbid19 = orderwr.volbid19,
+                                volbid20 = orderwr.volbid20,
+
+                                volask1 = orderwr.volask1,
+                                volask2 = orderwr.volask2,
+                                volask3 = orderwr.volask3,
+                                volask4 = orderwr.volask4,
+                                volask5 = orderwr.volask5,
+                                volask6 = orderwr.volask6,
+                                volask7 = orderwr.volask7,
+                                volask8 = orderwr.volask8,
+                                volask9 = orderwr.volask9,
+                                volask10 = orderwr.volask10,
+                                volask11 = orderwr.volask11,
+                                volask12 = orderwr.volask12,
+                                volask13 = orderwr.volask13,
+                                volask14 = orderwr.volask14,
+                                volask15 = orderwr.volask15,
+                                volask16 = orderwr.volask16,
+                                volask17 = orderwr.volask17,
+                                volask18 = orderwr.volask18,
+                                volask19 = orderwr.volask19,
+                                volask20 = orderwr.volask20,
+
+                                    bid1 = orderwr.bid1,
+                                    bid5 = orderwr.bid5,
+                                    bid10 = orderwr.bid10,
+                                    bid20 = orderwr.bid20,
+
+                                    ask1 = orderwr.ask1,
+                                    ask5 = orderwr.ask5,
+                                    ask10 = orderwr.ask10,
+                                    ask20 = orderwr.ask20,
+                                };
 
                             }
 
+                            
                                 //------- to PIPE
-                                if (threadprocess.pipe_enable)
+                                if (data.PIPEENABLE)
                                 {
-                                    data.pipeque.Enqueue(new PipeItem()
+                                    if (!mydb.enable)
                                     {
-                                      namepipe = quote.sec_code,
-                                      biditem = toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price,
-                                      askitem = toolOrderBook.offer[0].price
+                                        bid = ob.bid[ob.bid.Count() - 1].price;
+                                        ask = ob.offer[0].price;
+                                        if (ask == data._instr[ct].lastorder.ask1 &&
+                                            bid == data._instr[ct].lastorder.bid1
 
-                                    });
+                                        )
+                                        {
+                                            ravno = true;
+                                        }
+                                    }
+
+                                    if (!ravno)
+                                    {
+                                        data.pipeque.Enqueue(new PipeItem()
+                                        {
+                                            namepipe = ob.sec_code,
+                                            biditem = bid,
+                                            askitem = ask
+
+                                        });
+                                        if (!mydb.enable)
+                                        {
+                                            data._instr[ct].lastorder.bid1 = bid;
+                                            data._instr[ct].lastorder.ask1 = ask;
+                                        }
+                                    }
 
                                 }
                             }
                     }
-                    catch (Exception ex) { mes.err("err orders bidoffer " + ex.Message); }
+                    catch (Exception ex) { mes.err("err orders bidoffer size="+ ob.bid.Count().ToString()+"/"+ ob.offer.Count().ToString()+" err=" + ex.Message); }
 
                     break;
                 }
@@ -589,19 +740,56 @@ namespace CobraDataServer
             catch (Exception ex) { mes.err("err orders event " + ex.Message); }
         }
 
-        QuikDateTime tt;
-        string tektime;
-        void Analiz_Trade(AllTrade t)
+        private DateTime dtconv;
+        void Analiz_Trade(AllTrade _trade)
         {
             try
             { 
                 short ct = -1;
+                tb = _trade;
                 foreach (var i in data._instr)
                 {
                     ct++;              
-                    if (t.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
+                    if (tb.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
                     {
-                        data._instr[ct].interes = t.OpenInterest;
+                        data._instr[ct].interes = tb.OpenInterest;
+                        try
+                        {
+
+                            dtconv = new DateTime
+                            (
+                                tb.Datetime.year,
+                                tb.Datetime.month,
+                                tb.Datetime.day,
+                                tb.Datetime.hour,
+                                tb.Datetime.min,
+                                tb.Datetime.sec,
+                                tb.Datetime.mcs / 1000
+                            );
+
+                        tradewr = new Trade()
+                        {                      
+                            TickerId = ct,
+                            time = dtconv,
+                            NAMETEST = tb.SecCode,
+                            price = tb.Price,
+                            qty = tb.Qty,
+                            openinter = tb.OpenInterest,
+                        };
+                    }
+                    catch (Exception ex) { mes.err("err tradesPARSE "+ dtconv.ToLongTimeString()+"."+ dtconv.Millisecond + "  "+ ex.Message); }
+
+
+
+                        if (mydb.enable)
+                        {
+                            mydb.FIFOtrade.Enqueue(tradewr);
+                            if (mydb.FIFOtrade.Count == 50000)
+                            {
+                                mes.errLOG("Переполнение буфера данных Trades");
+                            }
+                        }
+
                         break;
                     }
 
@@ -617,10 +805,11 @@ namespace CobraDataServer
         AllTrade tradeALL;
 
 
+        
         // An action to consume the ConcurrentQueue.
         Action act_getdata = () =>
         {
-
+    
         };
 
 
