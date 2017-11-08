@@ -33,6 +33,11 @@ namespace CobraDataServer
 
         private void _key_CreateDB(object obj)
         {
+            if (mydb.enable)
+            {
+                MessageBox.Show("Сначала остановите запись в БАЗУ");
+                return;
+            }
             mydb.item.CREATEtest();
         }
 

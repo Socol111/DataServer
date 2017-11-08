@@ -57,13 +57,11 @@
                 <Grid Background="#FF2E2738" Margin="0,0,-2,-2">
                     <Grid.ColumnDefinitions>
 
-                        <ColumnDefinition Width="199*"/>
-                        <ColumnDefinition Width="457*"/>
                     </Grid.ColumnDefinitions>
 
 
                     <TextBox x:Name="bdnamex" Text="{Binding bdname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="20,44,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="252" Grid.ColumnSpan="2" FontWeight="Bold"/>
-                    <Label Content="Имя БАЗЫ данных" HorizontalAlignment="Left" Margin="16,14,0,0" VerticalAlignment="Top" Width="252" Grid.ColumnSpan="2" Foreground="#FF7CF34F" FontSize="16"/>
+                    <Label Content="Имя файла БАЗЫ данных" HorizontalAlignment="Left" Margin="16,14,0,0" VerticalAlignment="Top" Width="252" Grid.ColumnSpan="2" Foreground="#FF7CF34F" FontSize="16"/>
                     <TextBox x:Name="bdpathx" Text="{Binding bdpath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Height="21" Margin="20,114,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="551" Grid.ColumnSpan="2" FontWeight="Bold"/>
                     <Label Content="путь файлов базы данных" HorizontalAlignment="Left" Margin="20,84,0,0" VerticalAlignment="Top" Width="252" Grid.ColumnSpan="2" Foreground="#FF7CF34F" FontSize="16"/>
                     <TextBox x:Name="bdconnx" Text="{Binding bdconn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="76" Margin="20,182,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="551" Grid.ColumnSpan="2" FontWeight="Bold"/>
@@ -84,7 +82,7 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <CheckBox Content="НАЧАТЬ ЗАПИСЬ В БАЗУ" IsChecked="{Binding enabledatabase}" HorizontalAlignment="Left" Margin="178,72,0,0" VerticalAlignment="Top" Foreground="#FFFFF52D" Width="194" Grid.Column="1"/>
+                    <CheckBox Content="НАЧАТЬ ЗАПИСЬ В БАЗУ" IsChecked="{Binding enabledatabase}" HorizontalAlignment="Left" Margin="377,72,0,0" VerticalAlignment="Top" Foreground="#FFFFF52D" Width="194" Unchecked="CheckBox_Unchecked" Checked="CheckBox_Checked_1"/>
                     <Button x:Name="selectpath_x_Copy" Content="..." CommandParameter=""  Margin="0,140,85,0" Focusable="False" Width="24" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" RenderTransformOrigin="1,0.304" Click="selectpath_x_Copy_Click" Grid.Column="1"  >
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -105,11 +103,11 @@
 
             <TabItem Header="  Тикеры ">
                 <Grid Background="#FF160638" Margin="10,10,5,4">
-                    <Button Content="ДОБАВИТЬ"  CommandParameter=""  Margin="0,35,192,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click">
+                    <Button Content=" ДОБАВИТЬ В ИГНОРИРУЕМЫЕ "  CommandParameter=""  Margin="0,68,239,0" Focusable="False" Width="178" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black"/>
-                                <GradientStop Color="#FFFBE454" Offset="0.749"/>
+                                <GradientStop Color="#FFFB54EC" Offset="0.749"/>
                             </LinearGradientBrush>
                         </Button.Background>
                         <Button.Foreground>
@@ -134,7 +132,6 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <TextBox x:Name="Ignore" HorizontalAlignment="Left" Height="21" Margin="227,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="128" Background="#FFBBACAC" FontWeight="Bold"/>
                     <Label Content="Игнорировать из списка" HorizontalAlignment="Left" Margin="54,5,0,0" VerticalAlignment="Top" Width="173" Foreground="#FF39FF6F" FontSize="16"/>
 
                     <TextBox x:Name="PathTikerz1" Text="{Binding Pathtik1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="227,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="392" Background="#FFEED8D8" FontWeight="Bold"/>
@@ -171,13 +168,15 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
+                    <ListBox x:Name="Listalltk2" ItemsSource="{Binding listalltickers}" HorizontalAlignment="Left" Margin="417,30,0,132" Width="202" Background="#FFC9C9C9" FontWeight="Bold"/>
+                    <Label Content="все тикеры:" HorizontalAlignment="Left" Margin="475,5,0,0" VerticalAlignment="Top" Width="164" Foreground="#FF9EFF12" RenderTransformOrigin="0.396,0.726"/>
                 </Grid>
             </TabItem>
 
 
             <TabItem Header="  Тикеры БД ">
                 <Grid Background="#FF160638" Margin="10,10,5,4">
-                    <Button Content="ДОБАВИТЬ"  CommandParameter=""  Margin="0,107,343,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_6">
+                    <Button Content="ДОБАВИТЬ"  CommandParameter=""  Margin="0,118,329,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_6">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black"/>
@@ -191,7 +190,7 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <ListBox x:Name="Listalltk" ItemsSource="{Binding listalltickers}" HorizontalAlignment="Left" Margin="54,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
+                    <ListBox x:Name="Listalltk" ItemsSource="{Binding listalltickers}" HorizontalAlignment="Left" Margin="21,30,0,38" Width="197" Background="#FFC9C9C9" FontWeight="Bold"/>
                     <Button Content="Удалить" CommandParameter=""  Margin="0,230,240,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_5" >
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -206,10 +205,33 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
-                    <ListBox x:Name="ListBDactual" ItemsSource="{Binding listactive, Mode=TwoWay}" HorizontalAlignment="Left" Margin="322,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
+                    <ListBox x:Name="ListBDactual" ItemsSource="{Binding listactive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="322,30,0,38" Width="142" Background="#FFC9C9C9" FontWeight="Bold"/>
                     <Label Content="записываемые тикеры:" HorizontalAlignment="Left" Margin="322,5,0,0" VerticalAlignment="Top" Width="164" Foreground="#FF9EFF12" RenderTransformOrigin="0.396,0.726"/>
-                    <TextBox x:Name="Tx41" Text="{Binding sizepacket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="488,120,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
-                    <Label Content="Размер пакета записи" HorizontalAlignment="Left" Margin="469,95,0,0" VerticalAlignment="Top" Width="141" Foreground="#FF53C703"/>
+                    <TextBox x:Name="Tx41" Text="{Binding sizepacket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="496,44,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
+                    <Label Content="Размер пакета orders" HorizontalAlignment="Left" Margin="487,19,0,0" VerticalAlignment="Top" Width="150" Foreground="#FF53C703" RenderTransformOrigin="0.5,0.5">
+                        <Label.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform AngleX="-5.149"/>
+                                <RotateTransform/>
+                                <TranslateTransform X="-1.126"/>
+                            </TransformGroup>
+                        </Label.RenderTransform>
+                    </Label>
+                    <Label Content="все тикеры:" HorizontalAlignment="Left" Margin="22,5,0,0" VerticalAlignment="Top" Width="164" Foreground="#FF9EFF12" RenderTransformOrigin="0.396,0.726"/>
+                    <TextBox x:Name="Tx41_Copy" Text="{Binding sizepackettr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="496,107,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
+                    <Label Content="Размер пакета trades" HorizontalAlignment="Left" Margin="487,82,0,0" VerticalAlignment="Top" Width="150" Foreground="#FF53C703"/>
+                    <TextBox x:Name="Tx41_Copy1" Text="{Binding corrtime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="492,234,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="113" FontWeight="Bold"/>
+                    <Label Content="Коррекция времени,час" HorizontalAlignment="Left" Margin="481,209,0,0" VerticalAlignment="Top" Width="150" Foreground="#FF53C703" RenderTransformOrigin="0.5,0.5">
+                        <Label.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform AngleX="-5.149"/>
+                                <RotateTransform/>
+                                <TranslateTransform X="-1.126"/>
+                            </TransformGroup>
+                        </Label.RenderTransform>
+                    </Label>
                 </Grid>
             </TabItem>
 

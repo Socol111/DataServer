@@ -41,13 +41,15 @@ namespace CobraDataServer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Ignore.Text == "") return;
-            data.eliminate.Add(Ignore.Text);
+            var it = Listalltk2.SelectedItem as string;
+            if (!data.eliminate.Contains(it)) data.eliminate.Add(it);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            data.eliminate.RemoveAt(Lst1.SelectedIndex);
+            var s = Lst1.SelectedIndex;
+            if (s < 0) return;
+            data.eliminate.RemoveAt(s);
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -73,8 +75,9 @@ namespace CobraDataServer
             {
                 data.pathTIKERS1 = ofd.FileName;
                 PathTikerz1.Text = data.pathTIKERS1;
-                //Update.GuiElement("PathTiker");
                 data.getTickers();
+                Listalltk.Items.Refresh();
+                Listalltk2.Items.Refresh();
             }
            
         }
@@ -86,8 +89,8 @@ namespace CobraDataServer
             {
                 data.pathTIKERS2 = ofd.FileName;
                 PathTikerz2.Text = data.pathTIKERS2;
-                //Update.GuiElement("PathTiker");
                 data.getTickers();
+                Listalltk.Items.Refresh();
             }
             
         }
@@ -109,7 +112,9 @@ namespace CobraDataServer
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            mydb.listtickers.RemoveAt(ListBDactual.SelectedIndex);
+            var s = ListBDactual.SelectedIndex;
+            if (s<0) return;
+            mydb.listtickers.RemoveAt(s);
             ListBDactual.Items.Refresh();
 
         }
@@ -122,6 +127,16 @@ namespace CobraDataServer
             mydb.listtickers.Add(n);
             ListBDactual.Items.Refresh();
 
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            mes.addLOG("ОТКЛЮЧЕНА запись в базу данных");
+        }
+
+        private void CheckBox_Checked_1(object sender, RoutedEventArgs e)
+        {
+            mes.addLOG("Включена запись в базу данных");
         }
     }
 }

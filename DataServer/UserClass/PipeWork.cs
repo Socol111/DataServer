@@ -25,13 +25,11 @@ namespace CobraDataServer
                     {
                         i++;
                         if (threadprocess.exit) break;
-                        if (p.Name == _pip.namepipe)
+                        if (p.Name == _pip.namepipe && DateTime.Now.Hour>=data.hour_start_pipe)
                         {        
-                                //mes.add(_pip.namepipe+"   "+ data._instr[i].name);
+                                //mes.add("tick;" + _pip.biditem + ";" + _pip.askitem + ";"+ p.Name);
                                 data._instr[i].ct++;
-                                //if (DateTime.Now.Hour> data.hour_start_pipe)
-                                p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);
-     
+                                p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);   
                         }
                     }
 

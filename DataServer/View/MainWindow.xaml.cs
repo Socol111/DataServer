@@ -214,7 +214,7 @@ namespace CobraDataServer
 
                 bufdb.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                 {
-                    bufdb.Content = mydb.FIFOorderbook.Count.ToString();
+                    bufdb.Content = mydb.FIFOorderbook.Count.ToString()+"/"+mydb.FIFOtrade.Count.ToString();
                 }));
 
                 cttitle++;
@@ -351,7 +351,7 @@ namespace CobraDataServer
         private void close_Click(object sender, RoutedEventArgs e)
         {
             threadprocess.exit = true;
-            Thread.Sleep(200);
+            Thread.Sleep(900);
             foreach (var p in data.listpipe)
             {
                 p.stopPIPE();

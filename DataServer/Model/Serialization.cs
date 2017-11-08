@@ -29,6 +29,8 @@ namespace CobraDataServer
         public ObservableCollection<string> os2 { get; set; }
 
         public int in1 { get; set; }
+        public int in2 { get; set; }
+        public int in3 { get; set; }
 
         public ser_data()
         {
@@ -49,6 +51,9 @@ namespace CobraDataServer
             b1 = data.PIPEENABLE;
             b2 = mydb.enable;
             in1 = mydb.sizepacket;
+            in2 = mydb.sizepackettrade;
+            in3 = data.correct_time;
+
         }
 
         public void Update_new_data()
@@ -67,6 +72,9 @@ namespace CobraDataServer
             data.PIPEENABLE = b1;
             mydb.enable = b2;
             mydb.sizepacket = in1;
+            mydb.sizepackettrade = in2;
+            data.correct_time = (byte)in3;
+
         }
     }
     public static class SETTING 

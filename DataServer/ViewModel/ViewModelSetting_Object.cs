@@ -20,6 +20,9 @@ namespace CobraDataServer
         public static object list => data.eliminate;
 
         public string sizepacket { get => mydb.sizepacket.ToString(); set => mydb.sizepacket = int.Parse(value); }
+        public string sizepackettr { get => mydb.sizepackettrade.ToString(); set => mydb.sizepackettrade = int.Parse(value); }
+        public string corrtime { get => data.correct_time.ToString(); set => data.correct_time = byte.Parse(value); }
+
         public string Prefix1 { get => data.pipe_prefix1; set => data.pipe_prefix1 = value; }
         public string Prefix2 { get => data.pipe_prefix2; set => data.pipe_prefix2 = value; }
         public string Pathtik1 { get => data.pathTIKERS1; set => data.pathTIKERS1 = value; }
@@ -34,21 +37,17 @@ namespace CobraDataServer
         public bool enablepipe { get => data.PIPEENABLE; set => data.PIPEENABLE = value; }
 
 
-
-
+       // public object listalltickers => data.listINSTRUMENTS;
         public List<string> listalltickers
         {
-            get
-            {
-                return (data.ListTickers);
-            }
-            set {  }
+            get { return data.listINSTRUMENTS; }
+            set { }
         }
 
         // Using a DependencyProperty as the backing store for listalltickers.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty listalltickersProperty =
-            DependencyProperty.Register("listalltickers", typeof(List<string>), typeof(ListBox), 
-                new PropertyMetadata(new List<string>()  ));
+            DependencyProperty.Register("listalltickers", typeof(List<string>), typeof(ListBox),
+                new PropertyMetadata(new List<string>()));
 
 
 

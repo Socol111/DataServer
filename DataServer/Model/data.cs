@@ -11,37 +11,39 @@ using System.Windows;
 namespace CobraDataServer
 {
     public static class data
-    {
-        public static List<Pipe> listpipe=new List<Pipe>();
-       
+    {       
         public static QUIKSHARPconnector quik;
         public static List<Instrumensts> _instr;
         public static bool onestart = false;
         public static int ct_global=0;
         public static int ctglobalATstart = 0;
+        public static byte correct_time = 3;
+
+
         public static string path_settings= "";
-        public static string pipe_prefix1 = "IN_Cobraconnector_";
-        public static string pipe_prefix2 = "MT_Cobraconnector_";
-        public static bool PIPEENABLE = false;
-
-
-        public static string pathTIKERS1 = "2534";
+        public static string pathTIKERS1 = "";
         public static string pathTIKERS2 = "";
         public static string servertime="Server Time";
+        public static System.Collections.ObjectModel.ObservableCollection<string> eliminate =
+                new ObservableCollection<string> { /*"AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB"*/ };
+
+
+        //no data
         public static bool first_Not_data = false;
         public static bool Not_data = false;
         public static bool Not_connect = true;
         public static bool fatal = false;
         public static bool fatal_need_rst_task = false;
-
         public static bool need_rst = false;
+
+
+        //pipe
+        public static bool PIPEENABLE = false;
         public static byte hour_start_pipe = 10;
-
-       
+        public static string pipe_prefix1 = "IN_Cobraconnector_";
+        public static string pipe_prefix2 = "MT_Cobraconnector_";
         public static ConcurrentQueue<PipeItem> pipeque = new ConcurrentQueue<PipeItem>();
-
-        public static System.Collections.ObjectModel.ObservableCollection<string> eliminate = 
-             new ObservableCollection<string> { "AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB" };
+        public static List<Pipe> listpipe = new List<Pipe>();
 
 
         public static void getTickers()
@@ -50,23 +52,22 @@ namespace CobraDataServer
                 _instr.Clear();
            
             FilesWork f = new FilesWork(data.pathTIKERS1);
-            //System.Windows.MessageBox.Show(data.pathTIKERS1);
             f.ReadListInstrument(_instr);
             f = new FilesWork(data.pathTIKERS2);
             f.ReadListInstrument(_instr);
+
+            CreateListTickers();
         }
 
-        public static List<string> ListTickers
+
+        public static List<string> listINSTRUMENTS = new List<string>();
+        public static void CreateListTickers()
         {
-            get
+            listINSTRUMENTS.Clear();
+            foreach (var s in _instr)
             {
-                var result = new List<string>();
-                foreach (var s in _instr)
-                {
-                    result.Add(s.name);
-                }
-                return result;
-            }
+                listINSTRUMENTS.Add(s.name);
+            } 
         }
      
     }
@@ -79,14 +80,16 @@ namespace CobraDataServer
         public static List<string> listtickers = new List<string>();
         public static MSSQL item = new MSSQL();
 
-        public static string Connectparam = @"data source=NAMEMSSQL;  " + //initial catalog=TradesAndOrders;" +
+        public static string Connectparam = @"data source=(LocalDB)\MSSQLLocalDB;  " + //initial catalog=TradesAndOrders;" +
                                             //@"AttachDbFileName=rr:\DB\TradesAndOrders2.mdf;" +
                                             @"integrated security = True; MultipleActiveResultSets = True; App = EntityFramework; ";
 
-        public static int sizepacket = 100;
+        public static int sizepacket = 300;
+        public static int sizepackettrade = 100;
+
         public static bool enable = false;
         public static string Path = @"G:\DB\";
-        public static string Namebd = @"mydb";
+        public static string Namebd = @"mydatabase";
 
         public static string GetStringConnection()
         {

@@ -21,8 +21,6 @@ namespace CobraDataServer
         {
             name = s;
             Class = cl;
-           // bid = 0;
-           // ask = 0;
             lastorder = new Order();
         }
 
@@ -41,9 +39,9 @@ namespace CobraDataServer
 
         public string Class { get; set; }
 
-        //public double ask { get; set; }
+        public double lastPIPEask { get; set; }
 
-       // public double bid { get; set; }
+        public double lastPIPEbid { get; set; }
     }
 
 

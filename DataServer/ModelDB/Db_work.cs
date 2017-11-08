@@ -19,17 +19,17 @@ namespace CobraDataServer
         {
             try
             {
-                var entitiesORDER = EntityGenerator_Order.GeneratOrder(100);
-                var entitiesTRADE = EntityGenerator_Trade.GeneratOrder(100);
+                var entitiesORDER = EntityGenerator_Order.GeneratOrder(5000);
+                var entitiesTRADE = EntityGenerator_Trade.GeneratOrder(1000);
 
                 while (true)
                 {
                     if (threadprocess.exit) break;
                     if (mydb.enable)
                     {
-                        if (mydb.FIFOorderbook.Count == 0) Thread.Sleep(1000);
+                        if (mydb.FIFOorderbook.Count == 0) Thread.Sleep(300);
 
-                        if (mydb.FIFOorderbook.Count > mydb.sizepacket || data.Not_data)
+                        if (mydb.FIFOorderbook.Count > mydb.sizepacket)
                         {
                             entitiesORDER.Clear();
                             for (j = 0; j < mydb.sizepacket; j++)
@@ -39,8 +39,16 @@ namespace CobraDataServer
                             }
 
                             mydb.item.WRITE_TO_DB_ORDER(entitiesORDER);
+                        }
+                        else
+                        {
+                            if (mydb.FIFOtrade.Count==0) Thread.Sleep(100);
+                        }
 
-                            //TRADES
+                        ////TRADES
+                        if (mydb.FIFOtrade.Count > mydb.sizepackettrade)
+                        {
+                            
                             if (mydb.FIFOtrade.Count != 0)
                             {
                                 entitiesTRADE.Clear();
@@ -54,13 +62,12 @@ namespace CobraDataServer
                                 mydb.item.WRITE_TO_DB_TRADE(entitiesTRADE);
                             }
 
-                            if (data.Not_data) Thread.Sleep(100);
                         }
+                        else Thread.Sleep(100);
 
 
-                       
-                          
-                     
+
+
                         //using (var db = new MyContext())
                         //{
                         //    entities.Clear();
