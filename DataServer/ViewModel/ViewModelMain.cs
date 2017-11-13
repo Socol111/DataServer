@@ -57,26 +57,29 @@ namespace CobraDataServer
 
             if (data.fatal)
             {
-                err("Фатал. остановка QuikSharp");
+                mes.errLOG("МЕНЕДЖЕР - Фатал. остановка quik.Stop()");
                 try
                 {
-                    data.quik.Stop();
-                    
+                    // создаем новый поток для стоп (для исключения вылета)
+                    Thread myThread = new Thread(new ThreadStart(QUIKSTOP));
+                    myThread.Start();
+                    Thread.Sleep(5000);
                 }
-                catch
-                { }
+                catch (Exception ex)
+                {
+                    mes.errLOG("МЕНЕДЖЕР - Фатал. остановка quik.Stop() err="+ex.Message);
+
+                }
 
   
                 data.fatal_need_rst_task = true;
-                err("-Остановка задач-");
-
+                mes.errLOG("МЕНЕДЖЕР -Остановка всех процессов-");
                 threadprocess.stop_all();
 
                 loctask = false;
                 
-                err("Фатал. задача успешно прервана");
-
                 data.fatal = false;
+                mes.errLOG("МЕНЕДЖЕР - ЗАПУСК всех процессов...");
                 threadprocess.create();
             }
 
@@ -84,7 +87,10 @@ namespace CobraDataServer
         }
 
 
-       
+        static void QUIKSTOP()
+        {
+            data.quik.Stop();
+        }
 
 
         static bool loctask = false;
@@ -118,9 +124,9 @@ namespace CobraDataServer
 
             while (true)
             {
-                add("Начало выполнения задачи");
+                add("Начало выполнения task1");
                 if (data.fatal_need_rst_task || cts.IsCancellationRequested) break;
-                    Thread.Sleep(500);
+                Thread.Sleep(500);
 
 
                     if (!data.quik.Connect(data._instr))
@@ -131,37 +137,38 @@ namespace CobraDataServer
 
                 if (!PIPE_ok) CREATE_PIPE();
 
-                if (data.Not_connect)
-                {
-                    rst_not_connect++;
-                    if (rst_not_connect > 5)
-                    {
-                        err("фатал. нет подключения"); break;
-                    }
+                //if (data.Not_connect)
+                //{
+                //    rst_not_connect++;
+                //    if (rst_not_connect > 5)
+                //    {
+                //       mes.errLOG("фатал.таймаут нет подключения ВЫХОД ИЗ task1"); break;
+                //    }
 
-                }
-                else rst_not_connect = 0;
+                //}
+                //else rst_not_connect = 0;
 
                  Thread.Sleep(2000);
-                  if (data.fatal) { err("фатал. выход из задачи"); break; }
+                  if (data.fatal) { mes.errLOG("фатал. выход из задачи task11"); break; }
 
-                    add("Запуск главного цикла");
+                    mes.addLOG("Запуск главного цикла");
                     data.quik.work();//main cycle
-                    add(" главный цикл остановлен");
+                    mes.addLOG(" Главный цикл остановлен");
 
   
                 add("QuikSharp stop");
-                data.quik.Stop();
-               
+
+                // создаем новый поток для стоп (для исключения вылета)
+                Thread myThread = new Thread(new ThreadStart(QUIKSTOP));
+                myThread.Start();
+                Thread.Sleep(5000);
             }
 
             loctask = false;
-            err("Фатальный останов пауза 3сек...");
-             data.fatal_need_rst_task = false;//task закончена
-              //  quik = null;
-          
-                Thread.Sleep(3000);
-                err("завершение задачи");
+            mes.errLOG("Завершение главного потока task1");
+            data.fatal_need_rst_task = false;//task закончена
+            //  quik = null;          
+            Thread.Sleep(3000);
         }
 
 

@@ -119,7 +119,7 @@ namespace CobraDataServer
             if (msg == "*")
             {
                 rst++;
-                if (rst > 100)
+                if (rst > 500)
                 {
                     rst = 0;
                     box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
@@ -161,24 +161,28 @@ namespace CobraDataServer
             if (loc) return;
             loc = true;
 
-            if (data.Not_connect && !data.fatal)
-            {
-                
+            if (data.Not_data && !data.Not_connect && !data.fatal)
+            {        
                 ct_fatal++;
                 if (ct_fatal > 50)
                 {
-                    add("-- Фатальный рестарт ---", System.Windows.Media.Brushes.Red);
-                    Log.Debug( "Фатальный рестарт");
+                    mes.errLOG( "Сработал счетчик Фатальный рестарт");
                     data.fatal = true;
                     ct_fatal = 0;
                 }
             }
 
-
+            //идут данные
             if (l1_mem != data.ct_global)
             {
                 data.Not_connect = false;
+                data.Not_data = false;
 
+                if (ct_fatal != 0)
+                {
+                    ct_fatal = 0;
+                    data.fatal = false;
+                }
                 if (data.first_Not_data)
                 {
                     data.first_Not_data = false;
@@ -225,13 +229,10 @@ namespace CobraDataServer
 
                 l1_mem = data.ct_global;
             }
-            else//счетчик стоит
+            else//нет потока данных
             {
-
-                if (data.Not_data) goto exit;
-                if (data.Not_connect) goto exit;
-
                 ct_no_connect++;
+                if (data.Not_connect && ct_no_connect>3) ct_no_connect=0;
 
                 l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                 {
@@ -244,7 +245,7 @@ namespace CobraDataServer
                     if ( !data.first_Not_data)
                     {
                         data.first_Not_data = true;
-
+                      
                         Log.Debug("Нет потока данных");
                         tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                         {
@@ -259,15 +260,13 @@ namespace CobraDataServer
                 }
 
 
-                if (data.Not_connect) { ct_no_connect = 0; ct_fatal = 0; goto exit; }
-
 
                 //if (ct_no_connect == 12) { data.need_rst = true; }
                 if (ct_no_connect > 29)
                 {
                     if (DateTime.Now.Hour >= 10 && DateTime.Now.Hour <= 23)
                     {
-                        add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
+                        if (!data.Not_data)  add("сработал счетчик нет данных", System.Windows.Media.Brushes.Red);
                         data.Not_data = true;
                     }
                     ct_no_connect = 0;
@@ -340,7 +339,13 @@ namespace CobraDataServer
 
         private void Window_Closed(object sender, EventArgs e)
         {
-           
+            threadprocess.exit = true;
+            Thread.Sleep(900);
+            foreach (var p in data.listpipe)
+            {
+                p.stopPIPE();
+            }
+
             threadprocess.stop_all();
 
             Log.Debug("=========== Close Cobra Data Server ===========");

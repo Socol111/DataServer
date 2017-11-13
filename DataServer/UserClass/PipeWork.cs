@@ -35,9 +35,10 @@ namespace CobraDataServer
 
 
                 }
-                else Thread.Sleep(50);
+                else Thread.Sleep(200);
             }
 
+            mes.err("Завершение потока PIPE");
         }
 
 

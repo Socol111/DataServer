@@ -108,19 +108,28 @@ namespace CobraDataServer
             while (true)//main cycle
             {            
                 getAll();
-               
-                if (data.fatal) break;
+
+                if (data.fatal)
+                {
+                    mes.errLOG(" fatal. Главный цикл остановлен");
+                    return;
+                }
 
                 if (data.need_rst)
                 {
                     Rst();
+                    mes.errLOG("Перезапуск сервисов QuikSharp");
                     data.need_rst = false;
                 }
 
                 if (data.Not_data)
                 {
-                    mes.err(" НЕТ ДАННЫХ,  reconnect...");
-                    return;
+                    if (FIFOorderbookall.Count == 0 && FIFOtradeall.Count == 0)//дописываем данные в базу
+                    {
+                        mes.errLOG("НЕТ ДАННЫХ,  reconnect...");
+                        return;
+                    }
+                
                 }
 
 
@@ -136,12 +145,9 @@ namespace CobraDataServer
         // < returns ></ returns >
         public bool Connect(List<Instrumensts> p)
         {
-
             mes.add("Start Connect...");
-            // FIFOorderbook = new Queue<OrderBook>();
             data._instr = p;
-
-          
+   
             try
             {
 
@@ -182,10 +188,8 @@ namespace CobraDataServer
             catch (Exception ex)
             {
                 mes.err("Ошибка инициализации QuikSharp... " + ex.Message);
-                mes.add("Повтор соединения");
                 Thread.Sleep(3000); return false;
             }
-
 
             mes.add("Connect выполнен");
             return true;
@@ -194,6 +198,7 @@ namespace CobraDataServer
 
         public void Stop()
         {
+            data.Not_connect = true;
             try
             {
                 if (_quik != null)
@@ -385,6 +390,7 @@ namespace CobraDataServer
             fatalQUIK = false;
             data.first_Not_data = false;
             mes.addLOG("скрипт QUIKSHARP ЗАПУСТИЛСЯ");
+
         }
 
 
@@ -432,7 +438,7 @@ namespace CobraDataServer
                         if (sym == quote.sec_code)
                         {
                             FIFOorderbookall.Enqueue(quote);
-                            if (FIFOorderbookall.Count == 50000) mes.err("Переполнение буфера данных");
+                            if (FIFOorderbookall.Count == 500000) mes.errLOG("Переполнение буфера OrderBook");
                             break;
                         }
                     }
@@ -454,7 +460,7 @@ namespace CobraDataServer
                     if (sym == t.SecCode)
                     {
                         FIFOtradeall.Enqueue(t);
-                        if (FIFOtradeall.Count == 50000) mes.err("Переполнение буфера данных сделок");
+                        if (FIFOtradeall.Count == 300000) mes.errLOG("Переполнение буфера данных сделок");
                         break;
                     }
                 }
@@ -480,9 +486,6 @@ namespace CobraDataServer
                         
                     try
                     {
-                        //--------------- to DB
-                        if (mydb.enable)
-                        {
                             szb = ob.bid.Count();
                             sza = ob.offer.Count();
                             orderwr = new Order()
@@ -493,51 +496,51 @@ namespace CobraDataServer
                             };
                             data.servertime = orderwr.time.ToLongTimeString();
 
-                        if (szb >= 2)
-                        {
-                            orderwr.bid1 = ob.bid[szb - 1].price;
-                            orderwr.vb1 = ob.bid[szb - 1].quantity;
-                        }
-                        if (szb >= 3)
-                        {
-                            orderwr.bid2 = ob.bid[szb - 2].price;
-                            orderwr.vb2 = ob.bid[szb - 2].quantity;
-                        }
-                        if (szb >= 4)
-                        {
-                            orderwr.bid3 = ob.bid[szb - 3].price;
-                            orderwr.vb3 = ob.bid[szb - 3].quantity;
-                        }
-                        if (szb >= 5)
-                        {
-                            orderwr.bid4 = ob.bid[szb - 4].price;
-                            orderwr.vb4 = ob.bid[szb - 4].quantity;
-                        }
-                        if (szb >= 6)
-                        {
-                            orderwr.bid5 = ob.bid[szb - 5].price;
-                            orderwr.vb5 = ob.bid[szb - 5].quantity;
-                        }
-                        if (szb >= 7)
-                        {
-                            orderwr.bid6 = ob.bid[szb - 6].price;
-                            orderwr.vb6 = ob.bid[szb - 6].quantity;
-                        }
-                        if (szb >= 8)
-                        {
-                            orderwr.bid7 = ob.bid[szb - 7].price;
-                            orderwr.vb7 = ob.bid[szb - 7].quantity;
-                        }
-                        if (szb >= 9)
-                        {
-                            orderwr.bid8 = ob.bid[szb - 8].price;
-                            orderwr.vb8 = ob.bid[szb - 8].quantity;
-                        }
-                        if (szb >= 10)
-                        {
-                            orderwr.bid9 = ob.bid[szb - 9].price;
-                            orderwr.vb9 = ob.bid[szb - 9].quantity;
-                        }
+                            if (szb >= 2)
+                            {
+                                orderwr.bid1 = ob.bid[szb - 1].price;
+                                orderwr.vb1 = ob.bid[szb - 1].quantity;
+                            }
+                            if (szb >= 3)
+                            {
+                                orderwr.bid2 = ob.bid[szb - 2].price;
+                                orderwr.vb2 = ob.bid[szb - 2].quantity;
+                            }
+                            if (szb >= 4)
+                            {
+                                orderwr.bid3 = ob.bid[szb - 3].price;
+                                orderwr.vb3 = ob.bid[szb - 3].quantity;
+                            }
+                            if (szb >= 5)
+                            {
+                                orderwr.bid4 = ob.bid[szb - 4].price;
+                                orderwr.vb4 = ob.bid[szb - 4].quantity;
+                            }
+                            if (szb >= 6)
+                            {
+                                orderwr.bid5 = ob.bid[szb - 5].price;
+                                orderwr.vb5 = ob.bid[szb - 5].quantity;
+                            }
+                            if (szb >= 7)
+                            {
+                                orderwr.bid6 = ob.bid[szb - 6].price;
+                                orderwr.vb6 = ob.bid[szb - 6].quantity;
+                            }
+                            if (szb >= 8)
+                            {
+                                orderwr.bid7 = ob.bid[szb - 7].price;
+                                orderwr.vb7 = ob.bid[szb - 7].quantity;
+                            }
+                            if (szb >= 9)
+                            {
+                                orderwr.bid8 = ob.bid[szb - 8].price;
+                                orderwr.vb8 = ob.bid[szb - 8].quantity;
+                            }
+                            if (szb >= 10)
+                            {
+                                orderwr.bid9 = ob.bid[szb - 9].price;
+                                orderwr.vb9 = ob.bid[szb - 9].quantity;
+                            }
                             if (szb >= 11)
                             {
                                 orderwr.bid10 = ob.bid[szb - 10].price;
@@ -1124,7 +1127,7 @@ namespace CobraDataServer
                             }
                             else
                             {
-                                if (mydb.listtickers.Contains(ob.sec_code))
+                                if (mydb.enable  && mydb.listtickers.Contains(ob.sec_code))
                                 {
                                     mydb.FIFOorderbook.Enqueue(orderwr);
                                         if (mydb.FIFOorderbook.Count == 500000)
@@ -1133,11 +1136,9 @@ namespace CobraDataServer
                                         }
                                 }
                             }
-
-
+                     
                             data._instr[ct].lastorder = new Order
                             {
-
                                 vb1 = orderwr.vb1,
                                 vb2 = orderwr.vb2,
                                 vb3 = orderwr.vb3,
@@ -1273,7 +1274,7 @@ namespace CobraDataServer
                                     }
 
                                 }
-                        }
+                        
                     }
                     catch (Exception ex)
                     {
@@ -1368,8 +1369,8 @@ namespace CobraDataServer
         /// </summary>
         void getAll()
         {
-            if (FIFOorderbookall.Count == 0// && FIFOorderbook.Count == 0
-               /*&& FIFOtradeall.Count == 0 && FIFOtrade.Count == 0*/) Thread.Sleep(90);
+            if (FIFOorderbookall.Count == 0 && FIFOtradeall.Count == 0// && FIFOorderbook.Count == 0
+                 /* && FIFOtrade.Count == 0*/) Thread.Sleep(200);
 
 
             if (FIFOorderbookall.Count != 0)

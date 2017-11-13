@@ -21,28 +21,32 @@ namespace CobraDataServer
             {
                 var entitiesORDER = EntityGenerator_Order.GeneratOrder(5000);
                 var entitiesTRADE = EntityGenerator_Trade.GeneratOrder(1000);
-
+                mes.add("запущен DATABASE поток");
+                if (threadprocess.exit) mes.add("запущен DATABASE поток. ИДЕТ ПРОЦЕСС ПРЕРЫВНИЯ");
                 while (true)
                 {
                     if (threadprocess.exit) break;
                     if (mydb.enable)
                     {
-                        if (mydb.FIFOorderbook.Count == 0) Thread.Sleep(300);
+                        if (mydb.FIFOorderbook.Count == 0 && mydb.FIFOtrade.Count == 0) Thread.Sleep(300);
 
                         if (mydb.FIFOorderbook.Count > mydb.sizepacket)
                         {
                             entitiesORDER.Clear();
                             for (j = 0; j < mydb.sizepacket; j++)
                             {
-                                mydb.FIFOorderbook.TryDequeue(out ord);
-                                entitiesORDER.Add(ord);
+                                if (mydb.FIFOorderbook.Count != 0)
+                                {
+                                    mydb.FIFOorderbook.TryDequeue(out ord);
+                                    entitiesORDER.Add(ord);
+                                }
                             }
 
                             mydb.item.WRITE_TO_DB_ORDER(entitiesORDER);
                         }
                         else
                         {
-                            if (mydb.FIFOtrade.Count==0) Thread.Sleep(100);
+                            if (mydb.FIFOtrade.Count==0 && mydb.FIFOtrade.Count == 0) Thread.Sleep(100);
                         }
 
                         ////TRADES
@@ -54,16 +58,18 @@ namespace CobraDataServer
                                 entitiesTRADE.Clear();
                                 for (j = 0; j < mydb.sizepacket; j++)
                                 {
-                                    if (mydb.FIFOtrade.Count == 0) break;
-                                    mydb.FIFOtrade.TryDequeue(out trd);
-                                    entitiesTRADE.Add(trd);
+                                    if (mydb.FIFOtrade.Count != 0)
+                                    {
+                                        mydb.FIFOtrade.TryDequeue(out trd);
+                                        entitiesTRADE.Add(trd);
+                                    }
                                 }
 
                                 mydb.item.WRITE_TO_DB_TRADE(entitiesTRADE);
                             }
 
                         }
-                        else Thread.Sleep(100);
+                        else if (mydb.FIFOtrade.Count == 0) Thread.Sleep(100);
 
 
 
@@ -87,13 +93,13 @@ namespace CobraDataServer
 
                         //}
                     }
-                    else Thread.Sleep(100);
+                    else Thread.Sleep(500);
                 }
-
+                mes.err("Завершение DATABASE потока");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("err write to db "+ex.Message);
+                mes.errLOG("err write to db "+ex.Message);
             }
         }
 

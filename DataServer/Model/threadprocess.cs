@@ -35,7 +35,7 @@ namespace CobraDataServer
                 var tcs = new TaskCompletionSource<string>();
                 try
                 {
-                    ViewModelMain.task1_release(cancellationToken);
+                    ViewModelMain.task1_release(cancellationToken);//main cycle
                     tcs.SetResult("ok");
                     thread_start = false;
                 }
@@ -52,7 +52,7 @@ namespace CobraDataServer
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             threadprocess.mt.Name = "QUIKSHARP THREAD";
 
-            mes.add("Запуск Quik потока"); threadprocess.mt.Start();
+            mes.add("Запуск главного потока task1"); threadprocess.mt.Start();
 
 
 
@@ -115,7 +115,7 @@ namespace CobraDataServer
                 // return tcs.Task;
             });
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&  
-            threadprocess.dbTHREAD.Name = "DataBase THREAD";
+            threadprocess.dbTHREAD.Name = "DATABASE THREAD";
 
             mes.add("Запуск DATABASE потока");
             threadprocess.dbTHREAD.Start();
@@ -127,6 +127,7 @@ namespace CobraDataServer
 
         public static void stop_all()
         {
+            mes.errLOG("stop ALL");
             threadprocess.exit = true;
             Thread.Sleep(100);
 
@@ -153,7 +154,7 @@ namespace CobraDataServer
             }
 
             thread_start = false;
-
+            threadprocess.exit = false;
         }
 
     }
