@@ -79,6 +79,7 @@ namespace CobraDataServer
                 loctask = false;
                 
                 data.fatal = false;
+                data.fatal_need_rst_task = false;
                 mes.errLOG("МЕНЕДЖЕР - ЗАПУСК всех процессов...");
                 threadprocess.create();
             }

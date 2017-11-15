@@ -109,12 +109,6 @@ namespace CobraDataServer
             {            
                 getAll();
 
-                if (data.fatal)
-                {
-                    mes.errLOG(" fatal. Главный цикл остановлен");
-                    return;
-                }
-
                 if (data.need_rst)
                 {
                     Rst();
@@ -124,8 +118,14 @@ namespace CobraDataServer
 
                 if (data.Not_data)
                 {
+                    mes.errLOG("НЕТ ДАННЫХ.");
                     if (FIFOorderbookall.Count == 0 && FIFOtradeall.Count == 0)//дописываем данные в базу
                     {
+                        if (data.fatal)
+                        {
+                            mes.errLOG(" fatal. Главный цикл остановлен");
+                            return;
+                        }
                         mes.errLOG("НЕТ ДАННЫХ,  reconnect...");
                         return;
                     }
