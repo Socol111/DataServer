@@ -72,7 +72,9 @@ namespace CobraDataServer
 
         }
         public void work()
-        {   
+        {
+            data.Not_connect = true;
+            bool nofind = false;
             if (data._instr.Count==0) mes.err("НЕ ЗАДАНЫ ТИЕКРЫ!!!");
             mes.add("Подписки...");
             if (_quik == null) mes.err("err quik");
@@ -82,7 +84,12 @@ namespace CobraDataServer
             {
                 if (data.eliminate.Contains(i.name)) {mes.add("Игнор подписки " + i.name); continue;}
                 string fn= Sub(i.name, i.Class.Replace("@", ""));
-                if (fn!="") listFN.Add(fn); else mes.err("Не найден " + i.name);
+                if (fn != "") listFN.Add(fn);
+                else
+                {
+                    mes.err("Не найден " + i.name);
+                    nofind = true;
+                }
             }
 
             int ind = 0;
@@ -97,7 +104,8 @@ namespace CobraDataServer
             }
             catch { mes.err("ОШИБКА Подписки на события всех сделок"); }
 
-            mes.add("== Подписка на события всех сделок выполнена ==");
+            if (!nofind) mes.add("== Подписка на события всех сделок выполнена ==");
+            else return;
 
             data.Not_connect = false;
             data.Not_data = false;

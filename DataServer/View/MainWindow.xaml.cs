@@ -167,11 +167,11 @@ namespace CobraDataServer
 
 
             if (data.Not_data && !data.Not_connect && !data.fatal && timeok)
-            {        
+            {
                 ct_fatal++;
                 if (ct_fatal > 300)
                 {
-                    mes.errLOG( "Сработал счетчик Фатальный рестарт");
+                    mes.errLOG("Сработал счетчик Фатальный рестарт");
                     data.fatal = true;
                     ct_fatal = 0;
                 }
@@ -237,15 +237,15 @@ namespace CobraDataServer
             else//нет потока данных
             {
                 if (!data.Not_connect) ct_no_connect++;
-                //if (data.Not_connect && ct_no_connect>3) ct_no_connect=0;
-
+                else ct_fatal = 0;
+              
                 l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
                 {
                     l1err.Content = ct_no_connect.ToString();
                 }));
 
 
-                if (ct_no_connect == 5 && DateTime.Now.Hour>=10)
+                if (ct_no_connect == 5 && timeok)
                 {
                     if ( !data.first_Not_data)
                     {

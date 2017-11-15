@@ -20,7 +20,7 @@ namespace CobraDataServer
 
         public static void create()
         {
-            if (thread_start) { mes.err("Создание задачи - отмена уже создана "); return; }
+            if (thread_start) { mes.errLOG("Создание задачи - отмена уже создана "); return; }
 
             thread_start = true;
             data.fatal_need_rst_task = false;
@@ -52,7 +52,7 @@ namespace CobraDataServer
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
             threadprocess.mt.Name = "QUIKSHARP THREAD";
 
-            mes.add("Запуск главного потока task1"); threadprocess.mt.Start();
+            mes.addLOG("Запуск главного потока task1"); threadprocess.mt.Start();
 
 
 
@@ -129,6 +129,7 @@ namespace CobraDataServer
         {
             mes.errLOG("stop ALL");
             threadprocess.exit = true;
+            thread_start = false;
             Thread.Sleep(100);
 
             threadprocess.mt.Abort(5000);
