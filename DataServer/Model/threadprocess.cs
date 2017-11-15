@@ -84,7 +84,7 @@ namespace CobraDataServer
             {
                 threadprocess.pipeTHREAD.Name = "PIPE THREAD";
 
-                mes.add("Запуск PIPE потока");
+                mes.addLOG("Запуск PIPE потока");
                 threadprocess.pipeTHREAD.Start();
             }
 
@@ -117,7 +117,7 @@ namespace CobraDataServer
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&  
             threadprocess.dbTHREAD.Name = "DATABASE THREAD";
 
-            mes.add("Запуск DATABASE потока");
+            mes.addLOG("Запуск DATABASE потока");
             threadprocess.dbTHREAD.Start();
 
         }

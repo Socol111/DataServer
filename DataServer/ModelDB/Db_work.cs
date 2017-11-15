@@ -52,7 +52,7 @@ namespace CobraDataServer
                         ////TRADES
                         if (mydb.FIFOtrade.Count > mydb.sizepackettrade)
                         {
-                            
+
                             if (mydb.FIFOtrade.Count != 0)
                             {
                                 entitiesTRADE.Clear();
@@ -69,7 +69,7 @@ namespace CobraDataServer
                             }
 
                         }
-                        else if (mydb.FIFOtrade.Count == 0) Thread.Sleep(100);
+                        else  Thread.Sleep(100);
 
 
 
@@ -99,7 +99,7 @@ namespace CobraDataServer
             }
             catch (Exception ex)
             {
-                mes.errLOG("err write to db "+ex.Message);
+                mes.errLOG("Ошибка потока работы с БАЗОЙ "+ex.Message);
             }
         }
 
