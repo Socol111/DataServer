@@ -167,7 +167,7 @@
         <Label x:Name ="l1_Copy2" Content="сервер: " Grid.Column="1" HorizontalAlignment="Left" Margin="83,0,0,9" VerticalAlignment="Bottom" Width="254" FontSize="16" Foreground="#FFBFA18C" RenderTransformOrigin="-1.651,12.94" Grid.ColumnSpan="3" Grid.Row="1"/>
         <Label x:Name ="buftrades" Content="bufer" Grid.Column="3" HorizontalAlignment="Left" Margin="194,0,0,6" VerticalAlignment="Bottom" Width="81" FontSize="12" Foreground="#FFF7F7F7" Grid.Row="1" Height="13"/>
         <Label x:Name ="l1_Copy3" Content="буфер orders" Grid.Column="3" HorizontalAlignment="Left" Margin="78,0,0,20" VerticalAlignment="Bottom" Width="111" FontSize="16" Foreground="#FFA1BF8C" RenderTransformOrigin="-1.651,12.94" Grid.RowSpan="2"/>
-        <Label x:Name ="l1_Copy4" Content="буфер trades" Grid.Column="3" HorizontalAlignment="Left" Margin="78,0,0,4" VerticalAlignment="Bottom" Width="111" FontSize="16" Foreground="#FFA1BF8C" RenderTransformOrigin="-1.651,12.94" Grid.Row="1"/>
+        <Label x:Name ="l1_Copy4" Content="буфер trades" Grid.Column="3" HorizontalAlignment="Left" Margin="78,0,0,1" VerticalAlignment="Bottom" Width="111" FontSize="16" Foreground="#FFA1BF8C" RenderTransformOrigin="-1.651,12.94" Grid.Row="1" Height="21"/>
         <Button Name="close" Content="ЗАКРЫТЬ" Command="" CommandParameter=""   Margin="0,-4,17,0" Focusable="False" Width="135" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Grid.Column="5" RenderTransformOrigin="0.548,-3.565" Click="close_Click">
             <Button.Background>
                 <RadialGradientBrush>

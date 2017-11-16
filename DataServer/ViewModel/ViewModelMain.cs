@@ -173,6 +173,21 @@ namespace CobraDataServer
         }
 
 
+        public static void task2_release(CancellationToken cts)
+        {
+            add("Начало выполнения task2");
+            while (true)
+            {
+                if ( cts.IsCancellationRequested) break;
+                data.quik.getAll();
+
+            }
+            mes.errLOG("Завершение главного потока task2");
+        }
+
+
+
+
         static void add(string s)
         {
             winadd?.Invoke(s);

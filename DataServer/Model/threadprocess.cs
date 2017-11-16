@@ -9,7 +9,7 @@ namespace CobraDataServer
 {
     static class threadprocess
     {
-        public static Thread mt, pipeTHREAD, dbTHREAD;
+        public static Thread mt,write, pipeTHREAD, dbTHREAD;
       //  public static bool pipe_enable = true;
         public static bool exit = false;
 
@@ -55,10 +55,39 @@ namespace CobraDataServer
             mes.addLOG("Запуск главного потока task1"); threadprocess.mt.Start();
 
 
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            threadprocess.write = new Thread(() =>
+            {
+                var tcs = new TaskCompletionSource<string>();
+                try
+                {
+                    ViewModelMain.task2_release(cancellationToken);
+                    tcs.SetResult("ok");
+                }
+                catch (OperationCanceledException e)
+                {
+                    tcs.SetException(e);
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+                // return tcs.Task;
+            });
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            threadprocess.write.Name = "writeDB THREAD";
+
+            mes.addLOG("Запуск потока task2 "); threadprocess.write.Start();
+
+
+
+
 
             PipeWork _pip = new PipeWork();
 
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
             threadprocess.pipeTHREAD = new Thread(() =>
             {
                 var tcs = new TaskCompletionSource<string>();
@@ -131,14 +160,20 @@ namespace CobraDataServer
             threadprocess.exit = true;
             thread_start = false;
             Thread.Sleep(100);
-
+            
             threadprocess.mt.Abort(5000);
             while (threadprocess.mt.ThreadState == System.Threading.ThreadState.Running)
             {
                 Thread.Sleep(100);
-                mes.errLOG("задача прерывается....");
+                mes.errLOG("task1 прерывается....");
             }
 
+            threadprocess.write.Abort(5000);
+            while (threadprocess.write.ThreadState == System.Threading.ThreadState.Running)
+            {
+                Thread.Sleep(100);
+                mes.errLOG("task2 прерывается....");
+            }
             threadprocess.pipeTHREAD.Abort(5000);
             while (threadprocess.pipeTHREAD.ThreadState == System.Threading.ThreadState.Running)
             {
@@ -151,7 +186,7 @@ namespace CobraDataServer
             while (threadprocess.dbTHREAD.ThreadState == System.Threading.ThreadState.Running)
             {
                 Thread.Sleep(100);
-                mes.errLOG("задача PIPE прерывается....");
+                mes.errLOG("задача DB прерывается....");
             }
 
             thread_start = false;

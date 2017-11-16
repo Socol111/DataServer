@@ -47,8 +47,8 @@ namespace CobraDataServer
         static ConcurrentQueue<OrderBook> FIFOorderbook;
         static ConcurrentQueue<AllTrade> FIFOtrade;
 
-        static ConcurrentQueue<OrderBook> FIFOorderbookall;
-        static ConcurrentQueue<AllTrade> FIFOtradeall;
+        public static ConcurrentQueue<OrderBook> FIFOorderbookall;
+        public static ConcurrentQueue<AllTrade> FIFOtradeall;
   
 
         public static int getSIZEorderbook
@@ -114,8 +114,8 @@ namespace CobraDataServer
             //                          MAIN
             //****************************************************************************************
             while (true)//main cycle
-            {            
-                getAll();
+            {
+                Thread.Sleep(1000);
 
                 if (data.need_rst)
                 {
@@ -399,6 +399,8 @@ namespace CobraDataServer
             data.first_Not_data = false;
             mes.addLOG("скрипт QUIKSHARP ЗАПУСТИЛСЯ");
 
+            data.Not_data = true;//необходимо переподключение
+
         }
 
 
@@ -445,6 +447,7 @@ namespace CobraDataServer
                     {
                         if (sym == quote.sec_code)
                         {
+                            data.ct_global++;
                             FIFOorderbookall.Enqueue(quote);
                             if (FIFOorderbookall.Count == 500000) mes.errLOG("Переполнение буфера OrderBook");
                             break;
@@ -490,7 +493,6 @@ namespace CobraDataServer
                 if (ob.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
                 {
                     data._instr[ct].orders++;
-                    data.ct_global++;
                         
                     try
                     {
@@ -1375,7 +1377,7 @@ namespace CobraDataServer
         /// <summary>
         /// Чтение промежуточного буффера чтобы QuikSharp Callback не затягивался
         /// </summary>
-        void getAll()
+       public void getAll()
         {
             if (FIFOorderbookall.Count == 0 && FIFOtradeall.Count == 0// && FIFOorderbook.Count == 0
                  /* && FIFOtrade.Count == 0*/) Thread.Sleep(200);

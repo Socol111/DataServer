@@ -16,6 +16,8 @@ namespace CobraDataServer
         public Window header;
         private object threadLock = new object();
         int ct_no_connect=0;
+        public static event Action nofinddata;
+
         readonly string NameServer = "Cobra Data Server v1.0";
         public MainWindow()
         {   
@@ -45,6 +47,7 @@ namespace CobraDataServer
             ViewModelMain.winerr += ViewModelMain_winerr;
 
             mes.Event_Print += new Action<string, object>(add);
+
             //QUIKSHARPconnector.Event_CMD += new Action<int, int, int, string>(cmd);
             //Pipe.Event_Print += new Action<string, object>(add);
             //Pipe.Event_CMD += new Action<int, int, int, string>(cmd);
@@ -74,6 +77,11 @@ namespace CobraDataServer
 
             Log.Debug("Start Cobra Data Server");
 
+        }
+
+        private void Db_work_nofinddata()
+        {
+            throw new NotImplementedException();
         }
 
         string getCT()
@@ -177,6 +185,31 @@ namespace CobraDataServer
                 }
             }
 
+            buf.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            {
+                buf.Content = QUIKSHARPconnector.getSIZEorderbook.ToString();
+            }));
+
+            buftrades.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            {
+                buftrades.Content = QUIKSHARPconnector.getSIZEtrade.ToString();
+            }));
+
+            bufpipe.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            {
+                bufpipe.Content = data.pipeque.Count.ToString();
+            }));
+
+            bufdb.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
+            {
+                bufdb.Content = mydb.FIFOorderbook.Count.ToString()
+                + "/" + mydb.FIFOtrade.Count.ToString()
+
+                ;
+            }));
+
+
+
             //идут данные
             if (l1_mem != data.ct_global)
             {
@@ -206,26 +239,7 @@ namespace CobraDataServer
                     l1err.Content = "";
                 }));
 
-                buf.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
-                {
-                    buf.Content = QUIKSHARPconnector.getSIZEorderbook.ToString();
-                }));
-
-                buftrades.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
-                {
-                    buftrades.Content = QUIKSHARPconnector.getSIZEtrade.ToString();
-                }));
-
-                bufpipe.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
-                {
-                    bufpipe.Content = data.pipeque.Count.ToString();
-                }));
-
-                bufdb.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
-                {
-                    bufdb.Content = mydb.FIFOorderbook.Count.ToString()+"/"+mydb.FIFOtrade.Count.ToString();
-                }));
-
+               
                 cttitle++;
                 if (cttitle == 1) this.Title = "/ " + NameServer;
                 if (cttitle == 2) this.Title = "- " + NameServer;
@@ -247,6 +261,7 @@ namespace CobraDataServer
 
                 if (ct_no_connect == 5 && timeok)
                 {
+                    if (nofinddata != null) nofinddata();
                     if ( !data.first_Not_data)
                     {
                         data.first_Not_data = true;
