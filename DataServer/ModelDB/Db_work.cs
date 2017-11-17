@@ -24,6 +24,7 @@ namespace CobraDataServer
             {
                 mes.add("запущен DATABASE поток");
                 if (threadprocess.exit) mes.add("запущен DATABASE поток. ИДЕТ ПРОЦЕСС ПРЕРЫВНИЯ");
+                while (data.Not_data) Thread.Sleep(100);
                 while (true)
                 {
                     if (threadprocess.exit) break;
@@ -61,6 +62,7 @@ namespace CobraDataServer
             catch (Exception ex)
             {
                 mes.errLOG("Ошибка потока работы с БАЗОЙ "+ex.Message);
+                data.fatal = true;
             }
 
 

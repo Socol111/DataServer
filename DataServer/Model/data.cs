@@ -36,6 +36,9 @@ namespace CobraDataServer
         public static bool fatal_need_rst_task = false;
         public static bool need_rst = false;
 
+        public static bool crashpipe = false;
+        public static bool crashdb = false;
+
 
         //pipe
         public static bool PIPEENABLE = false;

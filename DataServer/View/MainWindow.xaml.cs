@@ -197,18 +197,21 @@ namespace CobraDataServer
 
             bufpipe.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
             {
-                bufpipe.Content = data.pipeque.Count.ToString();
+                if (data.crashpipe) bufpipe.Content = "crash threadPIPE";
+                else bufpipe.Content = data.pipeque.Count.ToString();
             }));
 
             bufdb.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
             {
+                if (data.crashdb) bufdb.Content = "crash threadDB";
+                else
                 bufdb.Content = mydb.FIFOorderbook.Count.ToString()
-                + "/" + mydb.FIFOtrade.Count.ToString()
+                + " / " + mydb.FIFOtrade.Count.ToString()
 
                 ;
             }));
-
-
+            data.crashdb = true;
+            data.crashpipe = true;
 
             //идут данные
             if (l1_mem != data.ct_global)

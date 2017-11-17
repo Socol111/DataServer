@@ -596,6 +596,9 @@ namespace CobraDataServer
                                 orderwr.bid18 = ob.bid[szb - 18].price;
                                 orderwr.vb18 = ob.bid[szb - 18].quantity;
                             }
+
+                        try
+                        {
                             if (szb >= 20)
                             {
                                 orderwr.bid19 = ob.bid[szb - 19].price;
@@ -760,10 +763,14 @@ namespace CobraDataServer
                                 orderwr.vb50 = ob.bid[szb - 50].quantity;
                             }
 
+                        }
+                        catch (Exception ex)
+                        {
+                            mes.err("Ошибка BID стакана  " + ob.sec_code + " " + ex);
+                        }
 
-
-                            /////ask
-                            if (sza >= 1)
+                        /////ask
+                        if (sza >= 1)
                             {
                                 orderwr.ask1 = ob.offer[0].price;
                                 orderwr.va1 = ob.offer[0].quantity;
@@ -854,6 +861,10 @@ namespace CobraDataServer
                                 orderwr.ask18 = ob.offer[17].price;
                                 orderwr.va18 = ob.offer[17].quantity;
                             }
+
+                        try
+                        {
+
                             if (sza >= 19)
                             {
                                 orderwr.ask19 = ob.offer[18].price;
@@ -1017,9 +1028,15 @@ namespace CobraDataServer
                                 orderwr.ask50 = ob.offer[49].price;
                                 orderwr.va50 = ob.offer[49].quantity;
                             }
-                           
 
-                            if (data._instr[ct].lastorder.vb1 == orderwr.vb1 &&
+                        }
+                        catch (Exception ex)
+                        {
+                            mes.err("Ошибка OFFER стакана  " + ob.sec_code + " " + ex);
+                        }
+
+
+                        if (data._instr[ct].lastorder.vb1 == orderwr.vb1 &&
                             data._instr[ct].lastorder.vb2 == orderwr.vb2 &&
                             data._instr[ct].lastorder.vb3 == orderwr.vb3 &&
                             data._instr[ct].lastorder.vb4 == orderwr.vb4 &&
@@ -1288,9 +1305,7 @@ namespace CobraDataServer
                     }
                     catch (Exception ex)
                     {
-                        mes.err("err orders bidoffer size="+ 
-                        ob.bid.Count()+"/"+ ob.offer.Count()+
-                        " err=" + ex.Message);
+                        mes.err("Ошибка в потоке Orders  "+ob.sec_code+" "+ ex);
                     }
                     break;
                 }
@@ -1374,6 +1389,8 @@ namespace CobraDataServer
             return normtime;
         }
 
+
+        bool correct = false;
         /// <summary>
         /// Чтение промежуточного буффера чтобы QuikSharp Callback не затягивался
         /// </summary>
@@ -1386,15 +1403,30 @@ namespace CobraDataServer
             if (FIFOorderbookall.Count != 0)
             {
                 FIFOorderbookall.TryDequeue(out orderALL);
-                Analiz_Quote(orderALL);
+                if (orderALL != null)
+                {
+                    try
+                    {
+                        if (orderALL.bid.Count() != 0 && orderALL.offer.Count() != 0) correct = true;
+                    }
+                    catch
+                    {
+                        correct = false;
+                    }
+
+                    if (correct) Analiz_Quote(orderALL);
+                }
             }
             if (FIFOtradeall.Count != 0)
             {
                 FIFOtradeall.TryDequeue(out tradeALL);
-                Analiz_Trade(tradeALL);
+                if (tradeALL != null)
+                {
+                   Analiz_Trade(tradeALL);
+                }
             }
 
-           
+            data.crashdb = false;
         }
 
 
