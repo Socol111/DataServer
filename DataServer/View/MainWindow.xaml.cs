@@ -170,7 +170,9 @@ namespace CobraDataServer
             loc = true;
 
             bool timeok = false;
-            if (DateTime.Now.Hour >= 10 && DateTime.Now.Hour <= 23) timeok = true;
+            if (DateTime.Now.Hour >= data.hour_start_pipe
+                && DateTime.Now.Hour <= 23
+                ) timeok = true;
 
 
 
@@ -253,7 +255,7 @@ namespace CobraDataServer
             }
             else//нет потока данных
             {
-                if (!data.Not_connect) ct_no_connect++;
+                if (!data.Not_connect && timeok) ct_no_connect++;
                 else ct_fatal = 0;
               
                 l1err.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
@@ -362,17 +364,7 @@ namespace CobraDataServer
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            threadprocess.exit = true;
-            Thread.Sleep(900);
-            foreach (var p in data.listpipe)
-            {
-                p.stopPIPE();
-            }
-
-            threadprocess.stop_all();
-
-            Log.Debug("=========== Close Cobra Data Server ===========");
-            Log.CloseAndFlush();
+          
 
         }
 
@@ -385,6 +377,21 @@ namespace CobraDataServer
                 p.stopPIPE();
             }
             this.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            threadprocess.exit = true;
+            Thread.Sleep(900);
+            foreach (var p in data.listpipe)
+            {
+                p.stopPIPE();
+            }
+
+            threadprocess.stop_all();
+
+            Log.Debug("=========== Close Cobra Data Server ===========");
+            Log.CloseAndFlush();
         }
     }
 

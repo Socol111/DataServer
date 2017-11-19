@@ -9,7 +9,7 @@
     
     
     
-        DataContext="{DynamicResource ViewModelMain}" Foreground="#FF20D10F" Closed="Window_Closed">
+        DataContext="{DynamicResource ViewModelMain}" Foreground="#FF20D10F" Closed="Window_Closed" Closing="Window_Closing">
 
 
     <Window.Resources>

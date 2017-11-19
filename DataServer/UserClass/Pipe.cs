@@ -38,8 +38,6 @@ namespace CobraDataServer
             mes.add("подключаем PIPE1 " + name + "...");
             createPIPE1(name);
 
-
-            if (name.Contains("Z7") && name != "SiZ7" && name != "RIZ7") return;
             mes.add("подключаем PIPE2 " + name + "...");
             createPIPE2(name);
         }

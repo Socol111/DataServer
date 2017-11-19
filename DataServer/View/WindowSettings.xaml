@@ -249,8 +249,6 @@
                         <ColumnDefinition Width="126*"/>
                         <ColumnDefinition Width="505*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="Tx31" Text="{Binding HourStartPipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="19,248,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="216" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <Label Content="Час начала передачи данных по PIPE" HorizontalAlignment="Left" Margin="19,218,0,0" VerticalAlignment="Top" Width="252" Grid.Column="2" Foreground="#FFBBE03F" Grid.ColumnSpan="2"/>
                     <TextBox x:Name="Tx35" Text="{Binding Prefix1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="105,51,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="423" Grid.Column="2" Grid.ColumnSpan="2" FontWeight="Bold"/>
                     <Label Content="Префикс PIPE1" HorizontalAlignment="Left" Margin="3,51,0,0" VerticalAlignment="Top" Width="93" Grid.Column="2" Foreground="#FFBBE03F" RenderTransformOrigin="-0.032,0.52"/>
                     <TextBox x:Name="Tx35_Copy" Text="{Binding Prefix2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="105,81,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="423" Grid.Column="2" Grid.ColumnSpan="2" FontWeight="Bold"/>
@@ -263,7 +261,15 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Header=" Времена ">
+                <Grid Background="#FF160638" Margin="10,10,5,4">
+                    <TextBox x:Name="Tx31" Text="{Binding HourStartPipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="176,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="40"/>
+                    <Label Content="Час начала работы" HorizontalAlignment="Left" Margin="31,17,0,0" VerticalAlignment="Top" Width="123" Foreground="#FFBBE03F"/>
 
+
+
+                </Grid>
+            </TabItem>
 
         </TabControl>
     </Grid>

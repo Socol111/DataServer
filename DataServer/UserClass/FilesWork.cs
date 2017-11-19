@@ -44,7 +44,7 @@ namespace CobraDataServer
                     s1 = sr.ReadLine();
                     s2 = sr.ReadLine();
                     
-                    if (data.eliminate.Contains(s1)) { /*mes.add("Игнор тикера " + s1);*/  }
+                    if (data.eliminate.Contains(s1) || s1=="") { /*mes.add("Игнор тикера " + s1);*/  }
                     else
                     p.Add(new Instrumensts(s1,s2));
 
