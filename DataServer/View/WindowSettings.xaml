@@ -277,19 +277,21 @@
 
             <TabItem Header=" Времена ">
                 <Grid Background="#FF160638" Margin="0,0,-2,-2">
-                    <TextBox x:Name="TxH1" Text="{Binding HourStart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="134,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26"/>
-                    <TextBox x:Name="TxH2" Text="{Binding HourStop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="196,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26"/>
+                    <TextBox x:Name="TxH1" Text="{Binding HourStart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="134,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" FontWeight="Bold"/>
+                    <TextBox x:Name="TxH2" Text="{Binding HourStop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="196,21,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" FontWeight="Bold"/>
 
-                    <Label Content="Часы работы" HorizontalAlignment="Left" Margin="31,17,0,0" VerticalAlignment="Top" Width="89" Foreground="#FFBBE03F"/>
-                    <Label Content="Перерыв" HorizontalAlignment="Left" Margin="34,78,0,0" VerticalAlignment="Top" Width="72" Foreground="#FFBBE03F" Height="26"/>
-                    <TextBox x:Name="h1" Text="{Binding h1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="114,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" RenderTransformOrigin="0.975,2.381"/>
-                    <TextBox x:Name="m1" Text="{Binding m1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="152,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="24" RenderTransformOrigin="0.975,2.381"/>
-                    <Label Content=":" HorizontalAlignment="Left" Margin="140,78,0,0" VerticalAlignment="Top" Width="12" Foreground="#FFBBE03F" Height="26"/>
-                    <TextBox x:Name="h2" Text="{Binding h2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="212,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" RenderTransformOrigin="0.975,2.381"/>
-                    <TextBox x:Name="m2" Text="{Binding m2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="250,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="24" RenderTransformOrigin="0.975,2.381"/>
-                    <Label Content=":" HorizontalAlignment="Left" Margin="238,78,0,0" VerticalAlignment="Top" Width="12" Foreground="#FFBBE03F" Height="26"/>
-                    <Label Content="--" HorizontalAlignment="Left" Margin="188,78,0,0" VerticalAlignment="Top" Width="14" Foreground="#FFBBE03F" Height="26"/>
-                    <Label Content="--" HorizontalAlignment="Left" Margin="170,18,0,0" VerticalAlignment="Top" Width="14" Foreground="#FFBBE03F" Height="26"/>
+                    <Label Content="Часы работы" HorizontalAlignment="Left" Margin="31,17,0,0" VerticalAlignment="Top" Width="89" Foreground="#FFBBE03F" FontWeight="Bold"/>
+                    <Label Content="Перерыв" HorizontalAlignment="Left" Margin="34,78,0,0" VerticalAlignment="Top" Width="72" Foreground="#FFBBE03F" Height="26" FontWeight="Bold"/>
+                    <TextBox x:Name="h1" Text="{Binding h1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="114,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" RenderTransformOrigin="0.975,2.381" FontWeight="Bold"/>
+                    <TextBox x:Name="m1" Text="{Binding m1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="152,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="24" RenderTransformOrigin="0.975,2.381" FontWeight="Bold"/>
+                    <Label Content=":" HorizontalAlignment="Left" Margin="140,78,0,0" VerticalAlignment="Top" Width="12" Foreground="#FFBBE03F" Height="26" FontWeight="Bold"/>
+                    <TextBox x:Name="h2" Text="{Binding h2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="212,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="26" RenderTransformOrigin="0.975,2.381" FontWeight="Bold"/>
+                    <TextBox x:Name="m2" Text="{Binding m2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" Margin="250,82,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="24" RenderTransformOrigin="0.975,2.381" FontWeight="Bold"/>
+                    <Label Content=":" HorizontalAlignment="Left" Margin="238,78,0,0" VerticalAlignment="Top" Width="12" Foreground="#FFBBE03F" Height="26" FontWeight="Bold"/>
+                    <Label Content="--" HorizontalAlignment="Left" Margin="188,78,0,0" VerticalAlignment="Top" Width="14" Foreground="#FFBBE03F" Height="26" FontWeight="Bold"/>
+                    <Label Content="--" HorizontalAlignment="Left" Margin="170,18,0,0" VerticalAlignment="Top" Width="14" Foreground="#FFBBE03F" Height="26" FontWeight="Bold"/>
+                    <Label Content="порт скрипта LUA" HorizontalAlignment="Left" Margin="34,150,0,0" VerticalAlignment="Top" Width="126" Foreground="#FFBBE03F" RenderTransformOrigin="0.348,6.2" FontWeight="Bold"/>
+                    <TextBox x:Name="_port" Text="{Binding port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="170,154,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="72" RenderTransformOrigin="1.962,2.714" FontWeight="Bold"/>
 
 
 

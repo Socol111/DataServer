@@ -136,15 +136,18 @@ namespace CobraDataServer
                 
                 }
 
-                if (data.crashpipe) notpipe++; else notpipe = 0;
-
-                if (data.crashpipe && notpipe>120)
+                if (data.PIPEENABLE)
                 {
-                    notpipe = 0;
-                    mes.errLOG("поток PIPE не отвечает. последний удачный transmit = " + data.crashpipeINFO);
-                    threadprocess.PIPE_Thread_restart();
-                }
+                    if (data.crashpipe) notpipe++;
+                    else notpipe = 0;
 
+                    if (data.crashpipe && notpipe > 120)
+                    {
+                        notpipe = 0;
+                        mes.errLOG("поток PIPE не отвечает. последний удачный transmit = " + data.crashpipeINFO);
+                        threadprocess.PIPE_Thread_restart();
+                    }
+                }
             }
 
         }
@@ -165,10 +168,11 @@ namespace CobraDataServer
 
                 if (_quik == null)
                 {
-                    mes.add("инициализация QuikSharp...");
+                    int port = data.portLUA;//34130
+                    mes.add("инициализация QuikSharp... порт "+port.ToString());
                     if (data.fatal_need_rst_task) { mes.add("прерывание"); return false; }
 
-                    _quik = new Quik(34130, new InMemoryStorage());
+                    _quik = new Quik(port, new InMemoryStorage());
 
                     mes.add("connecting... result =" + _quik.Service.IsConnected().Result);
 

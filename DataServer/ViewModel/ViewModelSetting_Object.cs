@@ -36,6 +36,7 @@ namespace CobraDataServer
         public bool enablepipe { get => data.PIPEENABLE; set => data.PIPEENABLE = value; }
 
 
+        public string port { get => data.portLUA.ToString(); set => parsing(value, out data.portLUA); }
         public string h1 { get => data.h1.ToString(); set => parsing(value, out data.h1 ); }
         public string m1 { get => data.m1.ToString(); set => parsing(value, out data.m1); }
         public string h2 { get => data.h2.ToString(); set => parsing(value, out data.h2); }
@@ -63,6 +64,23 @@ namespace CobraDataServer
             finally
             {
                 bt = ras; 
+            }
+            return ras;
+        }
+
+        int parsing(string value, out int bt)
+        {
+            int ras = 0;
+            try
+            {
+                ras = int.Parse(value);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                bt = ras;
             }
             return ras;
         }

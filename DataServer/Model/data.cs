@@ -19,7 +19,7 @@ namespace CobraDataServer
         public static int ctglobalATstart = 0;
         public static byte correct_time = 3;
 
-
+        public static int portLUA = 35130;
         public static string path_settings= "";
         public static string pathTIKERS1 = "";
         public static string pathTIKERS2 = "";
