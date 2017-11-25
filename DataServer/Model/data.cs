@@ -27,6 +27,10 @@ namespace CobraDataServer
         public static System.Collections.ObjectModel.ObservableCollection<string> eliminate =
                 new ObservableCollection<string> { /*"AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB"*/ };
 
+        //час минуты перерыва
+        public static byte h1=18, h2=19, m1=45, m2=00;
+        public static byte hour_start = 10;
+        public static byte hour_stop = 23;
 
         //no data
         public static bool first_Not_data = false;
@@ -37,12 +41,12 @@ namespace CobraDataServer
         public static bool need_rst = false;
 
         public static bool crashpipe = false;
+        public static string crashpipeINFO = "";
         public static bool crashdb = false;
 
 
         //pipe
         public static bool PIPEENABLE = false;
-        public static byte hour_start_pipe = 10;
         public static string pipe_prefix1 = "IN_Cobraconnector_";
         public static string pipe_prefix2 = "MT_Cobraconnector_";
         public static ConcurrentQueue<PipeItem> pipeque = new ConcurrentQueue<PipeItem>();

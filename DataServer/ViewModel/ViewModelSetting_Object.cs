@@ -27,7 +27,6 @@ namespace CobraDataServer
         public string Prefix2 { get => data.pipe_prefix2; set => data.pipe_prefix2 = value; }
         public string Pathtik1 { get => data.pathTIKERS1; set => data.pathTIKERS1 = value; }
         public string Pathtik2 { get => data.pathTIKERS2; set => data.pathTIKERS2 = value; }
-        public string HourStartPipe { get => data.hour_start_pipe.ToString();  set => byte.Parse(value); }
 
         public string bdconn { get => mydb.Connectparam; set => mydb.Connectparam = value; }
         public string bdpath { get => mydb.Path; set => mydb.Path = value; }
@@ -37,13 +36,36 @@ namespace CobraDataServer
         public bool enablepipe { get => data.PIPEENABLE; set => data.PIPEENABLE = value; }
 
 
-       // public object listalltickers => data.listINSTRUMENTS;
+        public string h1 { get => data.h1.ToString(); set => parsing(value, out data.h1 ); }
+        public string m1 { get => data.m1.ToString(); set => parsing(value, out data.m1); }
+        public string h2 { get => data.h2.ToString(); set => parsing(value, out data.h2); }
+        public string m2 { get => data.m2.ToString(); set => parsing(value, out data.m2); }
+
+        public string HourStart { get => data.hour_start.ToString(); set => parsing(value, out data.hour_start); }
+        public string HourStop { get => data.hour_stop.ToString(); set => parsing(value, out data.hour_stop); }
+        // public object listalltickers => data.listINSTRUMENTS;
         public List<string> listalltickers
         {
             get { return data.listINSTRUMENTS; }
             set { }
         }
 
+        byte parsing(string value, out byte bt)
+        {
+            byte ras=0;
+            try
+            {
+                ras = byte.Parse(value);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                bt = ras; 
+            }
+            return ras;
+        }
         // Using a DependencyProperty as the backing store for listalltickers.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty listalltickersProperty =
             DependencyProperty.Register("listalltickers", typeof(List<string>), typeof(ListBox),

@@ -46,9 +46,12 @@ namespace CobraDataServer
         {
             if (loc) return;
             loc= true;
+            if (threadprocess.exit) return;
+
 
             //mydb.item.CREATEtest();//////////////////////////////
             //return;
+
             if (!threads_on)
             {
                 threads_on = true;
@@ -102,14 +105,15 @@ namespace CobraDataServer
            
             if (data.PIPEENABLE)
             {
-  
+                data.PIPEENABLE = false;
                 foreach (var i in data._instr)
                 {
                    data.listpipe.Add(new Pipe(i.name));
+                    Thread.Sleep(100);
                 }
                 mes.add("== Все PIPE подключены успешно  ==");
                 PIPE_ok = true;
-        
+                data.PIPEENABLE = true;
             }
         }
     /// <summary>
@@ -137,17 +141,6 @@ namespace CobraDataServer
                     }
 
                 if (!PIPE_ok) CREATE_PIPE();
-
-                //if (data.Not_connect)
-                //{
-                //    rst_not_connect++;
-                //    if (rst_not_connect > 5)
-                //    {
-                //       mes.errLOG("фатал.таймаут нет подключения ВЫХОД ИЗ task1"); break;
-                //    }
-
-                //}
-                //else rst_not_connect = 0;
 
                  Thread.Sleep(2000);
                   if (data.fatal) { mes.errLOG("фатал. выход из задачи task11"); break; }

@@ -79,48 +79,10 @@ namespace CobraDataServer
 
             mes.addLOG("Запуск потока task2 "); threadprocess.write.Start();
 
+            //start pipe
+            create_PIPE();
 
-
-
-
-            PipeWork _pip = new PipeWork();
-
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-
-            threadprocess.pipeTHREAD = new Thread(() =>
-            {
-                var tcs = new TaskCompletionSource<string>();
-                try
-                {
-                    _pip.Transmit();
-                    tcs.SetResult("ok");
-
-                }
-                catch (OperationCanceledException e)
-                {
-                    tcs.SetException(e);
-                }
-                catch (Exception e)
-                {
-                    tcs.SetException(e);
-                }
-                // return tcs.Task;
-            });
-            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-            if (data.PIPEENABLE)
-            {
-                threadprocess.pipeTHREAD.Name = "PIPE THREAD";
-
-                mes.addLOG("Запуск PIPE потока");
-                threadprocess.pipeTHREAD.Start();
-            }
-
-
-
-
-
+            //start db
             Db_work _db = new Db_work();
 
             //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -152,7 +114,81 @@ namespace CobraDataServer
         }
 
 
+        public static void create_PIPE()
+        {
+            PipeWork _pip = new PipeWork();
 
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+            threadprocess.pipeTHREAD = new Thread(() =>
+            {
+                var tcs = new TaskCompletionSource<string>();
+                try
+                {
+                    _pip.Transmit();
+                    tcs.SetResult("ok");
+
+                }
+                catch (OperationCanceledException e)
+                {
+                    tcs.SetException(e);
+                }
+                catch (Exception e)
+                {
+                    tcs.SetException(e);
+                }
+                // return tcs.Task;
+            });
+            //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+            if (data.PIPEENABLE)
+            {
+                threadprocess.pipeTHREAD.Name = "PIPE THREAD";
+
+                mes.addLOG("Запуск PIPE потока");
+                threadprocess.pipeTHREAD.Start();
+            }
+
+        }
+
+        public static async Task PIPE_Thread_restart()
+        {
+            data.crashpipe = false;
+            data.PIPEENABLE = false;
+            mes.errLOG("PIPE прерывание потока");
+            pipeTHREAD.Abort(5000);
+            while (threadprocess.pipeTHREAD.ThreadState == System.Threading.ThreadState.Running)
+            {
+                Thread.Sleep(100);
+                mes.errLOG("задача PIPE прерывается....");
+            }
+
+            create_PIPE();
+            data.crashpipe = false;
+        }
+
+        public static async Task PIPE_all_reconnect()
+        {
+            if (data.listpipe != null && data.listpipe.Count!=0)
+            {
+                mes.errLOG("Остановка всех PIPE...");
+                data.PIPEENABLE = false;
+                foreach (var i in data.listpipe)
+                {
+                    mes.errLOG("Остановка pipe-"+i.Name);
+                    i.stopPIPE();
+                }
+
+                mes.addLOG("PIPE рекконект");
+                data.listpipe.Clear();
+                foreach (var i in data._instr)
+                {
+                    mes.addLOG("PIPE соединяемcя с "+i.name);
+                    data.listpipe.Add(new Pipe(i.name));
+                }
+                mes.add("== Все PIPE пересозданы ==");
+                data.PIPEENABLE = true;
+            }
+        }
 
         public static void stop_all()
         {

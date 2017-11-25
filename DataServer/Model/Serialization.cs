@@ -32,6 +32,14 @@ namespace CobraDataServer
         public int in2 { get; set; }
         public int in3 { get; set; }
 
+        public int in4 { get; set; }
+        public int in5 { get; set; }
+        public int in6 { get; set; }
+        public int in7 { get; set; }
+        public int in8 { get; set; }
+        public int in9 { get; set; }
+
+
         public ser_data()
         {
         }
@@ -54,6 +62,12 @@ namespace CobraDataServer
             in2 = mydb.sizepackettrade;
             in3 = data.correct_time;
 
+            in4 = data.h1;
+            in5 = data.h2;
+            in6 = data.m1;
+            in7 = data.m2;
+            in8 = data.hour_start;
+            in9 = data.hour_stop;
         }
 
         public void Update_new_data()
@@ -75,6 +89,12 @@ namespace CobraDataServer
             mydb.sizepackettrade = in2;
             data.correct_time = (byte)in3;
 
+            data.h1 = (byte)in4;
+            data.h2 = (byte)in5;
+            data.m1 = (byte)in6;
+            data.m2 = (byte)in7;
+            data.hour_start = (byte)in8;
+            data.hour_stop = (byte)in9;
         }
     }
     public static class SETTING 

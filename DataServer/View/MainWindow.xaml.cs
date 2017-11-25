@@ -153,7 +153,8 @@ namespace CobraDataServer
         int l1_mem = 0;
         bool loc = false;
         int ct_fatal; byte cttitle;
-
+        private bool timeok;
+        private int currH, currM;
         private void Timer_Tick(object sender, EventArgs e)
         {
             tmr.Dispatcher.Invoke(/*DispatcherPriority.Background,*/ new Action(() =>
@@ -168,12 +169,20 @@ namespace CobraDataServer
 
             if (loc) return;
             loc = true;
+ 
+            currH = DateTime.Now.Hour;
+            currM = DateTime.Now.Minute;
 
-            bool timeok = false;
-            if (DateTime.Now.Hour >= data.hour_start_pipe
-                && DateTime.Now.Hour <= 23
+
+            int perer1 = data.h1 * 60 + data.m1;
+            int perer2 = data.h2 * 60 + data.m2;
+            int currMIN = currH * 60 + currM;
+
+
+            if (currH >= data.hour_start && currH <= data.hour_stop  &&
+                currMIN<perer1 && currMIN>perer2
                 ) timeok = true;
-
+            else timeok = false;
 
 
             if (data.Not_data && !data.Not_connect && !data.fatal && timeok)
@@ -376,6 +385,9 @@ namespace CobraDataServer
             {
                 p.stopPIPE();
             }
+            threadprocess.stop_all();
+            mes.err("Все потоки остановлены");
+
             this.Close();
         }
 
@@ -392,6 +404,19 @@ namespace CobraDataServer
 
             Log.Debug("=========== Close Cobra Data Server ===========");
             Log.CloseAndFlush();
+        }
+
+        private void clscreen(object sender, RoutedEventArgs e)
+        {
+            box.Dispatcher.Invoke(DispatcherPriority.Background, new Action(() =>
+            {
+                box.Document.Blocks.Clear();
+            }));
+        }
+
+        private void box_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 

@@ -44,12 +44,12 @@ namespace CobraDataServer
 
        
 
-        static ConcurrentQueue<OrderBook> FIFOorderbook;
-        static ConcurrentQueue<AllTrade> FIFOtrade;
+        static ConcurrentQueue<OrderBook> FIFOorderbook = new ConcurrentQueue<OrderBook>();
+        static ConcurrentQueue<AllTrade> FIFOtrade = new ConcurrentQueue<AllTrade>();
 
-        public static ConcurrentQueue<OrderBook> FIFOorderbookall;
-        public static ConcurrentQueue<AllTrade> FIFOtradeall;
-  
+        public static ConcurrentQueue<OrderBook> FIFOorderbookall = new ConcurrentQueue<OrderBook>();
+        public static ConcurrentQueue<AllTrade> FIFOtradeall = new ConcurrentQueue<AllTrade>();
+
 
         public static int getSIZEorderbook
         {
@@ -65,11 +65,7 @@ namespace CobraDataServer
 
         public QUIKSHARPconnector()
         {
-            FIFOtrade = new ConcurrentQueue<AllTrade>();
-            FIFOorderbook = new ConcurrentQueue<OrderBook>();
-            FIFOtradeall = new ConcurrentQueue<AllTrade>();
-            FIFOorderbookall = new ConcurrentQueue<OrderBook>();
-
+           
         }
         public void work()
         {
@@ -109,7 +105,7 @@ namespace CobraDataServer
 
             data.Not_connect = false;
             data.Not_data = false;
-
+            int notpipe = 0;
             //****************************************************************************************
             //                          MAIN
             //****************************************************************************************
@@ -140,6 +136,14 @@ namespace CobraDataServer
                 
                 }
 
+                if (data.crashpipe) notpipe++; else notpipe = 0;
+
+                if (data.crashpipe && notpipe>120)
+                {
+                    notpipe = 0;
+                    mes.errLOG("поток PIPE не отвечает. последний удачный transmit = " + data.crashpipeINFO);
+                    threadprocess.PIPE_Thread_restart();
+                }
 
             }
 
@@ -1280,11 +1284,12 @@ namespace CobraDataServer
                                 ask20 = orderwr.ask20,
                             };
 
-                                //------- to PIPE
-                                if (data.PIPEENABLE)
-                                {
-                                        bid = ob.bid[ob.bid.Count() - 1].price;
+                        //------- to PIPE
+                        if (data.PIPEENABLE && szb >= 2)
+                        {
+                                        bid = ob.bid[szb - 1].price;
                                         ask = ob.offer[0].price;
+
                                     if (ask == data._instr[ct].lastPIPEask &&
                                         bid == data._instr[ct].lastPIPEbid ) {}
                                     else
@@ -1300,7 +1305,7 @@ namespace CobraDataServer
                                         data._instr[ct].lastPIPEask = ask;
                                     }
 
-                                }
+                        }
                         
                     }
                     catch (Exception ex)

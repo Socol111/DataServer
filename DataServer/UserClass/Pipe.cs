@@ -33,7 +33,7 @@ namespace CobraDataServer
         public Pipe(string name)
         {
             this.name = name;
-            if (data.eliminate.Contains(name) || !data.PIPEENABLE) return;
+            if (data.eliminate.Contains(name)) return;
 
             mes.add("подключаем PIPE1 " + name + "...");
             createPIPE1(name);
@@ -153,14 +153,25 @@ namespace CobraDataServer
             try
             {
                 nm = "PIPE1 " + this.name;
-                if (pipCLIENT1 != null) pipCLIENT1.Write(msg, 0, (int)msg.Length);
 
-                int sec = DateTime.Now.Second;
+                if (pipCLIENT1 != null)
+                    if (pipCLIENT1.IsConnected)
+                    {
+                        pipCLIENT1.Write(msg, 0, (int) msg.Length);
+                        pipCLIENT1.Flush();
+                    }
+
                 if (timer.ElapsedMilliseconds>1000)
                 {
                     timer = Stopwatch.StartNew();
                     nm = "PIPE2 " + this.name;
-                    if (pipCLIENT2 != null) pipCLIENT2.Write(msg, 0, (int) msg.Length);
+
+                    if (pipCLIENT2 != null)
+                        if (pipCLIENT2.IsConnected)
+                        {
+                            pipCLIENT2.Flush();
+                            pipCLIENT2.Write(msg, 0, (int) msg.Length);
+                        }
                 }
             }
             catch (Exception ex)
