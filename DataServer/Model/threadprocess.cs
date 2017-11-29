@@ -150,43 +150,61 @@ namespace CobraDataServer
 
         }
 
-        public static async Task PIPE_Thread_restart()
+        public static  void PIPE_Thread_restart()
         {
-            data.crashpipe = false;
-            data.PIPEENABLE = false;
-            mes.errLOG("PIPE прерывание потока");
-            pipeTHREAD.Abort(5000);
-            while (threadprocess.pipeTHREAD.ThreadState == System.Threading.ThreadState.Running)
+            try
             {
-                Thread.Sleep(100);
-                mes.errLOG("задача PIPE прерывается....");
-            }
+                data.crashpipe = false;
+                data.PIPEENABLE = false;
+                mes.errLOG("PIPE прерывание потока");
+                pipeTHREAD.Abort(5000);
+                while (threadprocess.pipeTHREAD.ThreadState == System.Threading.ThreadState.Running)
+                {
+                    Thread.Sleep(100);
+                    mes.errLOG("задача PIPE прерывается....");
+                }
 
-            create_PIPE();
-            data.crashpipe = false;
+                mes.errLOG("PIPE поток остановлен");
+
+                data.PIPEENABLE = true;
+                create_PIPE();
+                data.crashpipe = false;
+            }
+            catch (Exception ex)
+            {
+                mes.errLOG("Ошибка остановки PIPE потока "+ex.Message);
+            }
         }
 
-        public static async Task PIPE_all_reconnect()
+        public static void PIPE_all_reconnect()
         {
-            if (data.listpipe != null && data.listpipe.Count!=0)
+            try
             {
-                mes.errLOG("Остановка всех PIPE...");
-                data.PIPEENABLE = false;
-                foreach (var i in data.listpipe)
+                if (data.listpipe != null && data.listpipe.Count!=0)
                 {
-                    mes.errLOG("Остановка pipe-"+i.Name);
-                    i.stopPIPE();
-                }
+                    mes.errLOG("Остановка всех PIPE...");
+                    data.PIPEENABLE = false;
+                    foreach (var i in data.listpipe)
+                    {
+                        mes.err("Остановка pipe-"+i.Name);
+                        i.stopPIPE();
+                    }
 
-                mes.addLOG("PIPE рекконект");
-                data.listpipe.Clear();
-                foreach (var i in data._instr)
-                {
-                    mes.addLOG("PIPE соединяемcя с "+i.name);
-                    data.listpipe.Add(new Pipe(i.name));
+                    mes.addLOG("PIPE рекконект");
+                    data.listpipe.Clear();
+                    foreach (var i in data._instr)
+                    {
+                        mes.add("PIPE соединяемcя с "+i.name);
+                        data.listpipe.Add(new Pipe(i.name));
+                    }
+                    mes.add("== Все PIPE пересозданы ==");
+                    data.PIPEENABLE = true;
+                    data.crashpipe = false;
                 }
-                mes.add("== Все PIPE пересозданы ==");
-                data.PIPEENABLE = true;
+            }
+            catch (Exception ex)
+            {
+                mes.errLOG("Ошибка PIPE рекконект " + ex.Message);
             }
         }
 

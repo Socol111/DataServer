@@ -272,6 +272,8 @@
                             </LinearGradientBrush>
                         </Button.Foreground>
                     </Button>
+                    <Label Content="Таймаут PIPE, сек" HorizontalAlignment="Left" Margin="278,220,0,0" VerticalAlignment="Top" Width="118" Foreground="#FFBBE03F" RenderTransformOrigin="0.348,6.2" FontWeight="Bold" Grid.Column="3"/>
+                    <TextBox x:Name="_port_Copy" Text="{Binding timeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="21" Margin="401,220,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="72" RenderTransformOrigin="1.962,2.714" FontWeight="Bold" Grid.Column="3"/>
                 </Grid>
             </TabItem>
 

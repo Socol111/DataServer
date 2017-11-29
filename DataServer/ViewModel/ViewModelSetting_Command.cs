@@ -47,9 +47,13 @@ namespace CobraDataServer
         {
             if (!data.PIPEENABLE) return;
             mes.errLOG("РУЧНОЙ Рестарт PIPE");
-            await threadprocess.PIPE_Thread_restart();
-            await threadprocess.PIPE_all_reconnect();
 
+            new Task( () =>
+                {
+                    threadprocess.PIPE_Thread_restart();
+                    threadprocess.PIPE_all_reconnect();
+                }
+            ).Start();
         }
     }//class
 

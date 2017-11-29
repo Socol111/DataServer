@@ -39,6 +39,7 @@ namespace CobraDataServer
         public int in8 { get; set; }
         public int in9 { get; set; }
         public int port { get; set; }
+        public int timeout { get; set; }
 
         public ser_data()
         {
@@ -69,6 +70,7 @@ namespace CobraDataServer
             in8 = data.hour_start;
             in9 = data.hour_stop;
             port = data.portLUA;
+            timeout = data.PIPEtimeout;
         }
 
         public void Update_new_data()
@@ -97,6 +99,7 @@ namespace CobraDataServer
             data.hour_start = (byte)in8;
             data.hour_stop = (byte)in9;
             data.portLUA = port;
+            data.PIPEtimeout = timeout;
         }
     }
     public static class SETTING 

@@ -47,6 +47,7 @@ namespace CobraDataServer
 
         //pipe
         public static bool PIPEENABLE = false;
+        public static int PIPEtimeout = 120;
         public static string pipe_prefix1 = "IN_Cobraconnector_";
         public static string pipe_prefix2 = "MT_Cobraconnector_";
         public static ConcurrentQueue<PipeItem> pipeque = new ConcurrentQueue<PipeItem>();

@@ -44,6 +44,10 @@ namespace CobraDataServer
 
         public string HourStart { get => data.hour_start.ToString(); set => parsing(value, out data.hour_start); }
         public string HourStop { get => data.hour_stop.ToString(); set => parsing(value, out data.hour_stop); }
+
+        public string timeout { get => data.PIPEtimeout.ToString(); set => parsing(value, out data.PIPEtimeout); }
+
+
         // public object listalltickers => data.listINSTRUMENTS;
         public List<string> listalltickers
         {

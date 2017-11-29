@@ -141,7 +141,7 @@ namespace CobraDataServer
                     if (data.crashpipe) notpipe++;
                     else notpipe = 0;
 
-                    if (data.crashpipe && notpipe > 120)
+                    if (data.crashpipe && notpipe > data.PIPEtimeout)
                     {
                         notpipe = 0;
                         mes.errLOG("поток PIPE не отвечает. последний удачный transmit = " + data.crashpipeINFO);
@@ -1289,26 +1289,30 @@ namespace CobraDataServer
                             };
 
                         //------- to PIPE
-                        if (data.PIPEENABLE && szb >= 2)
+                        if (data.PIPEENABLE && szb >= 3 )
                         {
-                                        bid = ob.bid[szb - 1].price;
-                                        ask = ob.offer[0].price;
+                            if (ob.bid[szb - 1].price != null)
+                            {
+                                bid = ob.bid[szb - 1].price;
+                                ask = ob.offer[0].price;
 
-                                    if (ask == data._instr[ct].lastPIPEask &&
-                                        bid == data._instr[ct].lastPIPEbid ) {}
-                                    else
+                                if (ask == data._instr[ct].lastPIPEask &&
+                                    bid == data._instr[ct].lastPIPEbid)
+                                {
+                                }
+                                else
+                                {
+                                    data.pipeque.Enqueue(new PipeItem()
                                     {
-                                        data.pipeque.Enqueue(new PipeItem()
-                                        {
-                                            namepipe = ob.sec_code,
-                                            biditem = bid,
-                                            askitem = ask
-                                        });
-             
-                                        data._instr[ct].lastPIPEbid = bid;
-                                        data._instr[ct].lastPIPEask = ask;
-                                    }
+                                        namepipe = ob.sec_code,
+                                        biditem = bid,
+                                        askitem = ask
+                                    });
 
+                                    data._instr[ct].lastPIPEbid = bid;
+                                    data._instr[ct].lastPIPEask = ask;
+                                }
+                            }
                         }
                         
                     }
