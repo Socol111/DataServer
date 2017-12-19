@@ -6,3 +6,4 @@
 - транслирует bid/ask в PIPE сервер
 
 
+donate yandex money 410015510109786 
