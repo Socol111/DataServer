@@ -1040,7 +1040,7 @@ namespace CobraDataServer
                         }
                         catch (Exception ex)
                         {
-                            mes.err("Ошибка OFFER стакана  " + ob.sec_code + " " + ex);
+                            mes.LOG("Ошибка OFFER стакана  " + ob.sec_code + " " + ex);
                         }
 
 
@@ -1291,7 +1291,7 @@ namespace CobraDataServer
                         //------- to PIPE
                         if (data.PIPEENABLE && szb >= 3 )
                         {
-                            if (ob.bid[szb - 1].price != null)
+                            if (ob.bid[szb - 1] != null)
                             {
                                 bid = ob.bid[szb - 1].price;
                                 ask = ob.offer[0].price;
@@ -1318,7 +1318,7 @@ namespace CobraDataServer
                     }
                     catch (Exception ex)
                     {
-                        mes.err("Ошибка в потоке Orders  "+ob.sec_code+" "+ ex);
+                        mes.LOG("Ошибка в потоке Orders  "+ob.sec_code+" "+ ex);
                     }
                     break;
                 }
@@ -1382,8 +1382,8 @@ namespace CobraDataServer
         }
 
 
-        OrderBook order;
-        AllTrade trade;
+        //OrderBook order;
+        //AllTrade trade;
         OrderBook orderALL;
         AllTrade tradeALL;
 

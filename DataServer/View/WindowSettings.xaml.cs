@@ -124,7 +124,7 @@ namespace CobraDataServer
             string n = Listalltk.SelectedItem as string;
             
             if (!mydb.listtickers.Contains(n))
-            mydb.listtickers.Add(n);
+                                 mydb.listtickers.Add(n);
             ListBDactual.Items.Refresh();
 
         }
@@ -137,6 +137,27 @@ namespace CobraDataServer
         private void CheckBox_Checked_1(object sender, RoutedEventArgs e)
         {
             mes.addLOG("Включена запись в базу данных");
+        }
+
+        private void Button_Click_addALL(object sender, RoutedEventArgs e)
+        {
+            foreach (var obj in data.listINSTRUMENTS)
+            {
+                if (!mydb.listtickers.Contains(obj))
+                          mydb.listtickers.Add(obj);
+            }
+            ListBDactual.Items.Refresh();
+        }
+
+        private void Button_Click_REPLACEALL(object sender, RoutedEventArgs e)
+        {
+            mydb.listtickers.Clear();
+            foreach (var obj in data.listINSTRUMENTS)
+            {
+                if (!mydb.listtickers.Contains(obj))
+                    mydb.listtickers.Add(obj);
+            }
+            ListBDactual.Items.Refresh();
         }
     }
 }

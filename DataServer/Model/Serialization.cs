@@ -22,8 +22,8 @@ namespace CobraDataServer
         public string str6 { get; set; }
         public string str7 { get; set; }
      
-        public bool b1 { get; set; }
-        public bool b2 { get; set; }
+        public bool enpipe { get; set; }
+        public bool endb { get; set; }
 
         public List<string> os1 { get; set; }
         public ObservableCollection<string> os2 { get; set; }
@@ -57,8 +57,8 @@ namespace CobraDataServer
 
             os2 = data.eliminate;
             os1 = mydb.listtickers;
-            b1 = data.PIPEENABLE;
-            b2 = mydb.enable;
+            enpipe = data.PIPEENABLE;
+            endb = mydb.enable;
             in1 = mydb.sizepacket;
             in2 = mydb.sizepackettrade;
             in3 = data.correct_time;
@@ -86,8 +86,8 @@ namespace CobraDataServer
             data.eliminate= os2;
             mydb.listtickers = os1;
 
-            data.PIPEENABLE = b1;
-            mydb.enable = b2;
+            data.PIPEENABLE = enpipe;
+            mydb.enable = endb;
             mydb.sizepacket = in1;
             mydb.sizepackettrade = in2;
             data.correct_time = (byte)in3;

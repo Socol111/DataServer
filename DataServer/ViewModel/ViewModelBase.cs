@@ -82,7 +82,8 @@ namespace CobraDataServer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
-       public  event PropertyChangedEventHandler PropertyChanged;
+
+        public  event PropertyChangedEventHandler PropertyChanged;
 
         bool? _CloseWindowFlag;
         public bool? CloseWindowFlag

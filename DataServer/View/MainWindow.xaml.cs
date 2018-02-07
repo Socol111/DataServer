@@ -121,7 +121,7 @@ namespace CobraDataServer
             this.Close();
         }
 
-        byte rst = 0;
+        int rst = 0;
         void add(string msg, object c)
         {
             if (msg == "*")

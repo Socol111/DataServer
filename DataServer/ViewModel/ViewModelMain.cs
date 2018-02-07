@@ -96,9 +96,8 @@ namespace CobraDataServer
             data.quik.Stop();
         }
 
-
         static bool loctask = false;
-        static byte rst_not_connect = 0;
+        //static byte rst_not_connect = 0;
         static bool PIPE_ok = false;
         public static void CREATE_PIPE()
         {
@@ -217,6 +216,10 @@ namespace CobraDataServer
         public static void errLOG(string s)
         {
             Event_Print?.Invoke(s, System.Windows.Media.Brushes.Red);
+            Log.Debug(s);
+        }
+        public static void LOG(string s)
+        {
             Log.Debug(s);
         }
         public static void add(string s)

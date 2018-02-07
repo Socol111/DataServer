@@ -185,7 +185,11 @@ namespace CobraDataServer
                     if (!isConnectPIPE2) { mes.add("реконнект " + nm); createPIPE2(this.name); }
                 }
                 else
-                mes.err("сбой записи в "+nm+ "err=" + ex.Message);
+                {
+                    if (ex.Message != "Поток находился в процессе прерывания.")
+                        mes.err("сбой записи в " + nm + " " + ex.Message);
+                    else mes.err("pipe сбой " + nm);
+                }
             }
         }
 

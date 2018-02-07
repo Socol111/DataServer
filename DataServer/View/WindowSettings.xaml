@@ -176,7 +176,7 @@
 
             <TabItem Header="  Тикеры БД ">
                 <Grid Background="#FF160638" Margin="10,10,5,4">
-                    <Button Content="ДОБАВИТЬ"  CommandParameter=""  Margin="0,118,329,0" Focusable="False" Width="77" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_6">
+                    <Button Content=">"  CommandParameter=""  Margin="0,95,355,0" Focusable="False" Width="31" Height="23" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_6">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black"/>
@@ -232,6 +232,34 @@
                             </TransformGroup>
                         </Label.RenderTransform>
                     </Label>
+                    <Button Content="ЗАМЕНИТЬ ВСЕ"  CommandParameter=""  Margin="0,234,473,0" Focusable="False" Width="103" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_REPLACEALL">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black"/>
+                                <GradientStop Color="#FF54FBBE" Offset="0.749"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.Foreground>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="0"/>
+                                <GradientStop Color="#FF0627BB" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Foreground>
+                    </Button>
+                    <Button Content=">>>"  CommandParameter=""  Margin="0,150,345,0" Focusable="False" Width="50" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_addALL">
+                        <Button.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black"/>
+                                <GradientStop Color="#FFFB8954" Offset="0.749"/>
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.Foreground>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="0"/>
+                                <GradientStop Color="#FF0627BB" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Button.Foreground>
+                    </Button>
                 </Grid>
             </TabItem>
 
@@ -257,7 +285,7 @@
                     <Label Content="Трансляция строки tick;bid;ask; в PIPE-сервер " HorizontalAlignment="Left" Margin="105,0,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
                     <Label Content="(на каждый тикер свой PIPE-канал: имя=Префикс+тикер) " HorizontalAlignment="Left" Margin="105,21,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
                     <Label Content="Передача идет одновременно в PIPE1 и PIPE2" HorizontalAlignment="Left" Margin="105,107,0,0" VerticalAlignment="Top" Width="507" Foreground="#FF39FF6F" FontSize="16" Grid.ColumnSpan="2" Grid.Column="2"/>
-                    <CheckBox Content="ВКЛЮЧИТЬ ТРАНСЛЯЦИЮ" IsChecked="{Binding enablepipe}" HorizontalAlignment="Left" Margin="105,175,0,0" VerticalAlignment="Top" Foreground="#FFFFF52D" Width="194" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <CheckBox Content="ВКЛЮЧИТЬ ТРАНСЛЯЦИЮ" IsChecked="{Binding enablepipe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="105,175,0,0" VerticalAlignment="Top" Foreground="#FFFFF52D" Width="194" Grid.Column="2" Grid.ColumnSpan="2"/>
                     <Button Content="Рестарт Pipe"  Command="{Binding key_piperst}" CommandParameter=""  Margin="0,216,430,0" Focusable="False" Width="96" Height="26" HorizontalAlignment="Right" VerticalAlignment="Top" BorderBrush="#FF1BAC14" OpacityMask="#FF990E0E" Click="Button_Click_3" Grid.Column="2" Grid.ColumnSpan="2">
                         <Button.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">

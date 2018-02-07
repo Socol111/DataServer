@@ -43,7 +43,7 @@ namespace CobraDataServer
             mydb.item.CREATEtest();
         }
 
-        private async void _key_piperst(object sender)
+        private void _key_piperst(object sender)
         {
             if (!data.PIPEENABLE) return;
             mes.errLOG("РУЧНОЙ Рестарт PIPE");

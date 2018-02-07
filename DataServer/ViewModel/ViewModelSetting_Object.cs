@@ -31,7 +31,7 @@ namespace CobraDataServer
         public string bdconn { get => mydb.Connectparam; set => mydb.Connectparam = value; }
         public string bdpath { get => mydb.Path; set => mydb.Path = value; }
         public string bdname { get => mydb.Namebd; set => mydb.Namebd = value; }
-
+        
         public bool enabledatabase { get => mydb.enable; set => mydb.enable = value; }
         public bool enablepipe { get => data.PIPEENABLE; set => data.PIPEENABLE = value; }
 
@@ -49,6 +49,10 @@ namespace CobraDataServer
 
 
         // public object listalltickers => data.listINSTRUMENTS;
+
+        /// <summary>
+        /// Все тикеры из настроек
+        /// </summary>
         public List<string> listalltickers
         {
             get { return data.listINSTRUMENTS; }
@@ -93,8 +97,9 @@ namespace CobraDataServer
             DependencyProperty.Register("listalltickers", typeof(List<string>), typeof(ListBox),
                 new PropertyMetadata(new List<string>()));
 
-
-
+        /// <summary>
+        /// Активные тикеры обрабатываемые
+        /// </summary>
         public List<string> listactive
         {
             get { return mydb.listtickers; }
@@ -106,7 +111,7 @@ namespace CobraDataServer
             DependencyProperty.Register("listactive", typeof(List<string>), typeof(ListBox),
                 new PropertyMetadata(mydb.listtickers
                 ));
-      
+
 
         #region Реализация INotifyPropertyChanged
         /// <summary>Уведомляет подписчика о изменении свойства</summary>
@@ -115,8 +120,7 @@ namespace CobraDataServer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
+        new event PropertyChangedEventHandler PropertyChanged;
 
         public void NamedPropertyChanged(string PropertyName)
         {

@@ -46,8 +46,7 @@ namespace CobraDataServer
             }
             catch (Exception ex)
             {
-                mes.errLOG("PIPEerror "+ex);
-                //data.fatal = true;
+                mes.LOG("PIPEerror "+ex.Message);
             }
         }
 
