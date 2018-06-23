@@ -35,20 +35,23 @@ namespace CobraDataServer
               //MessageBox.Show("Не задан путь списка тикеров");
               return;
             }
-            string s1,s2;
+ 
             using (StreamReader sr = new StreamReader(path))
             {
                 sr.ReadLine();//шапка
                 while (!sr.EndOfStream)
                 {
-                    s1 = sr.ReadLine();
+                    string name = sr.ReadLine();
                     string cod = sr.ReadLine();
-                    s2 = sr.ReadLine();
-                    
-                    if (data.eliminate.Contains(s1) || s1=="") { /*mes.add("Игнор тикера " + s1);*/  }
-                    else
-                    p.Add(new Instrumensts(s1,s2));
+                    string cl = sr.ReadLine();
 
+
+                    if (data.eliminate.Contains(cod) 
+                        || cod == "" || name == "" || cl == "") { /*mes.add("Игнор тикера " + s1);*/  }
+                    else
+                    {
+                        p.Add(new Instrumensts(name, cod, cl));
+                    }
                     sr.ReadLine();
                     sr.ReadLine();
                 }

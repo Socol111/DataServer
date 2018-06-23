@@ -330,7 +330,7 @@ namespace CobraDataServer
 
             foreach (var i in data._instr)
             {
-                mess += i.name + "/" + i.namefull
+                mess += i.tickerCOD + "/" + i.namefull
                                 + "  pipesend=" + i.ct
                                + "  orders=" + i.orders
                                + "  inter=" + i.interes
@@ -387,6 +387,17 @@ namespace CobraDataServer
             }
             threadprocess.stop_all();
             mes.err("Все потоки остановлены");
+
+
+            if (threadprocess.dbTHREAD.ThreadState == ThreadState.Running)
+                System.Windows.Forms.MessageBox.Show("no stop1");
+
+            if (threadprocess.mt.ThreadState == ThreadState.Running)
+                System.Windows.Forms.MessageBox.Show("no stop2");
+
+            if (threadprocess.pipeTHREAD.ThreadState == ThreadState.Running)
+                System.Windows.Forms.MessageBox.Show("no stop3");
+
 
             this.Close();
         }

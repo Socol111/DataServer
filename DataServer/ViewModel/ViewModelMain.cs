@@ -107,7 +107,7 @@ namespace CobraDataServer
                 data.PIPEENABLE = false;
                 foreach (var i in data._instr)
                 {
-                   data.listpipe.Add(new Pipe(i.name));
+                   data.listpipe.Add(new Pipe(i.tickerName, i.tickerCOD));
                     Thread.Sleep(100);
                 }
                 mes.add("== Все PIPE подключены успешно  ==");

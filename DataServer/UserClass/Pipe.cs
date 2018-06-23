@@ -20,26 +20,37 @@ namespace CobraDataServer
         NamedPipeClientStream pipCLIENT1;
         NamedPipeClientStream pipCLIENT2;
         //NamedPipeServerStream pipeSERVERwrite;
-        string name;
+        string tickername;
+        string tickercode;
 
         public string Name
         {
             get
             {
-                return name;
+                return tickername;
             }
         }
 
-        public Pipe(string name)
+        public string cod
         {
-            this.name = name;
-            if (data.eliminate.Contains(name)) return;
+            get
+            {
+                return tickercode;
+            }
+        }
 
-            mes.add("подключаем PIPE1 " + name + "...");
-            createPIPE1(name);
+        public Pipe(string name, string cod)
+        {
+            this.tickername = name;
+            this.tickercode = cod;
 
-            mes.add("подключаем PIPE2 " + name + "...");
-            createPIPE2(name);
+            if (data.eliminate.Contains(this.tickername)) return;
+
+           // mes.add("подключаем PIPE1 " + this.tickername + "...");
+            createPIPE1(this.tickername);
+
+           // mes.add("подключаем PIPE2 " + this.tickername + "...");
+            createPIPE2(this.tickername);
         }
 
         public void stopPIPE()
@@ -52,9 +63,12 @@ namespace CobraDataServer
         void createPIPE1(string name)
         {
             while (true)
-            {
+            { 
                 string namechannel = data.pipe_prefix1 + name;
-                if (data.pipe_prefix1 == "" || data.pipe_prefix1 == "*") { pipCLIENT1 = null;return; }
+                mes.add("СОЗДАНИЕ pipe " + namechannel);
+
+                if (data.pipe_prefix1 == "" || data.pipe_prefix1 == "*")
+                { mes.err("нет имени PIPE1 " + namechannel ); pipCLIENT1 = null;return; }
                 try
                 {
                    
@@ -85,10 +99,14 @@ namespace CobraDataServer
             string namePIPE2 = "";
             try
             {
+ 
                 namePIPE2 = data.pipe_prefix2 + name;
-                if (data.pipe_prefix2 == "" || data.pipe_prefix2 == "*") { pipCLIENT2 = null; return; }
+                mes.add("СОЗДАНИЕ pipe " + namePIPE2);
 
-                pipCLIENT2 = new NamedPipeClientStream( namePIPE2);
+                if (data.pipe_prefix2 == "" || data.pipe_prefix2 == "*")
+                { mes.err("нет имени PIPE2 " + data.pipe_prefix2); pipCLIENT2 = null; return; }
+
+                pipCLIENT2 = new NamedPipeClientStream( namePIPE2 );
                 pipCLIENT2.Connect();
 
                 mes.add("подключен " + namePIPE2 + "  status=" +
@@ -152,7 +170,7 @@ namespace CobraDataServer
             string nm = "";
             try
             {
-                nm = "PIPE1 " + this.name;
+                nm = "PIPE1 " + this.tickername;
 
                 if (pipCLIENT1 != null)
                     if (pipCLIENT1.IsConnected)
@@ -164,7 +182,7 @@ namespace CobraDataServer
                 if (timer.ElapsedMilliseconds>1000)
                 {
                     timer = Stopwatch.StartNew();
-                    nm = "PIPE2 " + this.name;
+                    nm = "PIPE2 " + this.tickername;
 
                     if (pipCLIENT2 != null)
                         if (pipCLIENT2.IsConnected)
@@ -181,8 +199,8 @@ namespace CobraDataServer
                 {
                     ct_sboi = 0;
 
-                    if (!isConnectPIPE1) { mes.add("реконнект " + nm); createPIPE1(this.name); }
-                    if (!isConnectPIPE2) { mes.add("реконнект " + nm); createPIPE2(this.name); }
+                    if (!isConnectPIPE1) { mes.add("реконнект " + nm); createPIPE1(this.tickername); }
+                    if (!isConnectPIPE2) { mes.add("реконнект " + nm); createPIPE2(this.tickername); }
                 }
                 else
                 {

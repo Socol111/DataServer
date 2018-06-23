@@ -9,7 +9,8 @@ namespace CobraDataServer
 
     public class PipeItem
     {
-        public string namepipe;
+        public string tickerNAME;
+        public string tickerCOD;
         public double biditem;
         public double askitem;
     }
@@ -17,9 +18,10 @@ namespace CobraDataServer
 
     public class Instrumensts
     {
-        public Instrumensts(string s, string cl)
+        public Instrumensts(string name, string cod, string cl)
         {
-            name = s;
+            tickerName = name;
+            tickerCOD = cod;
             Class = cl;
             lastorder = new Order();
         }
@@ -33,7 +35,9 @@ namespace CobraDataServer
 
         public int trades { get; set; } = 0;
 
-        public string name { get; set; }
+        public string tickerCOD { get; set; }
+
+        public string tickerName { get; set; }
 
         public string namefull { get; set; }
 

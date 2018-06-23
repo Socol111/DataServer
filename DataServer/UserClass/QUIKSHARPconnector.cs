@@ -78,12 +78,13 @@ namespace CobraDataServer
 
             foreach (var i in data._instr)
             {
-                if (data.eliminate.Contains(i.name)) {mes.add("Игнор подписки " + i.name); continue;}
-                string fn= Sub(i.name, i.Class.Replace("@", ""));
+                if (data.eliminate.Contains(i.tickerCOD)) {mes.add("Игнор подписки " + i.tickerCOD); continue;}
+
+                string fn= Sub(i.tickerCOD, i.Class.Replace("@", ""));
                 if (fn != "") listFN.Add(fn);
                 else
                 {
-                    mes.err("Не найден " + i.name);
+                    mes.err("Не найден " + i.tickerCOD);
                     nofind = true;
                 }
             }
@@ -224,7 +225,7 @@ namespace CobraDataServer
 
                     foreach (var i in data._instr)
                     {
-                        DeSub(i.name, i.Class.Replace("@", ""));
+                        DeSub(i.tickerCOD, i.Class.Replace("@", ""));
                     }
 
                     mes.add("отмена подписок выполнена ");
@@ -498,7 +499,7 @@ namespace CobraDataServer
             {
                 ob = quote;
                 ct++;
-                if (ob.sec_code == i.name)/*&& quote.class_code == tool.ClassCode*/
+                if (ob.sec_code == i.tickerCOD)/*&& quote.class_code == tool.ClassCode*/
                 {
                     data._instr[ct].orders++;
                         
@@ -1304,7 +1305,7 @@ namespace CobraDataServer
                                 {
                                     data.pipeque.Enqueue(new PipeItem()
                                     {
-                                        namepipe = ob.sec_code,
+                                        tickerCOD = ob.sec_code,
                                         biditem = bid,
                                         askitem = ask
                                     });
@@ -1337,7 +1338,7 @@ namespace CobraDataServer
                 foreach (var i in data._instr)
                 {
                     ct++;              
-                    if (tb.SecCode == i.name)/*&& quote.class_code == tool.ClassCode*/
+                    if (tb.SecCode == i.tickerCOD)/*&& quote.class_code == tool.ClassCode*/
                     {
                         data._instr[ct].interes = tb.OpenInterest;
                         //dtconv = new DateTime

@@ -194,8 +194,8 @@ namespace CobraDataServer
                     data.listpipe.Clear();
                     foreach (var i in data._instr)
                     {
-                        mes.add("PIPE соединяемcя с "+i.name);
-                        data.listpipe.Add(new Pipe(i.name));
+                        mes.add("PIPE соединяемcя с "+i.tickerName);
+                        data.listpipe.Add(new Pipe(i.tickerName, i.tickerCOD));
                     }
                     mes.add("== Все PIPE пересозданы ==");
                     data.PIPEENABLE = true;

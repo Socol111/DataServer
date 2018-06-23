@@ -74,7 +74,7 @@ namespace CobraDataServer
             listINSTRUMENTS.Clear();
             foreach (var s in _instr)
             {
-                listINSTRUMENTS.Add(s.name);
+                listINSTRUMENTS.Add(s.tickerCOD);
             } 
         }
      

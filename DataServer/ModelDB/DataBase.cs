@@ -39,7 +39,7 @@ namespace CobraDataServer
             int i = 1;
             foreach (var tik in data._instr)
             {
-                db.Tickers.Add(new Ticker { Id = i, Name = tik.name });
+                db.Tickers.Add(new Ticker { Id = i, Name = tik.tickerName });
                 i++;
             }
 

@@ -28,18 +28,21 @@ namespace CobraDataServer
                         {
                             i++;
                             if (threadprocess.exit) break;
-                            if (p.Name == _pip.namepipe && DateTime.Now.Hour >= data.hour_start)
+                            if (p.Name == _pip.tickerNAME && DateTime.Now.Hour >= data.hour_start)
                             {
                                 //mes.add("tick;" + _pip.biditem + ";" + _pip.askitem + ";"+ p.Name);
                                 data._instr[i].ct++;
-                                p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);                             
+                                p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);
                                 data.crashpipeINFO = p.Name;
                             }
                         }
 
 
                     }
-                    else Thread.Sleep(200);
+                    else
+                    {
+                       Thread.Sleep(200);
+                    }
                 }
 
                 mes.err("Завершение потока PIPE");
