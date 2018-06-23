@@ -64,7 +64,7 @@
     </Reference>
     <Reference Include="QUIKSharp, Version=0.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\_DATASERVER_\QUIKSharp.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\z\_DATASERVER_\QUIKSharp.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>

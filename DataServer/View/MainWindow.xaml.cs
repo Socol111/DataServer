@@ -380,7 +380,7 @@ namespace CobraDataServer
         private void close_Click(object sender, RoutedEventArgs e)
         {
             threadprocess.exit = true;
-            Thread.Sleep(900);
+            Thread.Sleep(200);
             foreach (var p in data.listpipe)
             {
                 p.stopPIPE();
@@ -393,8 +393,11 @@ namespace CobraDataServer
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            Log.Debug("=========== Close Cobra Data Server ===========");
+            Log.CloseAndFlush();
+
             threadprocess.exit = true;
-            Thread.Sleep(900);
+            Thread.Sleep(200);
             foreach (var p in data.listpipe)
             {
                 p.stopPIPE();
@@ -402,8 +405,7 @@ namespace CobraDataServer
 
             threadprocess.stop_all();
 
-            Log.Debug("=========== Close Cobra Data Server ===========");
-            Log.CloseAndFlush();
+ 
         }
 
         private void clscreen(object sender, RoutedEventArgs e)

@@ -42,6 +42,7 @@ namespace CobraDataServer
                 while (!sr.EndOfStream)
                 {
                     s1 = sr.ReadLine();
+                    string cod = sr.ReadLine();
                     s2 = sr.ReadLine();
                     
                     if (data.eliminate.Contains(s1) || s1=="") { /*mes.add("Игнор тикера " + s1);*/  }
