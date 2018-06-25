@@ -9,7 +9,7 @@ namespace CobraDataServer
 
     public class PipeItem
     {
-        public string tickerNAME;
+        //public string tickerNAME;
         public string tickerCOD;
         public double biditem;
         public double askitem;

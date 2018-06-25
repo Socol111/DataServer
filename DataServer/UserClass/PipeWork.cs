@@ -15,6 +15,7 @@ namespace CobraDataServer
             try
             {
                 while (data.Not_data) Thread.Sleep(100);
+
                 while (true)
                 {
                     data.crashpipe = false;
@@ -28,9 +29,9 @@ namespace CobraDataServer
                         {
                             i++;
                             if (threadprocess.exit) break;
-                            if (p.Name == _pip.tickerNAME && DateTime.Now.Hour >= data.hour_start)
+                            if (p.cod == _pip.tickerCOD && DateTime.Now.Hour >= data.hour_start)
                             {
-                                //mes.add("tick;" + _pip.biditem + ";" + _pip.askitem + ";"+ p.Name);
+                               // mes.add("tick;>"+ p.cod+"<  >"+ _pip.tickerCOD+"<");
                                 data._instr[i].ct++;
                                 p.send("tick;" + _pip.biditem + ";" + _pip.askitem + ";", p.Name);
                                 data.crashpipeINFO = p.Name;

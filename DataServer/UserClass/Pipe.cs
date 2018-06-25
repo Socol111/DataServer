@@ -46,7 +46,7 @@ namespace CobraDataServer
 
             if (data.eliminate.Contains(this.tickername)) return;
 
-           // mes.add("подключаем PIPE1 " + this.tickername + "...");
+            //mes.add("подключаем PIPE1 " + this.tickername + "...");
             createPIPE1(this.tickername);
 
            // mes.add("подключаем PIPE2 " + this.tickername + "...");
@@ -77,8 +77,9 @@ namespace CobraDataServer
                     //pipeSERVERwrite.WaitForConnection();
                    
                     pipCLIENT1 = new NamedPipeClientStream(namechannel);
-                    pipCLIENT1.Connect();
-                    
+                    pipCLIENT1.Connect(); 
+
+
                 }
                 catch (Exception ex)
                 {
