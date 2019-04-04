@@ -19,6 +19,8 @@ namespace CobraDataServer
         // private string y = byte.Parse(data.hour_start_pipe.ToString());
         public static object list => data.eliminate;
 
+        public static object listLOTS => data.calcLOTS;
+
         public string sizepacket { get => mydb.sizepacket.ToString(); set => mydb.sizepacket = int.Parse(value); }
         public string sizepackettr { get => mydb.sizepackettrade.ToString(); set => mydb.sizepackettrade = int.Parse(value); }
         public string corrtime { get => data.correct_time.ToString(); set => data.correct_time = byte.Parse(value); }
@@ -47,6 +49,7 @@ namespace CobraDataServer
 
         public string timeout { get => data.PIPEtimeout.ToString(); set => parsing(value, out data.PIPEtimeout); }
 
+        public string sizeLOT { get => data.sizeLOT.ToString(); set => parsing(value, out data.sizeLOT); }
 
         // public object listalltickers => data.listINSTRUMENTS;
 

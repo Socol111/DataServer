@@ -46,6 +46,8 @@ namespace CobraDataServer
         public double lastPIPEask { get; set; }
 
         public double lastPIPEbid { get; set; }
+
+        public double size_lot { get; set; }
     }
 
 

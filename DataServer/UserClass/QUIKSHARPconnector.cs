@@ -84,8 +84,9 @@ namespace CobraDataServer
                 if (fn != "") listFN.Add(fn);
                 else
                 {
-                    mes.err("Не найден " + i.tickerCOD);
-                    nofind = true;
+                    //mes.err("Не найден " + i.tickerCOD);
+                    mes.errLOG("Не найден ИНСТРУМЕНТ " + i.tickerCOD );
+                   // nofind = true;
                 }
             }
 

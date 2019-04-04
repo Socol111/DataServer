@@ -18,7 +18,7 @@ namespace CobraDataServer
         int ct_no_connect=0;
         public static event Action nofinddata;
 
-        readonly string NameServer = "Cobra Data Server v1.0";
+        readonly string NameServer = "Cobra Data Server v"+data.version;
         public MainWindow()
         {   
         
@@ -65,6 +65,7 @@ namespace CobraDataServer
             timer2.Tick += Timer_TickHOUR;
             timer2.Start();
 
+            var path = System.IO.Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
 
             //Install - Package Serilog
             //Install - Package Serilog.Sinks.Literate
@@ -72,7 +73,7 @@ namespace CobraDataServer
             Log.Logger = new LoggerConfiguration()
                            .MinimumLevel.Debug()
                            .WriteTo.LiterateConsole()
-                           .WriteTo.RollingFile("logs\\{Date} Cobra Data Server.txt")
+                           .WriteTo.RollingFile(path+"\\logs\\{Date} Cobra Data Server.txt", fileSizeLimitBytes: 100000000)
                            .CreateLogger();
 
             Log.Debug("Start Cobra Data Server");

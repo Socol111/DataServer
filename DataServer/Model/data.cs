@@ -11,7 +11,10 @@ using System.Windows;
 namespace CobraDataServer
 {
     public static class data
-    {       
+    {
+
+        public static string version = "1.2";
+
         public static QUIKSHARPconnector quik;
         public static List<Instrumensts> _instr;
         public static bool onestart = false;
@@ -26,6 +29,8 @@ namespace CobraDataServer
         public static string servertime="Server Time";
         public static System.Collections.ObjectModel.ObservableCollection<string> eliminate =
                 new ObservableCollection<string> { /*"AA" , "BA" ,"AAPL" ,"EBAY", "USDRUB"*/ };
+        public static System.Collections.ObjectModel.ObservableCollection<string> calcLOTS =
+               new ObservableCollection<string> {  };
 
         //час минуты перерыва
         public static byte h1=18, h2=19, m1=45, m2=00;
@@ -48,6 +53,7 @@ namespace CobraDataServer
         //pipe
         public static bool PIPEENABLE = false;
         public static int PIPEtimeout = 120;
+        public static int sizeLOT = 100000;
         public static string pipe_prefix1 = "IN_Cobraconnector_";
         public static string pipe_prefix2 = "MT_Cobraconnector_";
         public static ConcurrentQueue<PipeItem> pipeque = new ConcurrentQueue<PipeItem>();
